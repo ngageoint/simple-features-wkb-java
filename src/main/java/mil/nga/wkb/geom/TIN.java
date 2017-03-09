@@ -10,6 +10,13 @@ public class TIN extends PolyhedralSurface {
 
 	/**
 	 * Constructor
+	 */
+	public TIN() {
+		this(false, false);
+	}
+
+	/**
+	 * Constructor
 	 * 
 	 * @param hasZ
 	 *            has z

@@ -12,6 +12,13 @@ public class MultiPoint extends GeometryCollection<Point> {
 
 	/**
 	 * Constructor
+	 */
+	public MultiPoint() {
+		this(false, false);
+	}
+
+	/**
+	 * Constructor
 	 * 
 	 * @param hasZ
 	 *            has z

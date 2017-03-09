@@ -18,6 +18,13 @@ public class CurvePolygon<T extends Curve> extends Surface {
 
 	/**
 	 * Constructor
+	 */
+	public CurvePolygon() {
+		this(false, false);
+	}
+	
+	/**
+	 * Constructor
 	 * 
 	 * @param hasZ
 	 *            has z

@@ -17,6 +17,13 @@ public class LineString extends Curve {
 
 	/**
 	 * Constructor
+	 */
+	public LineString() {
+		this(false, false);
+	}
+
+	/**
+	 * Constructor
 	 * 
 	 * @param hasZ
 	 *            has z

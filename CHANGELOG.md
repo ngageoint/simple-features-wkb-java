@@ -6,7 +6,7 @@ Adheres to [Semantic Versioning](http://semver.org/).
 
 ## 1.0.3 (TBD)
 
-* TBD
+* Shortcut default constructors for Geometry objects without z or m values
 
 ## [1.0.2](https://github.com/ngageoint/geopackage-wkb-java/releases/tag/1.0.2) (04-18-2016)
 

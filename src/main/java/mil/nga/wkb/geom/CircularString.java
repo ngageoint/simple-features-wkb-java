@@ -9,6 +9,13 @@ public class CircularString extends LineString {
 
 	/**
 	 * Constructor
+	 */
+	public CircularString() {
+		this(false, false);
+	}
+	
+	/**
+	 * Constructor
 	 * 
 	 * @param hasZ
 	 *            has z

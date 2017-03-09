@@ -17,6 +17,13 @@ public class CompoundCurve extends Curve {
 
 	/**
 	 * Constructor
+	 */
+	public CompoundCurve() {
+		this(false, false);
+	}
+	
+	/**
+	 * Constructor
 	 * 
 	 * @param hasZ
 	 *            has z

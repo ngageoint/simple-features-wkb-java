@@ -9,6 +9,13 @@ public class Triangle extends Polygon {
 
 	/**
 	 * Constructor
+	 */
+	public Triangle() {
+		this(false, false);
+	}
+
+	/**
+	 * Constructor
 	 * 
 	 * @param hasZ
 	 *            has z

@@ -17,6 +17,13 @@ public class PolyhedralSurface extends Surface {
 
 	/**
 	 * Constructor
+	 */
+	public PolyhedralSurface() {
+		this(false, false);
+	}
+
+	/**
+	 * Constructor
 	 * 
 	 * @param hasZ
 	 *            has z

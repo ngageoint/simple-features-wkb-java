@@ -17,6 +17,13 @@ public class GeometryCollection<T extends Geometry> extends Geometry {
 
 	/**
 	 * Constructor
+	 */
+	public GeometryCollection() {
+		this(false, false);
+	}
+
+	/**
+	 * Constructor
 	 * 
 	 * @param hasZ
 	 *            has z

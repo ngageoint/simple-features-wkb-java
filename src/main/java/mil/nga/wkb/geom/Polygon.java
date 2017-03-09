@@ -10,6 +10,13 @@ public class Polygon extends CurvePolygon<LineString> {
 
 	/**
 	 * Constructor
+	 */
+	public Polygon() {
+		this(false, false);
+	}
+	
+	/**
+	 * Constructor
 	 * 
 	 * @param hasZ
 	 *            has z

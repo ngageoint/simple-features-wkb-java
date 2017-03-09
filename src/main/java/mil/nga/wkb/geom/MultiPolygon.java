@@ -12,6 +12,13 @@ public class MultiPolygon extends MultiSurface<Polygon> {
 
 	/**
 	 * Constructor
+	 */
+	public MultiPolygon() {
+		this(false, false);
+	}
+
+	/**
+	 * Constructor
 	 * 
 	 * @param hasZ
 	 *            has z

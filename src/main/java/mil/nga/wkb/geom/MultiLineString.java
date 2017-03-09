@@ -12,6 +12,13 @@ public class MultiLineString extends MultiCurve<LineString> {
 
 	/**
 	 * Constructor
+	 */
+	public MultiLineString() {
+		this(false, false);
+	}
+
+	/**
+	 * Constructor
 	 * 
 	 * @param hasZ
 	 *            has z
