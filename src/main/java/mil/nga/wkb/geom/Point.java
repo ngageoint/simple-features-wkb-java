@@ -42,6 +42,13 @@ public class Point extends Geometry {
 
 	/**
 	 * Constructor
+	 */
+	public Point() {
+		this(0.0, 0.0);
+	}
+
+	/**
+	 * Constructor
 	 * 
 	 * @param hasZ
 	 *            has z
