@@ -8,6 +8,7 @@ Adheres to [Semantic Versioning](http://semver.org/).
 
 * Shortcut default constructors for Geometry objects without z or m values
 * Geometry utilities including dimension and centroid
+* GeometryEnvelopeBuilder option to wrap longitude ranges across boundary values (near the International Date Line)
 
 ## [1.0.2](https://github.com/ngageoint/geopackage-wkb-java/releases/tag/1.0.2) (04-18-2016)
 
