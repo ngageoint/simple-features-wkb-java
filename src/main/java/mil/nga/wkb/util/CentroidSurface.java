@@ -146,7 +146,7 @@ public class CentroidSurface {
 	}
 
 	/**
-	 * Add or substract a line string to or from the centroid total
+	 * Add or subtract a line string to or from the centroid total
 	 * 
 	 * @param positive
 	 *            true if an addition, false if a subtraction
