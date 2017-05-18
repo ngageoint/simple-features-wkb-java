@@ -22,7 +22,7 @@ public class CurvePolygon<T extends Curve> extends Surface {
 	public CurvePolygon() {
 		this(false, false);
 	}
-	
+
 	/**
 	 * Constructor
 	 * 
@@ -33,6 +33,21 @@ public class CurvePolygon<T extends Curve> extends Surface {
 	 */
 	public CurvePolygon(boolean hasZ, boolean hasM) {
 		super(GeometryType.CURVEPOLYGON, hasZ, hasM);
+	}
+
+	/**
+	 * Constructor
+	 * 
+	 * @param curvePolygon
+	 *            curve polygon to copy
+	 */
+	public CurvePolygon(CurvePolygon<T> curvePolygon) {
+		this(curvePolygon.hasZ(), curvePolygon.hasM());
+		for (T ring : curvePolygon.getRings()) {
+			@SuppressWarnings("unchecked")
+			T ringCopy = (T) ring.copy();
+			addRing(ringCopy);
+		}
 	}
 
 	/**
@@ -85,6 +100,14 @@ public class CurvePolygon<T extends Curve> extends Surface {
 	 */
 	public int numRings() {
 		return rings.size();
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public Geometry copy() {
+		return new CurvePolygon<T>(this);
 	}
 
 }

@@ -13,7 +13,7 @@ public class CircularString extends LineString {
 	public CircularString() {
 		this(false, false);
 	}
-	
+
 	/**
 	 * Constructor
 	 * 
@@ -24,6 +24,27 @@ public class CircularString extends LineString {
 	 */
 	public CircularString(boolean hasZ, boolean hasM) {
 		super(GeometryType.CIRCULARSTRING, hasZ, hasM);
+	}
+
+	/**
+	 * Constructor
+	 * 
+	 * @param circularString
+	 *            circular string to copy
+	 */
+	public CircularString(CircularString circularString) {
+		this(circularString.hasZ(), circularString.hasM());
+		for (Point point : circularString.getPoints()) {
+			addPoint((Point) point.copy());
+		}
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public Geometry copy() {
+		return new CircularString(this);
 	}
 
 }

@@ -14,7 +14,7 @@ public class Polygon extends CurvePolygon<LineString> {
 	public Polygon() {
 		this(false, false);
 	}
-	
+
 	/**
 	 * Constructor
 	 * 
@@ -30,6 +30,19 @@ public class Polygon extends CurvePolygon<LineString> {
 	/**
 	 * Constructor
 	 * 
+	 * @param polygon
+	 *            polygon to copy
+	 */
+	public Polygon(Polygon polygon) {
+		this(polygon.hasZ(), polygon.hasM());
+		for (LineString ring : polygon.getRings()) {
+			addRing((LineString) ring.copy());
+		}
+	}
+
+	/**
+	 * Constructor
+	 * 
 	 * @param type
 	 *            geometry type
 	 * @param hasZ
@@ -39,6 +52,14 @@ public class Polygon extends CurvePolygon<LineString> {
 	 */
 	protected Polygon(GeometryType type, boolean hasZ, boolean hasM) {
 		super(type, hasZ, hasM);
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public Geometry copy() {
+		return new Polygon(this);
 	}
 
 }

@@ -45,7 +45,6 @@ public class WkbGeometryReader {
 	 * @param expectedType
 	 * @return geometry
 	 */
-	@SuppressWarnings("unchecked")
 	public static <T extends Geometry> T readGeometry(ByteReader reader,
 			Class<T> expectedType) {
 
@@ -164,7 +163,10 @@ public class WkbGeometryReader {
 		// Restore the byte order
 		reader.setByteOrder(originalByteOrder);
 
-		return (T) geometry;
+		@SuppressWarnings("unchecked")
+		T result = (T) geometry;
+		
+		return result;
 	}
 
 	/**

@@ -1,6 +1,7 @@
 package mil.nga.wkb.test;
 
 import java.io.IOException;
+import java.util.List;
 
 import junit.framework.TestCase;
 import mil.nga.wkb.geom.Geometry;
@@ -268,6 +269,61 @@ public class GeometryUtilsTest {
 		}
 
 		return geometryCollection;
+	}
+
+	@Test
+	public void testCopyMinimizeAndNormalize() {
+
+		Polygon polygon = new Polygon();
+		LineString ring = new LineString();
+		double random = Math.random();
+		if (random < .5) {
+			ring.addPoint(createPoint(90.0, 0.0, 90.0, 90.0));
+			ring.addPoint(createPoint(90.0, -90.0, 90.0, 90.0));
+			ring.addPoint(createPoint(-180.0, -90.0, 89.0, 90.0));
+			ring.addPoint(createPoint(-180.0, 0.0, 89.0, 90.0));
+		} else {
+			ring.addPoint(createPoint(-180.0, 0.0, 89.0, 90.0));
+			ring.addPoint(createPoint(-180.0, -90.0, 89.0, 90.0));
+			ring.addPoint(createPoint(90.0, -90.0, 90.0, 90.0));
+			ring.addPoint(createPoint(90.0, 0.0, 90.0, 90.0));
+		}
+		polygon.addRing(ring);
+
+		Polygon polygon2 = (Polygon) polygon.copy();
+		GeometryUtils.minimizeGeometry(polygon2, 180.0);
+
+		Polygon polygon3 = (Polygon) polygon2.copy();
+		GeometryUtils.normalizeGeometry(polygon3, 180.0);
+
+		List<Point> points = ring.getPoints();
+		LineString ring2 = polygon2.getRings().get(0);
+		List<Point> points2 = ring2.getPoints();
+		LineString ring3 = polygon3.getRings().get(0);
+		List<Point> points3 = ring3.getPoints();
+
+		for (int i = 0; i < points.size(); i++) {
+
+			Point point = points.get(i);
+			Point point2 = points2.get(i);
+			Point point3 = points3.get(i);
+
+			TestCase.assertEquals(point.getY(), point2.getY(), .0000000001);
+			TestCase.assertEquals(point.getY(), point3.getY(), .0000000001);
+			TestCase.assertEquals(point.getX(), point3.getX(), .0000000001);
+			if (i < 2) {
+				TestCase.assertEquals(point.getX(), point2.getX(), .0000000001);
+			} else {
+				double point2Value = point2.getX();
+				if (random < .5) {
+					point2Value -= 360.0;
+				} else {
+					point2Value += 360.0;
+				}
+				TestCase.assertEquals(point.getX(), point2Value, .0000000001);
+			}
+		}
+
 	}
 
 }

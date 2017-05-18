@@ -30,6 +30,19 @@ public class MultiPolygon extends MultiSurface<Polygon> {
 	}
 
 	/**
+	 * Constructor
+	 * 
+	 * @param multiPolygon
+	 *            multi polygon to copy
+	 */
+	public MultiPolygon(MultiPolygon multiPolygon) {
+		this(multiPolygon.hasZ(), multiPolygon.hasM());
+		for (Polygon polygon : multiPolygon.getPolygons()) {
+			addPolygon((Polygon) polygon.copy());
+		}
+	}
+
+	/**
 	 * Get the polygons
 	 * 
 	 * @return polygons
@@ -65,6 +78,14 @@ public class MultiPolygon extends MultiSurface<Polygon> {
 	 */
 	public int numPolygons() {
 		return numGeometries();
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public Geometry copy() {
+		return new MultiPolygon(this);
 	}
 
 }

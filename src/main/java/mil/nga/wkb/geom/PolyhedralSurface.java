@@ -37,6 +37,19 @@ public class PolyhedralSurface extends Surface {
 	/**
 	 * Constructor
 	 * 
+	 * @param polyhedralSurface
+	 *            polyhedral surface to copy
+	 */
+	public PolyhedralSurface(PolyhedralSurface polyhedralSurface) {
+		this(polyhedralSurface.hasZ(), polyhedralSurface.hasM());
+		for (Polygon polygon : polyhedralSurface.getPolygons()) {
+			addPolygon((Polygon) polygon.copy());
+		}
+	}
+
+	/**
+	 * Constructor
+	 * 
 	 * @param type
 	 *            geometry type
 	 * @param hasZ
@@ -84,6 +97,14 @@ public class PolyhedralSurface extends Surface {
 	 */
 	public int numPolygons() {
 		return polygons.size();
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public Geometry copy() {
+		return new PolyhedralSurface(this);
 	}
 
 }

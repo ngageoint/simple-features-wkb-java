@@ -81,4 +81,11 @@ public abstract class Geometry {
 		return code;
 	}
 
+	/**
+	 * Copy the geometry
+	 * 
+	 * @return geometry copy
+	 */
+	public abstract Geometry copy();
+
 }

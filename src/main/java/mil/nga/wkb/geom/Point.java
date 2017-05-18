@@ -66,6 +66,18 @@ public class Point extends Geometry {
 	}
 
 	/**
+	 * Constructor
+	 * 
+	 * @param point
+	 *            point to copy
+	 */
+	public Point(Point point) {
+		this(point.hasZ(), point.hasM(), point.getX(), point.getY());
+		setZ(point.getZ());
+		setM(point.getM());
+	}
+
+	/**
 	 * Get x
 	 * 
 	 * @return x
@@ -139,6 +151,14 @@ public class Point extends Geometry {
 	 */
 	public void setM(Double m) {
 		this.m = m;
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public Geometry copy() {
+		return new Point(this);
 	}
 
 }

@@ -27,4 +27,25 @@ public class TIN extends PolyhedralSurface {
 		super(GeometryType.TIN, hasZ, hasM);
 	}
 
+	/**
+	 * Constructor
+	 * 
+	 * @param tin
+	 *            tin to copy
+	 */
+	public TIN(TIN tin) {
+		this(tin.hasZ(), tin.hasM());
+		for (Polygon polygon : tin.getPolygons()) {
+			addPolygon((Polygon) polygon.copy());
+		}
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public Geometry copy() {
+		return new TIN(this);
+	}
+
 }

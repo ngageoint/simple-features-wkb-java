@@ -26,4 +26,25 @@ public class Triangle extends Polygon {
 		super(GeometryType.TRIANGLE, hasZ, hasM);
 	}
 
+	/**
+	 * Constructor
+	 * 
+	 * @param triangle
+	 *            triangle to copy
+	 */
+	public Triangle(Triangle triangle) {
+		this(triangle.hasZ(), triangle.hasM());
+		for (LineString ring : triangle.getRings()) {
+			addRing((LineString) ring.copy());
+		}
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public Geometry copy() {
+		return new Triangle(this);
+	}
+
 }

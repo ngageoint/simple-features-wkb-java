@@ -29,135 +29,9 @@ public class GeometryEnvelopeBuilder {
 	 * Build Geometry Envelope
 	 * 
 	 * @param geometry
-	 *            geometry to build envelope from
 	 * @return geometry envelope
 	 */
 	public static GeometryEnvelope buildEnvelope(Geometry geometry) {
-		return new GeometryEnvelopeBuilder().build(geometry);
-	}
-
-	/**
-	 * Expand Geometry Envelope
-	 * 
-	 * @param geometry
-	 *            geometry to build envelope from
-	 * @param envelope
-	 *            envelope to expand
-	 */
-	public static void buildEnvelope(Geometry geometry,
-			GeometryEnvelope envelope) {
-		new GeometryEnvelopeBuilder().build(geometry, envelope);
-	}
-
-	/**
-	 * Build Geometry Envelope, expanded by wrapping values using the world
-	 * width producing an envelope longitude range >= (min value - world width)
-	 * and <= (max value + world width).
-	 * 
-	 * Example: For WGS84 with longitude values >= -180.0 and <= 180.0, provide
-	 * a world width of 360.0 resulting in an envelope with longitude range >=
-	 * -540.0 and <= 540.0.
-	 * 
-	 * Example: For web mercator with longitude values >= -20037508.342789244
-	 * and <= 20037508.342789244, provide a world width of 40075016.685578488
-	 * resulting in an envelope with longitude range >= -60112525.028367732 and
-	 * <= 60112525.028367732.
-	 * 
-	 * @param geometry
-	 *            geometry to build envelope from
-	 * @param worldWidth
-	 *            world longitude width in geometry projection
-	 * @return geometry envelope
-	 * @since 1.0.3
-	 */
-	public static GeometryEnvelope buildEnvelope(Geometry geometry,
-			double worldWidth) {
-		return new GeometryEnvelopeBuilder(worldWidth).build(geometry);
-	}
-
-	/**
-	 * Expand Geometry Envelope, expanded by wrapping values using the world
-	 * width producing an envelope longitude range >= (min value - world width)
-	 * and <= (max value + world width).
-	 * 
-	 * Example: For WGS84 with longitude values >= -180.0 and <= 180.0, provide
-	 * a world width of 360.0 resulting in an envelope with longitude range >=
-	 * -540.0 and <= 540.0.
-	 * 
-	 * Example: For web mercator with longitude values >= -20037508.342789244
-	 * and <= 20037508.342789244, provide a world width of 40075016.685578488
-	 * resulting in an envelope with longitude range >= -60112525.028367732 and
-	 * <= 60112525.028367732.
-	 * 
-	 * @param geometry
-	 *            geometry to build envelope from
-	 * @param envelope
-	 *            envelope to expand
-	 * @param worldWidth
-	 *            world longitude width in geometry projection
-	 * @since 1.0.3
-	 */
-	public static void buildEnvelope(Geometry geometry,
-			GeometryEnvelope envelope, double worldWidth) {
-		new GeometryEnvelopeBuilder(worldWidth).build(geometry, envelope);
-	}
-
-	/**
-	 * World longitude width in geometry projection
-	 */
-	private final Double worldWidth;
-
-	/**
-	 * Constructor
-	 * 
-	 * @since 1.0.3
-	 */
-	public GeometryEnvelopeBuilder() {
-		this(null);
-	}
-
-	/**
-	 * Constructor
-	 * 
-	 * If a non null world width is provided, expansions are done by wrapping
-	 * values producing an envelope longitude range >= (min value - world width)
-	 * and <= (max value + world width).
-	 * 
-	 * Example: For WGS84 with longitude values >= -180.0 and <= 180.0, provide
-	 * a world width of 360.0 resulting in an envelope with longitude range >=
-	 * -540.0 and <= 540.0.
-	 * 
-	 * Example: For web mercator with longitude values >= -20037508.342789244
-	 * and <= 20037508.342789244, provide a world width of 40075016.685578488
-	 * resulting in an envelope with longitude range >= -60112525.028367732 and
-	 * <= 60112525.028367732.
-	 * 
-	 * @param worldWidth
-	 *            null or world longitude width in geometry projection
-	 * @since 1.0.3
-	 */
-	public GeometryEnvelopeBuilder(Double worldWidth) {
-		this.worldWidth = worldWidth;
-	}
-
-	/**
-	 * Get the world width
-	 * 
-	 * @return null or world longitude width in geometry projection
-	 * @since 1.0.3
-	 */
-	public Double getWorldWidth() {
-		return worldWidth;
-	}
-
-	/**
-	 * Build Geometry Envelope
-	 * 
-	 * @param geometry
-	 * @return geometry envelope
-	 * @since 1.0.3
-	 */
-	public GeometryEnvelope build(Geometry geometry) {
 
 		GeometryEnvelope envelope = new GeometryEnvelope();
 
@@ -166,54 +40,54 @@ public class GeometryEnvelopeBuilder {
 		envelope.setMinY(Double.MAX_VALUE);
 		envelope.setMaxY(-Double.MAX_VALUE);
 
-		build(geometry, envelope);
+		buildEnvelope(geometry, envelope);
 
 		return envelope;
 	}
 
 	/**
-	 * Expand Geometry Envelope
+	 * Build Geometry Envelope
 	 * 
 	 * @param geometry
 	 * @param envelope
-	 * @since 1.0.3
 	 */
-	public void build(Geometry geometry, GeometryEnvelope envelope) {
+	public static void buildEnvelope(Geometry geometry,
+			GeometryEnvelope envelope) {
 
 		GeometryType geometryType = geometry.getGeometryType();
 		switch (geometryType) {
 		case POINT:
-			addPoint(envelope, (Point) geometry);
+			addPointMessage(envelope, (Point) geometry);
 			break;
 		case LINESTRING:
-			addLineString(envelope, (LineString) geometry);
+			addLineStringMessage(envelope, (LineString) geometry);
 			break;
 		case POLYGON:
-			addPolygon(envelope, (Polygon) geometry);
+			addPolygonMessage(envelope, (Polygon) geometry);
 			break;
 		case MULTIPOINT:
-			addMultiPoint(envelope, (MultiPoint) geometry);
+			addMultiPointMessage(envelope, (MultiPoint) geometry);
 			break;
 		case MULTILINESTRING:
-			addMultiLineString(envelope, (MultiLineString) geometry);
+			addMultiLineStringMessage(envelope, (MultiLineString) geometry);
 			break;
 		case MULTIPOLYGON:
-			addMultiPolygon(envelope, (MultiPolygon) geometry);
+			addMultiPolygonMessage(envelope, (MultiPolygon) geometry);
 			break;
 		case CIRCULARSTRING:
-			addLineString(envelope, (CircularString) geometry);
+			addLineStringMessage(envelope, (CircularString) geometry);
 			break;
 		case COMPOUNDCURVE:
-			addCompoundCurve(envelope, (CompoundCurve) geometry);
+			addCompoundCurveMessage(envelope, (CompoundCurve) geometry);
 			break;
 		case POLYHEDRALSURFACE:
-			addPolyhedralSurface(envelope, (PolyhedralSurface) geometry);
+			addPolyhedralSurfaceMessage(envelope, (PolyhedralSurface) geometry);
 			break;
 		case TIN:
-			addPolyhedralSurface(envelope, (TIN) geometry);
+			addPolyhedralSurfaceMessage(envelope, (TIN) geometry);
 			break;
 		case TRIANGLE:
-			addPolygon(envelope, (Triangle) geometry);
+			addPolygonMessage(envelope, (Triangle) geometry);
 			break;
 		case GEOMETRYCOLLECTION:
 			updateHasZandM(envelope, geometry);
@@ -221,7 +95,7 @@ public class GeometryEnvelopeBuilder {
 			GeometryCollection<Geometry> geomCollection = (GeometryCollection<Geometry>) geometry;
 			List<Geometry> geometries = geomCollection.getGeometries();
 			for (Geometry subGeometry : geometries) {
-				build(subGeometry, envelope);
+				buildEnvelope(subGeometry, envelope);
 			}
 			break;
 		default:
@@ -230,12 +104,13 @@ public class GeometryEnvelopeBuilder {
 	}
 
 	/**
-	 * Update the has z and m values
+	 * Update teh has z and m values
 	 * 
 	 * @param envelope
 	 * @param geometry
 	 */
-	private void updateHasZandM(GeometryEnvelope envelope, Geometry geometry) {
+	private static void updateHasZandM(GeometryEnvelope envelope,
+			Geometry geometry) {
 		if (!envelope.hasZ() && geometry.hasZ()) {
 			envelope.setHasZ(true);
 		}
@@ -250,28 +125,12 @@ public class GeometryEnvelopeBuilder {
 	 * @param envelope
 	 * @param point
 	 */
-	private void addPoint(GeometryEnvelope envelope, Point point) {
+	private static void addPointMessage(GeometryEnvelope envelope, Point point) {
 
 		updateHasZandM(envelope, point);
 
 		double x = point.getX();
 		double y = point.getY();
-
-		if (worldWidth != null && envelope.getMinX() != Double.MAX_VALUE
-				&& envelope.getMaxX() != Double.MIN_VALUE) {
-			if (x < envelope.getMinX()) {
-				if (envelope.getMinX() - x > (x + worldWidth)
-						- envelope.getMaxX()) {
-					x += worldWidth;
-				}
-			} else if (x > envelope.getMaxX()) {
-				if (x - envelope.getMaxX() > envelope.getMinX()
-						- (x - worldWidth)) {
-					x -= worldWidth;
-				}
-			}
-		}
-
 		if (x < envelope.getMinX()) {
 			envelope.setMinX(x);
 		}
@@ -314,13 +173,14 @@ public class GeometryEnvelopeBuilder {
 	 * @param envelope
 	 * @param multiPoint
 	 */
-	private void addMultiPoint(GeometryEnvelope envelope, MultiPoint multiPoint) {
+	private static void addMultiPointMessage(GeometryEnvelope envelope,
+			MultiPoint multiPoint) {
 
 		updateHasZandM(envelope, multiPoint);
 
 		List<Point> points = multiPoint.getPoints();
 		for (Point point : points) {
-			addPoint(envelope, point);
+			addPointMessage(envelope, point);
 		}
 	}
 
@@ -330,12 +190,13 @@ public class GeometryEnvelopeBuilder {
 	 * @param envelope
 	 * @param lineString
 	 */
-	private void addLineString(GeometryEnvelope envelope, LineString lineString) {
+	private static void addLineStringMessage(GeometryEnvelope envelope,
+			LineString lineString) {
 
 		updateHasZandM(envelope, lineString);
 
 		for (Point point : lineString.getPoints()) {
-			addPoint(envelope, point);
+			addPointMessage(envelope, point);
 		}
 	}
 
@@ -345,14 +206,14 @@ public class GeometryEnvelopeBuilder {
 	 * @param envelope
 	 * @param multiLineString
 	 */
-	private void addMultiLineString(GeometryEnvelope envelope,
+	private static void addMultiLineStringMessage(GeometryEnvelope envelope,
 			MultiLineString multiLineString) {
 
 		updateHasZandM(envelope, multiLineString);
 
 		List<LineString> lineStrings = multiLineString.getLineStrings();
 		for (LineString lineString : lineStrings) {
-			addLineString(envelope, lineString);
+			addLineStringMessage(envelope, lineString);
 		}
 	}
 
@@ -362,13 +223,14 @@ public class GeometryEnvelopeBuilder {
 	 * @param envelope
 	 * @param polygon
 	 */
-	private void addPolygon(GeometryEnvelope envelope, Polygon polygon) {
+	private static void addPolygonMessage(GeometryEnvelope envelope,
+			Polygon polygon) {
 
 		updateHasZandM(envelope, polygon);
 
 		List<LineString> rings = polygon.getRings();
 		for (LineString ring : rings) {
-			addLineString(envelope, ring);
+			addLineStringMessage(envelope, ring);
 		}
 	}
 
@@ -378,14 +240,14 @@ public class GeometryEnvelopeBuilder {
 	 * @param envelope
 	 * @param multiPolygon
 	 */
-	private void addMultiPolygon(GeometryEnvelope envelope,
+	private static void addMultiPolygonMessage(GeometryEnvelope envelope,
 			MultiPolygon multiPolygon) {
 
 		updateHasZandM(envelope, multiPolygon);
 
 		List<Polygon> polygons = multiPolygon.getPolygons();
 		for (Polygon polygon : polygons) {
-			addPolygon(envelope, polygon);
+			addPolygonMessage(envelope, polygon);
 		}
 	}
 
@@ -395,14 +257,14 @@ public class GeometryEnvelopeBuilder {
 	 * @param envelope
 	 * @param compoundCurve
 	 */
-	private void addCompoundCurve(GeometryEnvelope envelope,
+	private static void addCompoundCurveMessage(GeometryEnvelope envelope,
 			CompoundCurve compoundCurve) {
 
 		updateHasZandM(envelope, compoundCurve);
 
 		List<LineString> lineStrings = compoundCurve.getLineStrings();
 		for (LineString lineString : lineStrings) {
-			addLineString(envelope, lineString);
+			addLineStringMessage(envelope, lineString);
 		}
 	}
 
@@ -412,14 +274,14 @@ public class GeometryEnvelopeBuilder {
 	 * @param envelope
 	 * @param polyhedralSurface
 	 */
-	private void addPolyhedralSurface(GeometryEnvelope envelope,
+	private static void addPolyhedralSurfaceMessage(GeometryEnvelope envelope,
 			PolyhedralSurface polyhedralSurface) {
 
 		updateHasZandM(envelope, polyhedralSurface);
 
 		List<Polygon> polygons = polyhedralSurface.getPolygons();
 		for (Polygon polygon : polygons) {
-			addPolygon(envelope, polygon);
+			addPolygonMessage(envelope, polygon);
 		}
 	}
 
