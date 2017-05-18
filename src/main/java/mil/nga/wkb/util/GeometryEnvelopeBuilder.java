@@ -29,6 +29,7 @@ public class GeometryEnvelopeBuilder {
 	 * Build Geometry Envelope
 	 * 
 	 * @param geometry
+	 *            geometry to build envelope from
 	 * @return geometry envelope
 	 */
 	public static GeometryEnvelope buildEnvelope(Geometry geometry) {
@@ -49,7 +50,9 @@ public class GeometryEnvelopeBuilder {
 	 * Build Geometry Envelope
 	 * 
 	 * @param geometry
+	 *            geometry to build envelope from
 	 * @param envelope
+	 *            envelope to expand
 	 */
 	public static void buildEnvelope(Geometry geometry,
 			GeometryEnvelope envelope) {
