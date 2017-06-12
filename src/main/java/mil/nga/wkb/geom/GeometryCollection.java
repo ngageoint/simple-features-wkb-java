@@ -17,6 +17,13 @@ public class GeometryCollection<T extends Geometry> extends Geometry {
 
 	/**
 	 * Constructor
+	 */
+	public GeometryCollection() {
+		this(false, false);
+	}
+
+	/**
+	 * Constructor
 	 * 
 	 * @param hasZ
 	 *            has z
@@ -25,6 +32,21 @@ public class GeometryCollection<T extends Geometry> extends Geometry {
 	 */
 	public GeometryCollection(boolean hasZ, boolean hasM) {
 		super(GeometryType.GEOMETRYCOLLECTION, hasZ, hasM);
+	}
+
+	/**
+	 * Constructor
+	 * 
+	 * @param geometryCollection
+	 *            geometry collection to copy
+	 */
+	public GeometryCollection(GeometryCollection<T> geometryCollection) {
+		this(geometryCollection.hasZ(), geometryCollection.hasM());
+		for (T geometry : geometryCollection.getGeometries()) {
+			@SuppressWarnings("unchecked")
+			T geometryCopy = (T) geometry.copy();
+			addGeometry(geometryCopy);
+		}
 	}
 
 	/**
@@ -77,6 +99,14 @@ public class GeometryCollection<T extends Geometry> extends Geometry {
 	 */
 	public int numGeometries() {
 		return geometries.size();
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public Geometry copy() {
+		return new GeometryCollection<T>(this);
 	}
 
 }

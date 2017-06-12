@@ -17,6 +17,13 @@ public class LineString extends Curve {
 
 	/**
 	 * Constructor
+	 */
+	public LineString() {
+		this(false, false);
+	}
+
+	/**
+	 * Constructor
 	 * 
 	 * @param hasZ
 	 *            has z
@@ -25,6 +32,19 @@ public class LineString extends Curve {
 	 */
 	public LineString(boolean hasZ, boolean hasM) {
 		super(GeometryType.LINESTRING, hasZ, hasM);
+	}
+
+	/**
+	 * Constructor
+	 * 
+	 * @param lineString
+	 *            line string to copy
+	 */
+	public LineString(LineString lineString) {
+		this(lineString.hasZ(), lineString.hasM());
+		for (Point point : lineString.getPoints()) {
+			addPoint((Point) point.copy());
+		}
 	}
 
 	/**
@@ -77,6 +97,14 @@ public class LineString extends Curve {
 	 */
 	public int numPoints() {
 		return points.size();
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public Geometry copy() {
+		return new LineString(this);
 	}
 
 }

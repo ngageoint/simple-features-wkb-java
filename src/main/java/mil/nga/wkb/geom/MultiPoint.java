@@ -12,6 +12,13 @@ public class MultiPoint extends GeometryCollection<Point> {
 
 	/**
 	 * Constructor
+	 */
+	public MultiPoint() {
+		this(false, false);
+	}
+
+	/**
+	 * Constructor
 	 * 
 	 * @param hasZ
 	 *            has z
@@ -20,6 +27,19 @@ public class MultiPoint extends GeometryCollection<Point> {
 	 */
 	public MultiPoint(boolean hasZ, boolean hasM) {
 		super(GeometryType.MULTIPOINT, hasZ, hasM);
+	}
+
+	/**
+	 * Constructor
+	 * 
+	 * @param multiPoint
+	 *            multi point to copy
+	 */
+	public MultiPoint(MultiPoint multiPoint) {
+		this(multiPoint.hasZ(), multiPoint.hasM());
+		for (Point point : multiPoint.getPoints()) {
+			addPoint((Point) point.copy());
+		}
 	}
 
 	/**
@@ -58,6 +78,14 @@ public class MultiPoint extends GeometryCollection<Point> {
 	 */
 	public int numPoints() {
 		return numGeometries();
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public Geometry copy() {
+		return new MultiPoint(this);
 	}
 
 }

@@ -12,6 +12,13 @@ public class MultiLineString extends MultiCurve<LineString> {
 
 	/**
 	 * Constructor
+	 */
+	public MultiLineString() {
+		this(false, false);
+	}
+
+	/**
+	 * Constructor
 	 * 
 	 * @param hasZ
 	 *            has z
@@ -20,6 +27,19 @@ public class MultiLineString extends MultiCurve<LineString> {
 	 */
 	public MultiLineString(boolean hasZ, boolean hasM) {
 		super(GeometryType.MULTILINESTRING, hasZ, hasM);
+	}
+
+	/**
+	 * Constructor
+	 * 
+	 * @param multiLineString
+	 *            multi line string to copy
+	 */
+	public MultiLineString(MultiLineString multiLineString) {
+		this(multiLineString.hasZ(), multiLineString.hasM());
+		for (LineString lineString : multiLineString.getLineStrings()) {
+			addLineString((LineString) lineString.copy());
+		}
 	}
 
 	/**
@@ -58,6 +78,14 @@ public class MultiLineString extends MultiCurve<LineString> {
 	 */
 	public int numLineStrings() {
 		return numGeometries();
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public Geometry copy() {
+		return new MultiLineString(this);
 	}
 
 }

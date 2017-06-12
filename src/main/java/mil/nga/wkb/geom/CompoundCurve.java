@@ -17,6 +17,13 @@ public class CompoundCurve extends Curve {
 
 	/**
 	 * Constructor
+	 */
+	public CompoundCurve() {
+		this(false, false);
+	}
+
+	/**
+	 * Constructor
 	 * 
 	 * @param hasZ
 	 *            has z
@@ -25,6 +32,19 @@ public class CompoundCurve extends Curve {
 	 */
 	public CompoundCurve(boolean hasZ, boolean hasM) {
 		super(GeometryType.COMPOUNDCURVE, hasZ, hasM);
+	}
+
+	/**
+	 * Constructor
+	 * 
+	 * @param compoundCurve
+	 *            compound Curve to copy
+	 */
+	public CompoundCurve(CompoundCurve compoundCurve) {
+		this(compoundCurve.hasZ(), compoundCurve.hasM());
+		for (LineString lineString : compoundCurve.getLineStrings()) {
+			addLineString((LineString) lineString.copy());
+		}
 	}
 
 	/**
@@ -63,6 +83,14 @@ public class CompoundCurve extends Curve {
 	 */
 	public int numLineStrings() {
 		return lineStrings.size();
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public Geometry copy() {
+		return new CompoundCurve(this);
 	}
 
 }
