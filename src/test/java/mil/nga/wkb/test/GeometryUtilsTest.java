@@ -1,6 +1,8 @@
 package mil.nga.wkb.test;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import junit.framework.TestCase;
@@ -322,6 +324,79 @@ public class GeometryUtilsTest {
 				}
 				TestCase.assertEquals(point.getX(), point2Value, .0000000001);
 			}
+		}
+
+	}
+
+	@Test
+	public void testSimplifyPoints() {
+
+		final double halfWorldWidth = 20037508.342789244;
+
+		List<Point> points = new ArrayList<>();
+		List<Double> distances = new ArrayList<>();
+
+		double x = (Math.random() * halfWorldWidth * 2) - halfWorldWidth;
+		double y = (Math.random() * halfWorldWidth * 2) - halfWorldWidth;
+		Point point = new Point(x, y);
+		points.add(point);
+
+		for (int i = 1; i < 100; i++) {
+
+			double xChange = 100000.0 * Math.random()
+					* (Math.random() < .5 ? 1 : -1);
+			x += xChange;
+
+			double yChange = 100000.0 * Math.random()
+					* (Math.random() < .5 ? 1 : -1);
+			y += yChange;
+			if (y > halfWorldWidth || y < -halfWorldWidth) {
+				y -= 2 * yChange;
+			}
+
+			Point previousPoint = point;
+			point = new Point(x, y);
+			points.add(point);
+
+			double distance = GeometryUtils.distance(previousPoint, point);
+			distances.add(distance);
+
+		}
+
+		List<Double> sortedDistances = new ArrayList<>(distances);
+		Collections.sort(sortedDistances);
+		double tolerance = sortedDistances.get(sortedDistances.size() / 2);
+
+		List<Point> simplifiedPoints = GeometryUtils.simplifyPoints(points,
+				tolerance);
+		TestCase.assertTrue(simplifiedPoints.size() <= points.size());
+
+		Point firstPoint = points.get(0);
+		Point lastPoint = points.get(points.size() - 1);
+		Point firstSimplifiedPoint = simplifiedPoints.get(0);
+		Point lastSimplifiedPoint = simplifiedPoints.get(simplifiedPoints
+				.size() - 1);
+
+		TestCase.assertEquals(firstPoint.getX(), firstSimplifiedPoint.getX());
+		TestCase.assertEquals(firstPoint.getY(), firstSimplifiedPoint.getY());
+		TestCase.assertEquals(lastPoint.getX(), lastSimplifiedPoint.getX());
+		TestCase.assertEquals(lastPoint.getY(), lastSimplifiedPoint.getY());
+
+		int pointIndex = 0;
+		for (int i = 1; i < simplifiedPoints.size(); i++) {
+			Point simplifiedPoint = simplifiedPoints.get(i);
+			double simplifiedDistance = GeometryUtils.distance(
+					simplifiedPoints.get(i - 1), simplifiedPoint);
+			TestCase.assertTrue(simplifiedDistance >= tolerance);
+
+			for (pointIndex++; pointIndex < points.size(); pointIndex++) {
+				Point newPoint = points.get(pointIndex);
+				if (newPoint.getX() == simplifiedPoint.getX()
+						&& newPoint.getY() == simplifiedPoint.getY()) {
+					break;
+				}
+			}
+			TestCase.assertTrue(pointIndex < points.size());
 		}
 
 	}
