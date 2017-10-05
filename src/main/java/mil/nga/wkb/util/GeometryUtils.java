@@ -491,6 +491,7 @@ public class GeometryUtils {
 	 * @param tolerance
 	 *            minimum tolerance in meters for consecutive points
 	 * @return simplified points
+	 * @since 1.0.4
 	 */
 	public static List<Point> simplifyPoints(List<Point> points,
 			double tolerance) {
@@ -566,6 +567,7 @@ public class GeometryUtils {
 	 * @param lineEnd
 	 *            point representing the line end
 	 * @return distance in meters
+	 * @since 1.0.4
 	 */
 	public static double perpendicularDistance(Point point, Point lineStart,
 			Point lineEnd) {
