@@ -6,7 +6,8 @@ Adheres to [Semantic Versioning](http://semver.org/).
 
 ## 1.0.4 (TBD)
 
-* TBD
+* Douglas Peucker algorithm for geometry simplification
+* maven-gpg-plugin version 1.6
 
 ## [1.0.3](https://github.com/ngageoint/geopackage-wkb-java/releases/tag/1.0.3) (06-12-2017)
 
