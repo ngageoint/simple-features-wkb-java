@@ -1,5 +1,6 @@
 package mil.nga.wkb.util;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import mil.nga.wkb.geom.CircularString;
@@ -477,6 +478,131 @@ public class GeometryUtils {
 		for (Polygon polygon : polyhedralSurface.getPolygons()) {
 			normalize(polygon, maxX);
 		}
+	}
+
+	/**
+	 * Simplify the ordered points (representing a line, polygon, etc) using the
+	 * Douglas Peucker algorithm to create a similar curve with fewer points.
+	 * Points should be in a meters unit type projection. The tolerance is the
+	 * minimum tolerated distance between consecutive points.
+	 *
+	 * @param points
+	 *            geometry points
+	 * @param tolerance
+	 *            minimum tolerance in meters for consecutive points
+	 * @return simplified points
+	 * @since 1.0.4
+	 */
+	public static List<Point> simplifyPoints(List<Point> points,
+			double tolerance) {
+		return simplifyPoints(points, tolerance, 0, points.size() - 1);
+	}
+
+	/**
+	 * Simplify the ordered points (representing a line, polygon, etc) using the
+	 * Douglas Peucker algorithm to create a similar curve with fewer points.
+	 * Points should be in a meters unit type projection. The tolerance is the
+	 * minimum tolerated distance between consecutive points.
+	 *
+	 * @param points
+	 *            geometry points
+	 * @param tolerance
+	 *            minimum tolerance in meters for consecutive points
+	 * @param startIndex
+	 *            start index
+	 * @param endIndex
+	 *            end index
+	 * @return simplified points
+	 */
+	private static List<Point> simplifyPoints(List<Point> points,
+			double tolerance, int startIndex, int endIndex) {
+
+		List<Point> result = null;
+
+		double dmax = 0.0;
+		int index = 0;
+
+		Point startPoint = points.get(startIndex);
+		Point endPoint = points.get(endIndex);
+
+		for (int i = startIndex + 1; i < endIndex; i++) {
+			Point point = points.get(i);
+
+			double d = perpendicularDistance(point, startPoint, endPoint);
+
+			if (d > dmax) {
+				index = i;
+				dmax = d;
+			}
+		}
+
+		if (dmax > tolerance) {
+
+			List<Point> recResults1 = simplifyPoints(points, tolerance,
+					startIndex, index);
+			List<Point> recResults2 = simplifyPoints(points, tolerance, index,
+					endIndex);
+
+			result = recResults1.subList(0, recResults1.size() - 1);
+			result.addAll(recResults2);
+
+		} else {
+			result = new ArrayList<Point>();
+			result.add(startPoint);
+			result.add(endPoint);
+		}
+
+		return result;
+	}
+
+	/**
+	 * Calculate the perpendicular distance between the point and the line
+	 * represented by the start and end points. Points should be in a meters
+	 * unit type projection.
+	 *
+	 * @param point
+	 *            point
+	 * @param lineStart
+	 *            point representing the line start
+	 * @param lineEnd
+	 *            point representing the line end
+	 * @return distance in meters
+	 * @since 1.0.4
+	 */
+	public static double perpendicularDistance(Point point, Point lineStart,
+			Point lineEnd) {
+
+		double x = point.getX();
+		double y = point.getY();
+		double startX = lineStart.getX();
+		double startY = lineStart.getY();
+		double endX = lineEnd.getX();
+		double endY = lineEnd.getY();
+
+		double vX = endX - startX;
+		double vY = endY - startY;
+		double wX = x - startX;
+		double wY = y - startY;
+		double c1 = wX * vX + wY * vY;
+		double c2 = vX * vX + vY * vY;
+
+		double x2;
+		double y2;
+		if (c1 <= 0) {
+			x2 = startX;
+			y2 = startY;
+		} else if (c2 <= c1) {
+			x2 = endX;
+			y2 = endY;
+		} else {
+			double b = c1 / c2;
+			x2 = startX + b * vX;
+			y2 = startY + b * vY;
+		}
+
+		double distance = Math.sqrt(Math.pow(x2 - x, 2) + Math.pow(y2 - y, 2));
+
+		return distance;
 	}
 
 }
