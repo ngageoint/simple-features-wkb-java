@@ -17,6 +17,9 @@ import mil.nga.wkb.geom.Polygon;
 import mil.nga.wkb.geom.PolyhedralSurface;
 import mil.nga.wkb.geom.TIN;
 import mil.nga.wkb.geom.Triangle;
+import mil.nga.wkb.util.centroid.CentroidCurve;
+import mil.nga.wkb.util.centroid.CentroidPoint;
+import mil.nga.wkb.util.centroid.CentroidSurface;
 
 /**
  * Utilities for Geometry objects

@@ -1,4 +1,4 @@
-package mil.nga.wkb.util;
+package mil.nga.wkb.util.centroid;
 
 import java.util.List;
 
@@ -10,6 +10,7 @@ import mil.nga.wkb.geom.MultiPolygon;
 import mil.nga.wkb.geom.Point;
 import mil.nga.wkb.geom.Polygon;
 import mil.nga.wkb.geom.PolyhedralSurface;
+import mil.nga.wkb.util.WkbException;
 
 /**
  * Calculate the centroid from surface based geometries. Implementation based on
