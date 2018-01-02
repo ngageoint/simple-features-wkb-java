@@ -2,6 +2,9 @@ package mil.nga.wkb.util.centroid;
 
 import java.util.List;
 
+import mil.nga.wkb.geom.CompoundCurve;
+import mil.nga.wkb.geom.Curve;
+import mil.nga.wkb.geom.CurvePolygon;
 import mil.nga.wkb.geom.Geometry;
 import mil.nga.wkb.geom.GeometryCollection;
 import mil.nga.wkb.geom.GeometryType;
@@ -72,6 +75,11 @@ public class CentroidSurface {
 			MultiPolygon multiPolygon = (MultiPolygon) geometry;
 			add(multiPolygon.getPolygons());
 			break;
+		case CURVEPOLYGON:
+			@SuppressWarnings("unchecked")
+			CurvePolygon<Curve> curvePolygon = (CurvePolygon<Curve>) geometry;
+			add(curvePolygon);
+			break;
 		case POLYHEDRALSURFACE:
 		case TIN:
 			PolyhedralSurface polyhedralSurface = (PolyhedralSurface) geometry;
@@ -134,6 +142,56 @@ public class CentroidSurface {
 	 */
 	private void add(LineString lineString) {
 		add(true, lineString);
+	}
+
+	/**
+	 * Add a curve polygon to the centroid total
+	 * 
+	 * @param curvePolygon
+	 *            curve polygon
+	 */
+	private void add(CurvePolygon<Curve> curvePolygon) {
+
+		List<Curve> rings = curvePolygon.getRings();
+
+		Curve curve = rings.get(0);
+		GeometryType curveGeometryType = curve.getGeometryType();
+		switch (curveGeometryType) {
+		case COMPOUNDCURVE:
+			CompoundCurve compoundCurve = (CompoundCurve) curve;
+			for (LineString lineString : compoundCurve.getLineStrings()) {
+				add(lineString);
+			}
+			break;
+		case LINESTRING:
+		case CIRCULARSTRING:
+			add((LineString) curve);
+			break;
+		default:
+			throw new WkbException("Unexpected Curve Type: "
+					+ curveGeometryType);
+		}
+
+		for (int i = 1; i < rings.size(); i++) {
+			Curve curveHole = rings.get(i);
+			GeometryType curveHoleGeometryType = curveHole.getGeometryType();
+			switch (curveHoleGeometryType) {
+			case COMPOUNDCURVE:
+				CompoundCurve compoundCurveHole = (CompoundCurve) curveHole;
+				for (LineString lineStringHole : compoundCurveHole
+						.getLineStrings()) {
+					addHole(lineStringHole);
+				}
+				break;
+			case LINESTRING:
+			case CIRCULARSTRING:
+				addHole((LineString) curveHole);
+				break;
+			default:
+				throw new WkbException("Unexpected Curve Type: "
+						+ curveHoleGeometryType);
+			}
+		}
 	}
 
 	/**

@@ -7,6 +7,8 @@ import java.util.Map;
 
 import mil.nga.wkb.geom.CircularString;
 import mil.nga.wkb.geom.CompoundCurve;
+import mil.nga.wkb.geom.Curve;
+import mil.nga.wkb.geom.CurvePolygon;
 import mil.nga.wkb.geom.Geometry;
 import mil.nga.wkb.geom.GeometryCollection;
 import mil.nga.wkb.geom.GeometryType;
@@ -39,6 +41,25 @@ public class GeometryJSONCompatible {
 
 		Map<String, Object> jsonObject = new HashMap<>();
 
+		Object geometryObject = getJSONCompatibleGeometryObject(geometry);
+
+		if (geometryObject != null) {
+			jsonObject
+					.put(geometry.getGeometryType().getName(), geometryObject);
+		}
+
+		return jsonObject;
+	}
+
+	/**
+	 * Get a Geometry object that is JSON compatible
+	 * 
+	 * @param geometry
+	 *            geometry
+	 * @return geometry JSON object
+	 */
+	private static Object getJSONCompatibleGeometryObject(Geometry geometry) {
+
 		Object geometryObject = null;
 
 		GeometryType geometryType = geometry.getGeometryType();
@@ -67,6 +88,11 @@ public class GeometryJSONCompatible {
 		case COMPOUNDCURVE:
 			geometryObject = getCompoundCurve((CompoundCurve) geometry);
 			break;
+		case CURVEPOLYGON:
+			@SuppressWarnings("unchecked")
+			CurvePolygon<Curve> curvePolygon = (CurvePolygon<Curve>) geometry;
+			geometryObject = getCurvePolygon(curvePolygon);
+			break;
 		case POLYHEDRALSURFACE:
 			geometryObject = getPolyhedralSurface((PolyhedralSurface) geometry);
 			break;
@@ -91,17 +117,14 @@ public class GeometryJSONCompatible {
 		default:
 		}
 
-		if (geometryObject != null) {
-			jsonObject.put(geometryType.getName(), geometryObject);
-		}
-
-		return jsonObject;
+		return geometryObject;
 	}
 
 	/**
 	 * Get Point object
 	 * 
 	 * @param point
+	 *            point
 	 * @return point object
 	 */
 	private static Object getPoint(Point point) {
@@ -121,6 +144,7 @@ public class GeometryJSONCompatible {
 	 * Get MultiPoint object
 	 * 
 	 * @param multiPoint
+	 *            multi point
 	 * @return multi point object
 	 */
 	private static Object getMultiPoint(MultiPoint multiPoint) {
@@ -137,6 +161,7 @@ public class GeometryJSONCompatible {
 	 * Get LineString object
 	 * 
 	 * @param lineString
+	 *            line string
 	 * @return line string object
 	 */
 	private static Object getLineString(LineString lineString) {
@@ -151,6 +176,7 @@ public class GeometryJSONCompatible {
 	 * Get MultiLineString object
 	 * 
 	 * @param multiLineString
+	 *            multi line string
 	 * @return multi line string object
 	 */
 	private static Object getMultiLineString(MultiLineString multiLineString) {
@@ -167,6 +193,7 @@ public class GeometryJSONCompatible {
 	 * Get Polygon object
 	 * 
 	 * @param polygon
+	 *            polygon
 	 * @return polygon object
 	 */
 	private static Object getPolygon(Polygon polygon) {
@@ -183,6 +210,7 @@ public class GeometryJSONCompatible {
 	 * Get MultiPolygon object
 	 * 
 	 * @param multiPolygon
+	 *            multi polygon
 	 * @return multi polygon object
 	 */
 	private static Object getMultiPolygon(MultiPolygon multiPolygon) {
@@ -199,6 +227,7 @@ public class GeometryJSONCompatible {
 	 * Get CompoundCurve object
 	 * 
 	 * @param compoundCurve
+	 *            compound curve
 	 * @return compound curve object
 	 */
 	private static Object getCompoundCurve(CompoundCurve compoundCurve) {
@@ -212,9 +241,27 @@ public class GeometryJSONCompatible {
 	}
 
 	/**
+	 * Get CurvePolygon object
+	 * 
+	 * @param curvePolygon
+	 *            curve polygon
+	 * @return curve polygon object
+	 */
+	private static Object getCurvePolygon(CurvePolygon<Curve> curvePolygon) {
+		List<Object> jsonObject = new ArrayList<>();
+		List<Curve> rings = curvePolygon.getRings();
+		for (int i = 0; i < rings.size(); i++) {
+			Curve ring = rings.get(i);
+			jsonObject.add(getJSONCompatibleGeometryObject(ring));
+		}
+		return jsonObject;
+	}
+
+	/**
 	 * Get PolyhedralSurface object
 	 * 
 	 * @param polyhedralSurface
+	 *            polyhedral surface
 	 * @return polyhedral surface object
 	 */
 	private static Object getPolyhedralSurface(

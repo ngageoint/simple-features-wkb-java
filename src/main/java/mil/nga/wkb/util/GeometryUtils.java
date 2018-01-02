@@ -5,6 +5,8 @@ import java.util.List;
 
 import mil.nga.wkb.geom.CircularString;
 import mil.nga.wkb.geom.CompoundCurve;
+import mil.nga.wkb.geom.Curve;
+import mil.nga.wkb.geom.CurvePolygon;
 import mil.nga.wkb.geom.Geometry;
 import mil.nga.wkb.geom.GeometryCollection;
 import mil.nga.wkb.geom.GeometryType;
@@ -160,6 +162,11 @@ public class GeometryUtils {
 		case COMPOUNDCURVE:
 			minimize((CompoundCurve) geometry, maxX);
 			break;
+		case CURVEPOLYGON:
+			@SuppressWarnings("unchecked")
+			CurvePolygon<Curve> curvePolygon = (CurvePolygon<Curve>) geometry;
+			minimize(curvePolygon, maxX);
+			break;
 		case POLYHEDRALSURFACE:
 			minimize((PolyhedralSurface) geometry, maxX);
 			break;
@@ -275,6 +282,21 @@ public class GeometryUtils {
 	}
 
 	/**
+	 * Minimize the curve polygon
+	 * 
+	 * @param curvePolygon
+	 *            curve polygon
+	 * @param maxX
+	 *            max positive x value in the geometry projection
+	 */
+	private static void minimize(CurvePolygon<Curve> curvePolygon, double maxX) {
+
+		for (Curve ring : curvePolygon.getRings()) {
+			minimizeGeometry(ring, maxX);
+		}
+	}
+
+	/**
 	 * Minimize the polyhedral surface
 	 * 
 	 * @param polyhedralSurface
@@ -333,6 +355,11 @@ public class GeometryUtils {
 			break;
 		case COMPOUNDCURVE:
 			normalize((CompoundCurve) geometry, maxX);
+			break;
+		case CURVEPOLYGON:
+			@SuppressWarnings("unchecked")
+			CurvePolygon<Curve> curvePolygon = (CurvePolygon<Curve>) geometry;
+			normalize(curvePolygon, maxX);
 			break;
 		case POLYHEDRALSURFACE:
 			normalize((PolyhedralSurface) geometry, maxX);
@@ -464,6 +491,21 @@ public class GeometryUtils {
 
 		for (LineString lineString : compoundCurve.getLineStrings()) {
 			normalize(lineString, maxX);
+		}
+	}
+
+	/**
+	 * Normalize the curve polygon
+	 * 
+	 * @param curvePolygon
+	 *            curve polygon
+	 * @param maxX
+	 *            max positive x value in the geometry projection
+	 */
+	private static void normalize(CurvePolygon<Curve> curvePolygon, double maxX) {
+
+		for (Curve ring : curvePolygon.getRings()) {
+			normalizeGeometry(ring, maxX);
 		}
 	}
 
