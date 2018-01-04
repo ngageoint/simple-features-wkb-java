@@ -313,7 +313,7 @@ public class SweepLine {
 			value = -1;
 		} else if (point1.getY() > point2.getY()) {
 			value = 1;
-		} else if (point1.getY() > point2.getY()) {
+		} else if (point1.getY() < point2.getY()) {
 			value = -1;
 		}
 		return value;
