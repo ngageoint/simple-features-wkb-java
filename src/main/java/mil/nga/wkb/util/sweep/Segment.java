@@ -16,6 +16,11 @@ public class Segment {
 	private int edge;
 
 	/**
+	 * Polygon ring number
+	 */
+	private int ring;
+
+	/**
 	 * Left point
 	 */
 	private Point leftPoint;
@@ -59,6 +64,25 @@ public class Segment {
 	 */
 	public void setEdge(int edge) {
 		this.edge = edge;
+	}
+
+	/**
+	 * Get the polygon ring number
+	 * 
+	 * @return polygon ring number
+	 */
+	public int getRing() {
+		return ring;
+	}
+
+	/**
+	 * Set the polygon ring number
+	 * 
+	 * @param ring
+	 *            polygon ring number
+	 */
+	public void setRing(int ring) {
+		this.ring = ring;
 	}
 
 	/**

@@ -8,7 +8,7 @@ import mil.nga.wkb.geom.Point;
 import mil.nga.wkb.geom.Polygon;
 
 /**
- * Shamos Hoey simple polygon detection
+ * Shamos-Hoey simple polygon detection
  * 
  * Based upon C++ implementation:
  * http://geomalgorithms.com/a09-_intersect-3.html
@@ -34,63 +34,93 @@ public class ShamosHoey {
 	 * @return true if simple, false if intersects
 	 */
 	public static boolean simplePolygon(Polygon polygon) {
-
-		boolean simple = true;
-
-		// TODO handle holes not contained within the polygon and overlapping
-		// holes
-
-		for (LineString ring : polygon.getRings()) {
-			if (!simplePolygon(ring)) {
-				simple = false;
-				break;
-			}
-		}
-
-		return simple;
-	}
-
-	/**
-	 * Determine if the polygon line string is simple
-	 * 
-	 * @param lineString
-	 *            polygon as a line string
-	 * @return true if simple, false if intersects
-	 */
-	public static boolean simplePolygon(LineString lineString) {
-		return simplePolygon(lineString.getPoints());
+		return simplePolygon(polygon.getRings());
 	}
 
 	/**
 	 * Determine if the polygon points are simple
 	 * 
 	 * @param points
-	 *            polygon as poinst
+	 *            polygon as points
 	 * @return true if simple, false if intersects
 	 */
-	public static boolean simplePolygon(List<Point> points) {
+	public static boolean simplePolygonPoints(List<Point> points) {
+		LineString ring = new LineString();
+		ring.setPoints(points);
+		return simplePolygon(ring);
+	}
 
-		boolean simple = false;
+	/**
+	 * Determine if the polygon point rings are simple
+	 * 
+	 * @param pointRings
+	 *            polygon point rings
+	 * @return true if simple, false if intersects
+	 */
+	public static boolean simplePolygonRingPoints(List<List<Point>> pointRings) {
+		List<LineString> rings = new ArrayList<>();
+		for (List<Point> points : pointRings) {
+			LineString ring = new LineString();
+			ring.setPoints(points);
+			rings.add(ring);
+		}
+		return simplePolygon(rings);
+	}
 
-		// Copy the points
-		points = new ArrayList<>(points);
+	/**
+	 * Determine if the polygon line string ring is simple
+	 * 
+	 * @param ring
+	 *            polygon ring as a line string
+	 * @return true if simple, false if intersects
+	 */
+	public static boolean simplePolygon(LineString ring) {
+		List<LineString> rings = new ArrayList<>();
+		rings.add(ring);
+		return simplePolygon(rings);
+	}
 
-		// Remove the last point is same as the first
-		if (points.size() > 1) {
-			Point first = points.get(0);
-			Point last = points.get(points.size() - 1);
-			if (first.getX() == last.getX() || first.getY() == last.getY()) {
-				points.remove(points.size() - 1);
+	/**
+	 * Determine if the polygon rings are simple
+	 * 
+	 * @param rings
+	 *            polygon rings
+	 * @return true if simple, false if intersects
+	 */
+	public static boolean simplePolygon(List<LineString> rings) {
+
+		boolean simple = !rings.isEmpty();
+
+		List<LineString> ringCopies = new ArrayList<>();
+		for (LineString ring : rings) {
+
+			// Copy the ring
+			LineString ringCopy = new LineString();
+			ringCopy.setPoints(new ArrayList<>(ring.getPoints()));
+			ringCopies.add(ringCopy);
+
+			// Remove the last point when identical to the first
+			List<Point> ringCopyPoints = ringCopy.getPoints();
+			if (ringCopyPoints.size() >= 3) {
+				Point first = ringCopyPoints.get(0);
+				Point last = ringCopyPoints.get(ringCopyPoints.size() - 1);
+				if (first.getX() == last.getX() || first.getY() == last.getY()) {
+					ringCopyPoints.remove(ringCopyPoints.size() - 1);
+				}
+			}
+
+			// Verify enough ring points
+			if (ringCopyPoints.size() < 3) {
+				simple = false;
+				break;
 			}
 		}
 
-		// If valid polygon
-		if (points.size() > 2) {
+		// If valid polygon rings
+		if (simple) {
 
-			simple = true;
-
-			EventQueue eventQueue = new EventQueue(points);
-			SweepLine sweepLine = new SweepLine(points);
+			EventQueue eventQueue = new EventQueue(ringCopies);
+			SweepLine sweepLine = new SweepLine(ringCopies);
 
 			for (Event event : eventQueue) {
 				if (event.getType() == EventType.LEFT) {

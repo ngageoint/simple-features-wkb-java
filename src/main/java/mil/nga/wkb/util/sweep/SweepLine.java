@@ -7,6 +7,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import mil.nga.wkb.geom.LineString;
 import mil.nga.wkb.geom.Point;
 
 /**
@@ -18,9 +19,9 @@ import mil.nga.wkb.geom.Point;
 public class SweepLine {
 
 	/**
-	 * Polygon points
+	 * Polygon rings
 	 */
-	private List<Point> points;
+	private List<LineString> rings;
 
 	/**
 	 * Tree of segments sorted by above-below order
@@ -28,18 +29,18 @@ public class SweepLine {
 	private List<Segment> tree = new ArrayList<>();
 
 	/**
-	 * Mapping between edge number and segment
+	 * Mapping between ring, edges, and segments
 	 */
-	private Map<Integer, Segment> segments = new HashMap<>();
+	private Map<Integer, Map<Integer, Segment>> segments = new HashMap<>();
 
 	/**
 	 * Constructor
 	 * 
-	 * @param points
-	 *            polygon points
+	 * @param rings
+	 *            polygon rings
 	 */
-	public SweepLine(List<Point> points) {
-		this.points = points;
+	public SweepLine(List<LineString> rings) {
+		this.rings = rings;
 	}
 
 	/**
@@ -53,6 +54,10 @@ public class SweepLine {
 
 		Segment segment = new Segment();
 		segment.setEdge(event.getEdge());
+		segment.setRing(event.getRing());
+
+		LineString ring = rings.get(segment.getRing());
+		List<Point> points = ring.getPoints();
 
 		Point point1 = points.get(segment.getEdge());
 		Point point2 = points.get((segment.getEdge() + 1) % points.size());
@@ -88,7 +93,7 @@ public class SweepLine {
 	 * @return segment
 	 */
 	public Segment find(Event event) {
-		return segments.get(event.getEdge());
+		return segments.get(event.getRing()).get(event.getEdge());
 	}
 
 	/**
@@ -106,10 +111,19 @@ public class SweepLine {
 
 		if (segment1 != null && segment2 != null) {
 
-			int edge1 = segment1.getEdge();
-			int edge2 = segment2.getEdge();
-			if ((edge1 + 1) % points.size() != edge2
-					&& edge1 != (edge2 + 1) % points.size()) {
+			int ring1 = segment1.getRing();
+			int ring2 = segment2.getRing();
+
+			boolean consecutive = ring1 == ring2;
+			if (consecutive) {
+				int edge1 = segment1.getEdge();
+				int edge2 = segment2.getEdge();
+				int ringPoints = rings.get(ring1).numPoints();
+				consecutive = (edge1 + 1) % ringPoints == edge2
+						|| edge1 == (edge2 + 1) % ringPoints;
+			}
+
+			if (!consecutive) {
 
 				double left = isLeft(segment1, segment2.getLeftPoint());
 				double right = isLeft(segment1, segment2.getRightPoint());
@@ -150,7 +164,7 @@ public class SweepLine {
 				previous.setAbove(segment.getAbove());
 			}
 			tree.remove(index);
-			segments.remove(segment.getEdge());
+			segments.get(segment.getRing()).remove(segment.getEdge());
 		}
 
 	}
@@ -172,7 +186,12 @@ public class SweepLine {
 		}
 
 		tree.add(index, segment);
-		segments.put(segment.getEdge(), segment);
+		Map<Integer, Segment> edgeMap = segments.get(segment.getRing());
+		if (edgeMap == null) {
+			edgeMap = new HashMap<>();
+			segments.put(segment.getRing(), edgeMap);
+		}
+		edgeMap.put(segment.getEdge(), segment);
 
 		return index;
 	}
@@ -197,6 +216,10 @@ public class SweepLine {
 				if (y1 < y2) {
 					compare = -1;
 				} else if (y2 < y1) {
+					compare = 1;
+				} else if (segment1.getRing() < segment2.getRing()) {
+					compare = -1;
+				} else if (segment2.getRing() < segment1.getRing()) {
 					compare = 1;
 				} else if (segment1.getEdge() < segment2.getEdge()) {
 					compare = -1;
