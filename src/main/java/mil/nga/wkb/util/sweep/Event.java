@@ -21,20 +21,32 @@ public class Event implements Comparable<Event> {
 	private int ring;
 
 	/**
-	 * Event type, left or right point
-	 */
-	private EventType type;
-
-	/**
 	 * Polygon point
 	 */
 	private Point point;
 
 	/**
-	 * Constructor
+	 * Event type, left or right point
 	 */
-	public Event() {
+	private EventType type;
 
+	/**
+	 * Constructor
+	 * 
+	 * @param edge
+	 *            edge number
+	 * @param ring
+	 *            ring number
+	 * @param point
+	 *            point
+	 * @param type
+	 *            event type
+	 */
+	public Event(int edge, int ring, Point point, EventType type) {
+		this.edge = edge;
+		this.ring = ring;
+		this.point = point;
+		this.type = type;
 	}
 
 	/**
@@ -47,51 +59,12 @@ public class Event implements Comparable<Event> {
 	}
 
 	/**
-	 * Set the edge
-	 * 
-	 * @param edge
-	 *            edge number
-	 */
-	public void setEdge(int edge) {
-		this.edge = edge;
-	}
-
-	/**
 	 * Get the polygon ring number
 	 * 
 	 * @return polygon ring number
 	 */
 	public int getRing() {
 		return ring;
-	}
-
-	/**
-	 * Set the polygon ring number
-	 * 
-	 * @param ring
-	 *            polygon ring number
-	 */
-	public void setRing(int ring) {
-		this.ring = ring;
-	}
-
-	/**
-	 * Get the event type
-	 * 
-	 * @return event type
-	 */
-	public EventType getType() {
-		return type;
-	}
-
-	/**
-	 * Set the event type
-	 * 
-	 * @param type
-	 *            event type
-	 */
-	public void setType(EventType type) {
-		this.type = type;
 	}
 
 	/**
@@ -104,13 +77,12 @@ public class Event implements Comparable<Event> {
 	}
 
 	/**
-	 * Set the polygon point
+	 * Get the event type
 	 * 
-	 * @param point
-	 *            polygon point
+	 * @return event type
 	 */
-	public void setPoint(Point point) {
-		this.point = point;
+	public EventType getType() {
+		return type;
 	}
 
 	/**

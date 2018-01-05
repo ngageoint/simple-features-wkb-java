@@ -162,7 +162,7 @@ public class ShamosHoey {
 						simple = false;
 						break;
 					}
-					sweepLine.remove(segment, event);
+					sweepLine.remove(segment);
 				}
 			}
 		}

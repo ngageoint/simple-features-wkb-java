@@ -42,9 +42,21 @@ public class Segment {
 
 	/**
 	 * Constructor
+	 * 
+	 * @param edge
+	 *            edge number
+	 * @param ring
+	 *            ring number
+	 * @param leftPoint
+	 *            left point
+	 * @param rightPoint
+	 *            right point
 	 */
-	public Segment() {
-
+	public Segment(int edge, int ring, Point leftPoint, Point rightPoint) {
+		this.edge = edge;
+		this.ring = ring;
+		this.leftPoint = leftPoint;
+		this.rightPoint = rightPoint;
 	}
 
 	/**
@@ -57,32 +69,12 @@ public class Segment {
 	}
 
 	/**
-	 * Set the edge number
-	 * 
-	 * @param edge
-	 *            edge number
-	 */
-	public void setEdge(int edge) {
-		this.edge = edge;
-	}
-
-	/**
 	 * Get the polygon ring number
 	 * 
 	 * @return polygon ring number
 	 */
 	public int getRing() {
 		return ring;
-	}
-
-	/**
-	 * Set the polygon ring number
-	 * 
-	 * @param ring
-	 *            polygon ring number
-	 */
-	public void setRing(int ring) {
-		this.ring = ring;
 	}
 
 	/**
@@ -95,32 +87,12 @@ public class Segment {
 	}
 
 	/**
-	 * Set the left point
-	 * 
-	 * @param leftPoint
-	 *            left point
-	 */
-	public void setLeftPoint(Point leftPoint) {
-		this.leftPoint = leftPoint;
-	}
-
-	/**
 	 * Get the right point
 	 * 
 	 * @return right point
 	 */
 	public Point getRightPoint() {
 		return rightPoint;
-	}
-
-	/**
-	 * Set the right point
-	 * 
-	 * @param rightPoint
-	 *            right point
-	 */
-	public void setRightPoint(Point rightPoint) {
-		this.rightPoint = rightPoint;
 	}
 
 	/**
@@ -159,6 +131,37 @@ public class Segment {
 	 */
 	public void setBelow(Segment below) {
 		this.below = below;
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + edge;
+		result = prime * result + ring;
+		return result;
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		Segment other = (Segment) obj;
+		if (edge != other.edge)
+			return false;
+		if (ring != other.ring)
+			return false;
+		return true;
 	}
 
 }

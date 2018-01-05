@@ -59,22 +59,22 @@ public class EventQueue implements Iterable<Event> {
 		List<Point> points = ring.getPoints();
 
 		for (int i = 0; i < points.size(); i++) {
-			Event endpoint1 = new Event();
-			Event endpoint2 = new Event();
 
-			endpoint1.setEdge(i);
-			endpoint1.setRing(ringIndex);
-			endpoint2.setEdge(i);
-			endpoint2.setRing(ringIndex);
-			endpoint1.setPoint(points.get(i));
-			endpoint2.setPoint(points.get((i + 1) % points.size()));
-			if (endpoint1.compareTo(endpoint2) < 0) {
-				endpoint1.setType(EventType.LEFT);
-				endpoint2.setType(EventType.RIGHT);
+			Point point1 = points.get(i);
+			Point point2 = points.get((i + 1) % points.size());
+
+			EventType type1 = null;
+			EventType type2 = null;
+			if (SweepLine.xyOrder(point1, point2) < 0) {
+				type1 = EventType.LEFT;
+				type2 = EventType.RIGHT;
 			} else {
-				endpoint1.setType(EventType.RIGHT);
-				endpoint2.setType(EventType.LEFT);
+				type1 = EventType.RIGHT;
+				type2 = EventType.LEFT;
 			}
+
+			Event endpoint1 = new Event(i, ringIndex, point1, type1);
+			Event endpoint2 = new Event(i, ringIndex, point2, type2);
 
 			events.add(endpoint1);
 			events.add(endpoint2);

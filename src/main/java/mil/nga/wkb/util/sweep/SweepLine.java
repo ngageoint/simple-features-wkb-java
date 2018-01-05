@@ -1,11 +1,10 @@
 package mil.nga.wkb.util.sweep;
 
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.TreeSet;
 
 import mil.nga.wkb.geom.LineString;
 import mil.nga.wkb.geom.Point;
@@ -19,14 +18,71 @@ import mil.nga.wkb.geom.Point;
 public class SweepLine {
 
 	/**
+	 * Segment comparator for adding segments to the sweep line in above-below
+	 * order
+	 */
+	private class SegmentComparator implements Comparator<Segment> {
+
+		/**
+		 * Current sweep x value
+		 */
+		private double x;
+
+		/**
+		 * Set the current sweep x value
+		 * 
+		 * @param x
+		 *            x value
+		 */
+		public void setX(double x) {
+			this.x = x;
+		}
+
+		/**
+		 * {@inheritDoc}
+		 */
+		@Override
+		public int compare(Segment segment1, Segment segment2) {
+
+			double y1 = yValueAtX(segment1, x);
+			double y2 = yValueAtX(segment2, x);
+
+			int compare;
+			if (y1 < y2) {
+				compare = -1;
+			} else if (y2 < y1) {
+				compare = 1;
+			} else if (segment1.getRing() < segment2.getRing()) {
+				compare = -1;
+			} else if (segment2.getRing() < segment1.getRing()) {
+				compare = 1;
+			} else if (segment1.getEdge() < segment2.getEdge()) {
+				compare = -1;
+			} else if (segment2.getEdge() < segment1.getEdge()) {
+				compare = 1;
+			} else {
+				compare = 0;
+			}
+
+			return compare;
+		}
+
+	}
+
+	/**
 	 * Polygon rings
 	 */
 	private List<LineString> rings;
 
 	/**
+	 * Comparator for ordering segments in above-below order
+	 */
+	private SegmentComparator comparator = new SegmentComparator();
+
+	/**
 	 * Tree of segments sorted by above-below order
 	 */
-	private List<Segment> tree = new ArrayList<>();
+	private TreeSet<Segment> tree = new TreeSet<>(comparator);
 
 	/**
 	 * Mapping between ring, edges, and segments
@@ -52,27 +108,15 @@ public class SweepLine {
 	 */
 	public Segment add(Event event) {
 
-		Segment segment = new Segment();
-		segment.setEdge(event.getEdge());
-		segment.setRing(event.getRing());
+		Segment segment = createSegment(event);
 
-		LineString ring = rings.get(segment.getRing());
-		List<Point> points = ring.getPoints();
+		// Add to the tree
+		comparator.setX(event.getPoint().getX());
+		tree.add(segment);
 
-		Point point1 = points.get(segment.getEdge());
-		Point point2 = points.get((segment.getEdge() + 1) % points.size());
-		if (xyOrder(point1, point2) < 0) {
-			segment.setLeftPoint(point1);
-			segment.setRightPoint(point2);
-		} else {
-			segment.setRightPoint(point1);
-			segment.setLeftPoint(point2);
-		}
-
-		int index = add(segment, event.getPoint().getX());
-
-		Segment next = getNext(index);
-		Segment previous = getPrevious(index);
+		// Update the above and below pointers
+		Segment next = tree.higher(segment);
+		Segment previous = tree.lower(segment);
 		if (next != null) {
 			segment.setAbove(next);
 			next.setBelow(segment);
@@ -81,6 +125,47 @@ public class SweepLine {
 			segment.setBelow(previous);
 			previous.setAbove(segment);
 		}
+
+		// Add to the segments map
+		Map<Integer, Segment> edgeMap = segments.get(segment.getRing());
+		if (edgeMap == null) {
+			edgeMap = new HashMap<>();
+			segments.put(segment.getRing(), edgeMap);
+		}
+		edgeMap.put(segment.getEdge(), segment);
+
+		return segment;
+	}
+
+	/**
+	 * Create a segment from the event
+	 * 
+	 * @param event
+	 *            event
+	 * @return segment
+	 */
+	private Segment createSegment(Event event) {
+
+		int edgeNumber = event.getEdge();
+		int ringNumber = event.getRing();
+
+		LineString ring = rings.get(ringNumber);
+		List<Point> points = ring.getPoints();
+
+		Point point1 = points.get(edgeNumber);
+		Point point2 = points.get((edgeNumber + 1) % points.size());
+
+		Point left = null;
+		Point right = null;
+		if (xyOrder(point1, point2) < 0) {
+			left = point1;
+			right = point2;
+		} else {
+			right = point1;
+			left = point2;
+		}
+
+		Segment segment = new Segment(edgeNumber, ringNumber, left, right);
 
 		return segment;
 	}
@@ -148,93 +233,23 @@ public class SweepLine {
 	 * 
 	 * @param segment
 	 *            segment
-	 * @param event
-	 *            event
 	 */
-	public void remove(Segment segment, Event event) {
+	public void remove(Segment segment) {
 
-		int index = search(segment, event.getPoint().getX());
-		if (index >= 0) {
-			Segment next = getNext(index);
-			if (next != null) {
-				next.setBelow(segment.getBelow());
+		if (tree.remove(segment)) {
+
+			Segment above = segment.getAbove();
+			Segment below = segment.getBelow();
+			if (above != null) {
+				above.setBelow(below);
 			}
-			Segment previous = getPrevious(index);
-			if (previous != null) {
-				previous.setAbove(segment.getAbove());
+			if (below != null) {
+				below.setAbove(above);
 			}
-			tree.remove(index);
+
 			segments.get(segment.getRing()).remove(segment.getEdge());
 		}
 
-	}
-
-	/**
-	 * Add the segment to the sweep tree
-	 * 
-	 * @param segment
-	 *            segment
-	 * @param x
-	 *            current point x value
-	 * @return index where added
-	 */
-	private int add(Segment segment, double x) {
-
-		int index = search(segment, x);
-		if (index < 0) {
-			index = -index - 1;
-		}
-
-		tree.add(index, segment);
-		Map<Integer, Segment> edgeMap = segments.get(segment.getRing());
-		if (edgeMap == null) {
-			edgeMap = new HashMap<>();
-			segments.put(segment.getRing(), edgeMap);
-		}
-		edgeMap.put(segment.getEdge(), segment);
-
-		return index;
-	}
-
-	/**
-	 * Search the sweep line tree for the segment or insert location
-	 * 
-	 * @param segment
-	 *            segment
-	 * @param x
-	 *            current point x value
-	 * @return binary search result, index if found, (-(insertion point) - 1) if
-	 *         not
-	 */
-	private int search(Segment segment, final double x) {
-
-		Comparator<Segment> comparator = new Comparator<Segment>() {
-			public int compare(Segment segment1, Segment segment2) {
-				double y1 = yValueAtX(segment1, x);
-				double y2 = yValueAtX(segment2, x);
-				int compare;
-				if (y1 < y2) {
-					compare = -1;
-				} else if (y2 < y1) {
-					compare = 1;
-				} else if (segment1.getRing() < segment2.getRing()) {
-					compare = -1;
-				} else if (segment2.getRing() < segment1.getRing()) {
-					compare = 1;
-				} else if (segment1.getEdge() < segment2.getEdge()) {
-					compare = -1;
-				} else if (segment2.getEdge() < segment1.getEdge()) {
-					compare = 1;
-				} else {
-					compare = 0;
-				}
-				return compare;
-			}
-		};
-
-		int index = Collections.binarySearch(tree, segment, comparator);
-
-		return index;
 	}
 
 	/**
@@ -257,43 +272,6 @@ public class SweepLine {
 		double y = (m * x) + b;
 
 		return y;
-	}
-
-	/**
-	 * Get the segment at the index, null if one does not exist
-	 * 
-	 * @param index
-	 *            index location
-	 * @return segment, null if none
-	 */
-	private Segment get(int index) {
-		Segment segment = null;
-		if (index >= 0 && index < tree.size()) {
-			segment = tree.get(index);
-		}
-		return segment;
-	}
-
-	/**
-	 * Get the segment at the previous location from the index
-	 * 
-	 * @param index
-	 *            index location
-	 * @return previous segment, or null
-	 */
-	private Segment getPrevious(int index) {
-		return get(index - 1);
-	}
-
-	/**
-	 * Get the segment at the next location from the index
-	 * 
-	 * @param index
-	 *            index location
-	 * @return next segment, or null
-	 */
-	private Segment getNext(int index) {
-		return get(index + 1);
 	}
 
 	/**
