@@ -387,6 +387,102 @@ public class ShamosHoeyTest {
 		TestCase.assertEquals(3, polygon.getRings().get(1).numPoints());
 	}
 
+	@Test
+	public void testLargeSimple() throws IOException {
+
+		double increment = .001;
+		double radius = 1250;
+		double x = -radius + increment;
+		double y = 0;
+
+		List<Point> points = new ArrayList<>();
+
+		while (x <= radius) {
+			if (x <= 0) {
+				y -= increment;
+			} else {
+				y += increment;
+			}
+			addPoint(points, x, y);
+			x += increment;
+		}
+
+		x = radius - increment;
+		while (x >= -radius) {
+			if (x >= 0) {
+				y += increment;
+			} else {
+				y -= increment;
+			}
+			addPoint(points, x, y);
+			x -= increment;
+		}
+
+		// Date before = new Date();
+		TestCase.assertTrue(ShamosHoey.simplePolygonPoints(points));
+		// Date after = new Date();
+		// long time = after.getTime() - before.getTime();
+		// System.out.println("Points: " + points.size() + ", Time: " + time);
+		TestCase.assertEquals((int) (radius / increment * 4), points.size());
+
+	}
+
+	@Test
+	public void testLargeNonSimple() throws IOException {
+
+		double increment = .001;
+		double radius = 1250;
+		double x = -radius + increment;
+		double y = 0;
+
+		List<Point> points = new ArrayList<>();
+
+		while (x <= radius) {
+			if (x <= 0) {
+				y -= increment;
+			} else {
+				y += increment;
+			}
+			addPoint(points, x, y);
+			x += increment;
+		}
+
+		Point previousPoint = points.get(points.size() - 2);
+		int invalidIndex = points.size();
+		addPoint(points, previousPoint.getX(),
+				previousPoint.getY() - .000000000000001);
+
+		x = radius - increment;
+		while (x >= -radius) {
+			if (x >= 0) {
+				y += increment;
+			} else {
+				y -= increment;
+			}
+			addPoint(points, x, y);
+			x -= increment;
+		}
+
+		// Date before = new Date();
+		TestCase.assertFalse(ShamosHoey.simplePolygonPoints(points));
+		// Date after = new Date();
+		// long time = after.getTime() - before.getTime();
+		// System.out.println("Points: " + points.size() + ", Time: " + time);
+		TestCase.assertEquals(1 + (int) (radius / increment * 4), points.size());
+
+		points.remove(invalidIndex);
+		previousPoint = points.get(points.size() - 3);
+		addPoint(points, previousPoint.getX(),
+				previousPoint.getY() + .000000000000001);
+
+		// Date before2 = new Date();
+		TestCase.assertFalse(ShamosHoey.simplePolygonPoints(points));
+		// Date after2 = new Date();
+		// long time2 = after2.getTime() - before2.getTime();
+		// System.out.println("Points: " + points.size() + ", Time: " + time2);
+		TestCase.assertEquals(1 + (int) (radius / increment * 4), points.size());
+	}
+
 	private void addPoint(List<Point> points, double x, double y) {
 		points.add(new Point(x, y));
 	}
