@@ -412,43 +412,62 @@ public class GeometryUtilsTest {
 
 		double deviation = 0.000000000000001;
 
-		TestCase.assertTrue(GeometryUtils.containsPoint(new Point(
+		for (Point point : points) {
+			TestCase.assertTrue(GeometryUtils.polygonContainsPoint(point,
+					points));
+		}
+
+		TestCase.assertTrue(GeometryUtils.polygonContainsPoint(new Point(
 				0 + deviation, 5), points));
-		TestCase.assertTrue(GeometryUtils.containsPoint(new Point(5,
+		TestCase.assertTrue(GeometryUtils.polygonContainsPoint(new Point(5,
 				0 + deviation), points));
-		TestCase.assertTrue(GeometryUtils.containsPoint(new Point(
+		TestCase.assertTrue(GeometryUtils.polygonContainsPoint(new Point(
 				10 - deviation, 5), points));
-		TestCase.assertTrue(GeometryUtils.containsPoint(new Point(5,
+		TestCase.assertTrue(GeometryUtils.polygonContainsPoint(new Point(5,
 				10 - deviation), points));
-		TestCase.assertTrue(GeometryUtils
-				.containsPoint(new Point(5, 5), points));
-		TestCase.assertTrue(GeometryUtils.containsPoint(new Point(
+
+		TestCase.assertTrue(GeometryUtils.polygonContainsPoint(new Point(5, 5),
+				points));
+
+		TestCase.assertTrue(GeometryUtils.polygonContainsPoint(new Point(
 				2.5 + deviation, 7.5 - deviation), points));
-		TestCase.assertTrue(GeometryUtils.containsPoint(new Point(
+		TestCase.assertTrue(GeometryUtils.polygonContainsPoint(new Point(
 				2.5 + deviation, 2.5 + deviation), points));
-		TestCase.assertTrue(GeometryUtils.containsPoint(new Point(
+		TestCase.assertTrue(GeometryUtils.polygonContainsPoint(new Point(
 				7.5 - deviation, 2.5 + deviation), points));
-		TestCase.assertTrue(GeometryUtils.containsPoint(new Point(
+		TestCase.assertTrue(GeometryUtils.polygonContainsPoint(new Point(
 				7.5 - deviation, 7.5 - deviation), points));
 
-		TestCase.assertFalse(GeometryUtils.containsPoint(new Point(0, 0),
-				points));
-		TestCase.assertFalse(GeometryUtils.containsPoint(new Point(
+		TestCase.assertTrue(GeometryUtils.polygonContainsPoint(new Point(2.5,
+				7.5), points));
+		TestCase.assertTrue(GeometryUtils.polygonContainsPoint(new Point(2.5,
+				2.5), points));
+		TestCase.assertTrue(GeometryUtils.polygonContainsPoint(new Point(7.5,
+				2.5), points));
+		TestCase.assertTrue(GeometryUtils.polygonContainsPoint(new Point(7.5,
+				7.5), points));
+
+		TestCase.assertFalse(GeometryUtils.polygonContainsPoint(
+				new Point(0, 0), points));
+		TestCase.assertFalse(GeometryUtils.polygonContainsPoint(new Point(
 				0 - deviation, 5), points));
-		TestCase.assertFalse(GeometryUtils.containsPoint(new Point(5,
+		TestCase.assertFalse(GeometryUtils.polygonContainsPoint(new Point(5,
 				0 - deviation), points));
-		TestCase.assertFalse(GeometryUtils.containsPoint(new Point(
+		TestCase.assertFalse(GeometryUtils.polygonContainsPoint(new Point(
 				10 + deviation, 5), points));
-		TestCase.assertFalse(GeometryUtils.containsPoint(new Point(5,
+		TestCase.assertFalse(GeometryUtils.polygonContainsPoint(new Point(5,
 				10 + deviation), points));
-		TestCase.assertFalse(GeometryUtils.containsPoint(new Point(
+
+		deviation = .0000001;
+		TestCase.assertFalse(GeometryUtils.polygonContainsPoint(new Point(
 				2.5 - deviation, 7.5 + deviation), points));
-		TestCase.assertFalse(GeometryUtils.containsPoint(new Point(
+		TestCase.assertFalse(GeometryUtils.polygonContainsPoint(new Point(
 				2.5 - deviation, 2.5 - deviation), points));
-		TestCase.assertFalse(GeometryUtils.containsPoint(new Point(
+		TestCase.assertFalse(GeometryUtils.polygonContainsPoint(new Point(
 				7.5 + deviation, 2.5 - deviation), points));
-		TestCase.assertFalse(GeometryUtils.containsPoint(new Point(
+		TestCase.assertFalse(GeometryUtils.polygonContainsPoint(new Point(
 				7.5 + deviation, 7.5 + deviation), points));
+
 	}
 
 }

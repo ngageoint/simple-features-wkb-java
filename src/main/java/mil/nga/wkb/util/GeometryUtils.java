@@ -32,6 +32,13 @@ import mil.nga.wkb.util.centroid.CentroidSurface;
 public class GeometryUtils {
 
 	/**
+	 * Default epsilon for line tolerance
+	 * 
+	 * @since 1.0.5
+	 */
+	public static final double DEFAULT_EPSILON = 0.000000000000001;
+
+	/**
 	 * Get the dimension of the Geometry, 0 for points, 1 for curves, 2 for
 	 * surfaces. If a collection, the largest dimension is returned.
 	 * 
@@ -658,17 +665,35 @@ public class GeometryUtils {
 	 * @param polygon
 	 *            polygon
 	 * @return true if in the polygon
+	 * @since 1.0.5
 	 */
-	public static boolean containsPoint(Point point, Polygon polygon) {
+	public static boolean polygonContainsPoint(Point point, Polygon polygon) {
+		return polygonContainsPoint(point, polygon, DEFAULT_EPSILON);
+	}
+
+	/**
+	 * Check if the point is contained within the polygon
+	 * 
+	 * @param point
+	 *            point
+	 * @param polygon
+	 *            polygon
+	 * @param epsilon
+	 *            epsilon on line tolerance
+	 * @return true if in the polygon
+	 * @since 1.0.5
+	 */
+	public static boolean polygonContainsPoint(Point point, Polygon polygon,
+			double epsilon) {
 
 		boolean contains = false;
 		List<LineString> rings = polygon.getRings();
 		if (!rings.isEmpty()) {
-			contains = containsPoint(point, rings.get(0));
+			contains = polygonContainsPoint(point, rings.get(0), epsilon);
 			if (contains) {
 				// Check the holes
 				for (int i = 1; i < rings.size(); i++) {
-					if (containsPoint(point, rings.get(i))) {
+					if (polygonContainsPoint(point, rings.get(i), epsilon)) {
 						contains = false;
 						break;
 					}
@@ -687,9 +712,27 @@ public class GeometryUtils {
 	 * @param ring
 	 *            polygon ring
 	 * @return true if in the polygon
+	 * @since 1.0.5
 	 */
-	public static boolean containsPoint(Point point, LineString ring) {
-		return containsPoint(point, ring.getPoints());
+	public static boolean polygonContainsPoint(Point point, LineString ring) {
+		return polygonContainsPoint(point, ring, DEFAULT_EPSILON);
+	}
+
+	/**
+	 * Check if the point is contained within the polygon ring
+	 * 
+	 * @param point
+	 *            point
+	 * @param ring
+	 *            polygon ring
+	 * @param epsilon
+	 *            epsilon on line tolerance
+	 * @return true if in the polygon
+	 * @since 1.0.5
+	 */
+	public static boolean polygonContainsPoint(Point point, LineString ring,
+			double epsilon) {
+		return polygonContainsPoint(point, ring.getPoints(), epsilon);
 	}
 
 	/**
@@ -700,8 +743,26 @@ public class GeometryUtils {
 	 * @param points
 	 *            polygon points
 	 * @return true if in the polygon
+	 * @since 1.0.5
 	 */
-	public static boolean containsPoint(Point point, List<Point> points) {
+	public static boolean polygonContainsPoint(Point point, List<Point> points) {
+		return polygonContainsPoint(point, points, DEFAULT_EPSILON);
+	}
+
+	/**
+	 * Check if the point is contained within the polygon points
+	 * 
+	 * @param point
+	 *            point
+	 * @param points
+	 *            polygon points
+	 * @param epsilon
+	 *            epsilon on line tolerance
+	 * @return true if in the polygon
+	 * @since 1.0.5
+	 */
+	public static boolean polygonContainsPoint(Point point, List<Point> points,
+			double epsilon) {
 
 		boolean contains = false;
 
@@ -709,12 +770,84 @@ public class GeometryUtils {
 		for (int i = 0, j = count - 1; i < count; j = i++) {
 			Point point1 = points.get(i);
 			Point point2 = points.get(j);
+
+			if (point1.getX() == point.getX() && point1.getY() == point.getY()) {
+				contains = true;
+				break;
+			}
+
 			if (((point1.getY() > point.getY()) != (point2.getY() > point
 					.getY()))
 					&& (point.getX() < (point2.getX() - point1.getX())
 							* (point.getY() - point1.getY())
 							/ (point2.getY() - point1.getY()) + point1.getX())) {
 				contains = !contains;
+			}
+		}
+
+		if (!contains) {
+			for (int i = 0, j = count - 1; i < count; j = i++) {
+				Point point1 = points.get(i);
+				Point point2 = points.get(j);
+				if (lineContainsPoint(point, point1, point2, epsilon)) {
+					contains = true;
+					break;
+				}
+			}
+		}
+
+		return contains;
+	}
+
+	/**
+	 * Check if the point falls on the line represented by point 1 and point 2
+	 * 
+	 * @param point
+	 *            point
+	 * @param point1
+	 *            line point 1
+	 * @param point2
+	 *            line point 2
+	 * @return true if on the line
+	 * @since 1.0.5
+	 */
+	public static boolean lineContainsPoint(Point point, Point point1,
+			Point point2) {
+		return lineContainsPoint(point, point1, point2, DEFAULT_EPSILON);
+	}
+
+	/**
+	 * Check if the point falls on the line represented by point 1 and point 2
+	 * 
+	 * @param point
+	 *            point
+	 * @param point1
+	 *            line point 1
+	 * @param point2
+	 *            line point 2
+	 * @param epsilon
+	 *            epsilon on line tolerance
+	 * @return true if on the line
+	 * @since 1.0.5
+	 */
+	public static boolean lineContainsPoint(Point point, Point point1,
+			Point point2, double epsilon) {
+
+		boolean contains = false;
+
+		double x21 = point2.getX() - point1.getX();
+		double y21 = point2.getY() - point1.getY();
+		double xP1 = point.getX() - point1.getX();
+		double yP1 = point.getY() - point1.getY();
+
+		double dp = xP1 * x21 + yP1 * y21;
+		if (dp >= 0.0) {
+
+			double lengthP1 = xP1 * xP1 + yP1 * yP1;
+			double length21 = x21 * x21 + y21 * y21;
+
+			if (lengthP1 <= length21) {
+				contains = Math.abs(dp * dp - lengthP1 * length21) <= epsilon;
 			}
 		}
 
