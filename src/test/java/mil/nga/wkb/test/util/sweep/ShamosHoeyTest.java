@@ -296,6 +296,97 @@ public class ShamosHoeyTest {
 		TestCase.assertEquals(3, polygon.getRings().get(2).numPoints());
 	}
 
+	@Test
+	public void testHoleInsideHole() throws IOException {
+
+		Polygon polygon = new Polygon();
+
+		List<Point> points = new ArrayList<>();
+
+		addPoint(points, 0, 0);
+		addPoint(points, 10, 0);
+		addPoint(points, 5, 10);
+
+		LineString ring = new LineString();
+		ring.setPoints(points);
+
+		polygon.addRing(ring);
+
+		TestCase.assertTrue(ShamosHoey.simplePolygon(polygon));
+		TestCase.assertEquals(1, polygon.numRings());
+		TestCase.assertEquals(3, polygon.getRings().get(0).numPoints());
+
+		List<Point> holePoints1 = new ArrayList<>();
+
+		addPoint(holePoints1, 1, 1);
+		addPoint(holePoints1, 9, 1);
+		addPoint(holePoints1, 5, 9);
+
+		LineString hole1 = new LineString();
+		hole1.setPoints(holePoints1);
+
+		polygon.addRing(hole1);
+
+		TestCase.assertTrue(ShamosHoey.simplePolygon(polygon));
+		TestCase.assertEquals(2, polygon.numRings());
+		TestCase.assertEquals(3, polygon.getRings().get(0).numPoints());
+		TestCase.assertEquals(3, polygon.getRings().get(1).numPoints());
+
+		List<Point> holePoints2 = new ArrayList<>();
+
+		addPoint(holePoints2, 2, 2);
+		addPoint(holePoints2, 8, 2);
+		addPoint(holePoints2, 5, 8);
+
+		LineString hole2 = new LineString();
+		hole2.setPoints(holePoints2);
+
+		polygon.addRing(hole2);
+
+		TestCase.assertFalse(ShamosHoey.simplePolygon(polygon));
+		TestCase.assertEquals(3, polygon.numRings());
+		TestCase.assertEquals(3, polygon.getRings().get(0).numPoints());
+		TestCase.assertEquals(3, polygon.getRings().get(1).numPoints());
+		TestCase.assertEquals(3, polygon.getRings().get(2).numPoints());
+	}
+
+	@Test
+	public void testExternalHole() throws IOException {
+
+		Polygon polygon = new Polygon();
+
+		List<Point> points = new ArrayList<>();
+
+		addPoint(points, 0, 0);
+		addPoint(points, 10, 0);
+		addPoint(points, 5, 10);
+
+		LineString ring = new LineString();
+		ring.setPoints(points);
+
+		polygon.addRing(ring);
+
+		TestCase.assertTrue(ShamosHoey.simplePolygon(polygon));
+		TestCase.assertEquals(1, polygon.numRings());
+		TestCase.assertEquals(3, polygon.getRings().get(0).numPoints());
+
+		List<Point> holePoints = new ArrayList<>();
+
+		addPoint(holePoints, -1, 1);
+		addPoint(holePoints, -1, 3);
+		addPoint(holePoints, -2, 1);
+
+		LineString hole = new LineString();
+		hole.setPoints(holePoints);
+
+		polygon.addRing(hole);
+
+		TestCase.assertFalse(ShamosHoey.simplePolygon(polygon));
+		TestCase.assertEquals(2, polygon.numRings());
+		TestCase.assertEquals(3, polygon.getRings().get(0).numPoints());
+		TestCase.assertEquals(3, polygon.getRings().get(1).numPoints());
+	}
+
 	private void addPoint(List<Point> points, double x, double y) {
 		points.add(new Point(x, y));
 	}

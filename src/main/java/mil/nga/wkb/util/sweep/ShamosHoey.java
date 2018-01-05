@@ -6,6 +6,7 @@ import java.util.List;
 import mil.nga.wkb.geom.LineString;
 import mil.nga.wkb.geom.Point;
 import mil.nga.wkb.geom.Polygon;
+import mil.nga.wkb.util.GeometryUtils;
 
 /**
  * Shamos-Hoey simple polygon detection
@@ -92,7 +93,9 @@ public class ShamosHoey {
 		boolean simple = !rings.isEmpty();
 
 		List<LineString> ringCopies = new ArrayList<>();
-		for (LineString ring : rings) {
+		for (int i = 0; i < rings.size(); i++) {
+
+			LineString ring = rings.get(i);
 
 			// Copy the ring
 			LineString ringCopy = new LineString();
@@ -113,6 +116,28 @@ public class ShamosHoey {
 			if (ringCopyPoints.size() < 3) {
 				simple = false;
 				break;
+			}
+
+			// Check holes to make sure the first point is in the polygon
+			if (i > 0) {
+				Point firstPoint = ringCopyPoints.get(0);
+				if (!GeometryUtils.containsPoint(firstPoint, rings.get(0))) {
+					simple = false;
+					break;
+				}
+				// Make sure the hole first points are not inside of one another
+				for (int j = 1; j < i; j++) {
+					List<Point> holePoints = rings.get(j).getPoints();
+					if (GeometryUtils.containsPoint(firstPoint, holePoints)
+							|| GeometryUtils.containsPoint(holePoints.get(0),
+									ringCopyPoints)) {
+						simple = false;
+						break;
+					}
+				}
+				if (!simple) {
+					break;
+				}
 			}
 		}
 

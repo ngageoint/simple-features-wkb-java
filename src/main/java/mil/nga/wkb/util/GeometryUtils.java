@@ -650,4 +650,75 @@ public class GeometryUtils {
 		return distance;
 	}
 
+	/**
+	 * Check if the point is contained within the polygon
+	 * 
+	 * @param point
+	 *            point
+	 * @param polygon
+	 *            polygon
+	 * @return true if in the polygon
+	 */
+	public static boolean containsPoint(Point point, Polygon polygon) {
+
+		boolean contains = false;
+		List<LineString> rings = polygon.getRings();
+		if (!rings.isEmpty()) {
+			contains = containsPoint(point, rings.get(0));
+			if (contains) {
+				// Check the holes
+				for (int i = 1; i < rings.size(); i++) {
+					if (containsPoint(point, rings.get(i))) {
+						contains = false;
+						break;
+					}
+				}
+			}
+		}
+
+		return contains;
+	}
+
+	/**
+	 * Check if the point is contained within the polygon ring
+	 * 
+	 * @param point
+	 *            point
+	 * @param ring
+	 *            polygon ring
+	 * @return true if in the polygon
+	 */
+	public static boolean containsPoint(Point point, LineString ring) {
+		return containsPoint(point, ring.getPoints());
+	}
+
+	/**
+	 * Check if the point is contained within the polygon points
+	 * 
+	 * @param point
+	 *            point
+	 * @param points
+	 *            polygon points
+	 * @return true if in the polygon
+	 */
+	public static boolean containsPoint(Point point, List<Point> points) {
+
+		boolean contains = false;
+
+		int count = points.size();
+		for (int i = 0, j = count - 1; i < count; j = i++) {
+			Point point1 = points.get(i);
+			Point point2 = points.get(j);
+			if (((point1.getY() > point.getY()) != (point2.getY() > point
+					.getY()))
+					&& (point.getX() < (point2.getX() - point1.getX())
+							* (point.getY() - point1.getY())
+							/ (point2.getY() - point1.getY()) + point1.getX())) {
+				contains = !contains;
+			}
+		}
+
+		return contains;
+	}
+
 }

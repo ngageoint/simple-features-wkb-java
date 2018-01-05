@@ -401,4 +401,54 @@ public class GeometryUtilsTest {
 
 	}
 
+	@Test
+	public void testContainsPoint() {
+
+		List<Point> points = new ArrayList<>();
+		points.add(new Point(0, 5));
+		points.add(new Point(5, 0));
+		points.add(new Point(10, 5));
+		points.add(new Point(5, 10));
+
+		double deviation = 0.000000000000001;
+
+		TestCase.assertTrue(GeometryUtils.containsPoint(new Point(
+				0 + deviation, 5), points));
+		TestCase.assertTrue(GeometryUtils.containsPoint(new Point(5,
+				0 + deviation), points));
+		TestCase.assertTrue(GeometryUtils.containsPoint(new Point(
+				10 - deviation, 5), points));
+		TestCase.assertTrue(GeometryUtils.containsPoint(new Point(5,
+				10 - deviation), points));
+		TestCase.assertTrue(GeometryUtils
+				.containsPoint(new Point(5, 5), points));
+		TestCase.assertTrue(GeometryUtils.containsPoint(new Point(
+				2.5 + deviation, 7.5 - deviation), points));
+		TestCase.assertTrue(GeometryUtils.containsPoint(new Point(
+				2.5 + deviation, 2.5 + deviation), points));
+		TestCase.assertTrue(GeometryUtils.containsPoint(new Point(
+				7.5 - deviation, 2.5 + deviation), points));
+		TestCase.assertTrue(GeometryUtils.containsPoint(new Point(
+				7.5 - deviation, 7.5 - deviation), points));
+
+		TestCase.assertFalse(GeometryUtils.containsPoint(new Point(0, 0),
+				points));
+		TestCase.assertFalse(GeometryUtils.containsPoint(new Point(
+				0 - deviation, 5), points));
+		TestCase.assertFalse(GeometryUtils.containsPoint(new Point(5,
+				0 - deviation), points));
+		TestCase.assertFalse(GeometryUtils.containsPoint(new Point(
+				10 + deviation, 5), points));
+		TestCase.assertFalse(GeometryUtils.containsPoint(new Point(5,
+				10 + deviation), points));
+		TestCase.assertFalse(GeometryUtils.containsPoint(new Point(
+				2.5 - deviation, 7.5 + deviation), points));
+		TestCase.assertFalse(GeometryUtils.containsPoint(new Point(
+				2.5 - deviation, 2.5 - deviation), points));
+		TestCase.assertFalse(GeometryUtils.containsPoint(new Point(
+				7.5 + deviation, 2.5 - deviation), points));
+		TestCase.assertFalse(GeometryUtils.containsPoint(new Point(
+				7.5 + deviation, 7.5 + deviation), points));
+	}
+
 }
