@@ -658,7 +658,7 @@ public class GeometryUtils {
 	}
 
 	/**
-	 * Check if the point is contained within the polygon
+	 * Check if the point is in the polygon
 	 * 
 	 * @param point
 	 *            point
@@ -667,33 +667,33 @@ public class GeometryUtils {
 	 * @return true if in the polygon
 	 * @since 1.0.5
 	 */
-	public static boolean polygonContainsPoint(Point point, Polygon polygon) {
-		return polygonContainsPoint(point, polygon, DEFAULT_EPSILON);
+	public static boolean pointInPolygon(Point point, Polygon polygon) {
+		return pointInPolygon(point, polygon, DEFAULT_EPSILON);
 	}
 
 	/**
-	 * Check if the point is contained within the polygon
+	 * Check if the point is in the polygon
 	 * 
 	 * @param point
 	 *            point
 	 * @param polygon
 	 *            polygon
 	 * @param epsilon
-	 *            epsilon on line tolerance
+	 *            epsilon line tolerance
 	 * @return true if in the polygon
 	 * @since 1.0.5
 	 */
-	public static boolean polygonContainsPoint(Point point, Polygon polygon,
+	public static boolean pointInPolygon(Point point, Polygon polygon,
 			double epsilon) {
 
 		boolean contains = false;
 		List<LineString> rings = polygon.getRings();
 		if (!rings.isEmpty()) {
-			contains = polygonContainsPoint(point, rings.get(0), epsilon);
+			contains = pointInPolygon(point, rings.get(0), epsilon);
 			if (contains) {
 				// Check the holes
 				for (int i = 1; i < rings.size(); i++) {
-					if (polygonContainsPoint(point, rings.get(i), epsilon)) {
+					if (pointInPolygon(point, rings.get(i), epsilon)) {
 						contains = false;
 						break;
 					}
@@ -705,7 +705,7 @@ public class GeometryUtils {
 	}
 
 	/**
-	 * Check if the point is contained within the polygon ring
+	 * Check if the point is in the polygon ring
 	 * 
 	 * @param point
 	 *            point
@@ -714,29 +714,29 @@ public class GeometryUtils {
 	 * @return true if in the polygon
 	 * @since 1.0.5
 	 */
-	public static boolean polygonContainsPoint(Point point, LineString ring) {
-		return polygonContainsPoint(point, ring, DEFAULT_EPSILON);
+	public static boolean pointInPolygon(Point point, LineString ring) {
+		return pointInPolygon(point, ring, DEFAULT_EPSILON);
 	}
 
 	/**
-	 * Check if the point is contained within the polygon ring
+	 * Check if the point is in the polygon ring
 	 * 
 	 * @param point
 	 *            point
 	 * @param ring
 	 *            polygon ring
 	 * @param epsilon
-	 *            epsilon on line tolerance
+	 *            epsilon line tolerance
 	 * @return true if in the polygon
 	 * @since 1.0.5
 	 */
-	public static boolean polygonContainsPoint(Point point, LineString ring,
+	public static boolean pointInPolygon(Point point, LineString ring,
 			double epsilon) {
-		return polygonContainsPoint(point, ring.getPoints(), epsilon);
+		return pointInPolygon(point, ring.getPoints(), epsilon);
 	}
 
 	/**
-	 * Check if the point is contained within the polygon points
+	 * Check if the point is in the polygon points
 	 * 
 	 * @param point
 	 *            point
@@ -745,33 +745,40 @@ public class GeometryUtils {
 	 * @return true if in the polygon
 	 * @since 1.0.5
 	 */
-	public static boolean polygonContainsPoint(Point point, List<Point> points) {
-		return polygonContainsPoint(point, points, DEFAULT_EPSILON);
+	public static boolean pointInPolygon(Point point, List<Point> points) {
+		return pointInPolygon(point, points, DEFAULT_EPSILON);
 	}
 
 	/**
-	 * Check if the point is contained within the polygon points
+	 * Check if the point is in the polygon points
 	 * 
 	 * @param point
 	 *            point
 	 * @param points
 	 *            polygon points
 	 * @param epsilon
-	 *            epsilon on line tolerance
+	 *            epsilon line tolerance
 	 * @return true if in the polygon
 	 * @since 1.0.5
 	 */
-	public static boolean polygonContainsPoint(Point point, List<Point> points,
+	public static boolean pointInPolygon(Point point, List<Point> points,
 			double epsilon) {
 
 		boolean contains = false;
 
-		int count = points.size();
-		for (int i = 0, j = count - 1; i < count; j = i++) {
+		int i = 0;
+		int j = points.size() - 1;
+		if (closedPolygon(points)) {
+			j = i++;
+		}
+
+		for (; i < points.size(); j = i++) {
 			Point point1 = points.get(i);
 			Point point2 = points.get(j);
 
-			if (point1.getX() == point.getX() && point1.getY() == point.getY()) {
+			// Shortcut check if polygon contains the point within tolerance
+			if (Math.abs(point1.getX() - point.getX()) <= epsilon
+					&& Math.abs(point1.getY() - point.getY()) <= epsilon) {
 				contains = true;
 				break;
 			}
@@ -786,52 +793,247 @@ public class GeometryUtils {
 		}
 
 		if (!contains) {
-			for (int i = 0, j = count - 1; i < count; j = i++) {
-				Point point1 = points.get(i);
-				Point point2 = points.get(j);
-				if (lineContainsPoint(point, point1, point2, epsilon)) {
-					contains = true;
-					break;
-				}
-			}
+			// Check the polygon edges
+			contains = pointOnPolygonEdge(point, points);
 		}
 
 		return contains;
 	}
 
 	/**
-	 * Check if the point falls on the line represented by point 1 and point 2
+	 * Check if the point is on the polygon edge
 	 * 
 	 * @param point
 	 *            point
-	 * @param point1
-	 *            line point 1
-	 * @param point2
-	 *            line point 2
-	 * @return true if on the line
+	 * @param polygon
+	 *            polygon
+	 * @return true if on the polygon edge
 	 * @since 1.0.5
 	 */
-	public static boolean lineContainsPoint(Point point, Point point1,
-			Point point2) {
-		return lineContainsPoint(point, point1, point2, DEFAULT_EPSILON);
+	public static boolean pointOnPolygonEdge(Point point, Polygon polygon) {
+		return pointOnPolygonEdge(point, polygon, DEFAULT_EPSILON);
 	}
 
 	/**
-	 * Check if the point falls on the line represented by point 1 and point 2
+	 * Check if the point is on the polygon edge
+	 * 
+	 * @param point
+	 *            point
+	 * @param polygon
+	 *            polygon
+	 * @param epsilon
+	 *            epsilon line tolerance
+	 * @return true if on the polygon edge
+	 * @since 1.0.5
+	 */
+	public static boolean pointOnPolygonEdge(Point point, Polygon polygon,
+			double epsilon) {
+		return polygon.numRings() > 0
+				&& pointOnPolygonEdge(point, polygon.getRings().get(0), epsilon);
+	}
+
+	/**
+	 * Check if the point is on the polygon ring edge
+	 * 
+	 * @param point
+	 *            point
+	 * @param ring
+	 *            polygon ring
+	 * @return true if on the polygon edge
+	 * @since 1.0.5
+	 */
+	public static boolean pointOnPolygonEdge(Point point, LineString ring) {
+		return pointOnPolygonEdge(point, ring, DEFAULT_EPSILON);
+	}
+
+	/**
+	 * Check if the point is on the polygon ring edge
+	 * 
+	 * @param point
+	 *            point
+	 * @param ring
+	 *            polygon ring
+	 * @param epsilon
+	 *            epsilon line tolerance
+	 * @return true if on the polygon edge
+	 * @since 1.0.5
+	 */
+	public static boolean pointOnPolygonEdge(Point point, LineString ring,
+			double epsilon) {
+		return pointOnPolygonEdge(point, ring.getPoints(), epsilon);
+	}
+
+	/**
+	 * Check if the point is on the polygon ring edge points
+	 * 
+	 * @param point
+	 *            point
+	 * @param points
+	 *            polygon points
+	 * @return true if on the polygon edge
+	 * @since 1.0.5
+	 */
+	public static boolean pointOnPolygonEdge(Point point, List<Point> points) {
+		return pointOnPolygonEdge(point, points, DEFAULT_EPSILON);
+	}
+
+	/**
+	 * Check if the point is on the polygon ring edge points
+	 * 
+	 * @param point
+	 *            point
+	 * @param points
+	 *            polygon points
+	 * @param epsilon
+	 *            epsilon line tolerance
+	 * @return true if on the polygon edge
+	 * @since 1.0.5
+	 */
+	public static boolean pointOnPolygonEdge(Point point, List<Point> points,
+			double epsilon) {
+		return pointOnPath(point, points, epsilon, !closedPolygon(points));
+	}
+
+	/**
+	 * Check if the polygon outer ring is explicitly closed, where the first and
+	 * last point are the same
+	 * 
+	 * @param polygon
+	 *            polygon
+	 * @return true if the first and last points are the same
+	 * @since 1.0.5
+	 */
+	public static boolean closedPolygon(Polygon polygon) {
+		return polygon.numRings() > 0
+				&& closedPolygon(polygon.getRings().get(0));
+	}
+
+	/**
+	 * Check if the polygon ring is explicitly closed, where the first and last
+	 * point are the same
+	 * 
+	 * @param ring
+	 *            polygon ring
+	 * @return true if the first and last points are the same
+	 * @since 1.0.5
+	 */
+	public static boolean closedPolygon(LineString ring) {
+		return closedPolygon(ring.getPoints());
+	}
+
+	/**
+	 * Check if the polygon ring points are explicitly closed, where the first
+	 * and last point are the same
+	 * 
+	 * @param points
+	 *            polygon ring points
+	 * @return true if the first and last points are the same
+	 * @since 1.0.5
+	 */
+	public static boolean closedPolygon(List<Point> points) {
+		boolean closed = false;
+		if (!points.isEmpty()) {
+			Point first = points.get(0);
+			Point last = points.get(points.size() - 1);
+			closed = first.getX() == last.getX() && first.getY() == last.getY();
+		}
+		return closed;
+	}
+
+	/**
+	 * Check if the point is on the line
+	 * 
+	 * @param point
+	 *            point
+	 * @param line
+	 *            line
+	 * @return true if on the line
+	 * @since 1.0.5
+	 */
+	public static boolean pointOnLine(Point point, LineString line) {
+		return pointOnLine(point, line, DEFAULT_EPSILON);
+	}
+
+	/**
+	 * Check if the point is on the line
+	 * 
+	 * @param point
+	 *            point
+	 * @param line
+	 *            line
+	 * @param epsilon
+	 *            epsilon line tolerance
+	 * @return true if on the line
+	 * @since 1.0.5
+	 */
+	public static boolean pointOnLine(Point point, LineString line,
+			double epsilon) {
+		return pointOnLine(point, line.getPoints(), epsilon);
+	}
+
+	/**
+	 * Check if the point is on the line represented by the points
+	 * 
+	 * @param point
+	 *            point
+	 * @param points
+	 *            line points
+	 * @return true if on the line
+	 * @since 1.0.5
+	 */
+	public static boolean pointOnLine(Point point, List<Point> points) {
+		return pointOnLine(point, points, DEFAULT_EPSILON);
+	}
+
+	/**
+	 * Check if the point is on the line represented by the points
+	 * 
+	 * @param point
+	 *            point
+	 * @param points
+	 *            line points
+	 * @param epsilon
+	 *            epsilon line tolerance
+	 * @return true if on the line
+	 * @since 1.0.5
+	 */
+	public static boolean pointOnLine(Point point, List<Point> points,
+			double epsilon) {
+		return pointOnPath(point, points, epsilon, false);
+	}
+
+	/**
+	 * Check if the point is on the path between point 1 and point 2
 	 * 
 	 * @param point
 	 *            point
 	 * @param point1
-	 *            line point 1
+	 *            path point 1
 	 * @param point2
-	 *            line point 2
-	 * @param epsilon
-	 *            epsilon on line tolerance
-	 * @return true if on the line
+	 *            path point 2
+	 * @return true if on the path
 	 * @since 1.0.5
 	 */
-	public static boolean lineContainsPoint(Point point, Point point1,
-			Point point2, double epsilon) {
+	public static boolean pointOnPath(Point point, Point point1, Point point2) {
+		return pointOnPath(point, point1, point2, DEFAULT_EPSILON);
+	}
+
+	/**
+	 * Check if the point is on the path between point 1 and point 2
+	 * 
+	 * @param point
+	 *            point
+	 * @param point1
+	 *            path point 1
+	 * @param point2
+	 *            path point 2
+	 * @param epsilon
+	 *            epsilon line tolerance
+	 * @return true if on the path
+	 * @since 1.0.5
+	 */
+	public static boolean pointOnPath(Point point, Point point1, Point point2,
+			double epsilon) {
 
 		boolean contains = false;
 
@@ -852,6 +1054,43 @@ public class GeometryUtils {
 		}
 
 		return contains;
+	}
+
+	/**
+	 * Check if the point is on the path between the points
+	 * 
+	 * @param point
+	 *            point
+	 * @param points
+	 *            path points
+	 * @param epsilon
+	 *            epsilon line tolerance
+	 * @param circular
+	 *            true if a path exists between the first and last point (a non
+	 *            explicitly closed polygon)
+	 * @return true if on the path
+	 */
+	private static boolean pointOnPath(Point point, List<Point> points,
+			double epsilon, boolean circular) {
+
+		boolean onPath = false;
+
+		int i = 0;
+		int j = points.size() - 1;
+		if (!circular) {
+			j = i++;
+		}
+
+		for (; i < points.size(); j = i++) {
+			Point point1 = points.get(i);
+			Point point2 = points.get(j);
+			if (pointOnPath(point, point1, point2, epsilon)) {
+				onPath = true;
+				break;
+			}
+		}
+
+		return onPath;
 	}
 
 }

@@ -121,15 +121,15 @@ public class ShamosHoey {
 			// Check holes to make sure the first point is in the polygon
 			if (i > 0) {
 				Point firstPoint = ringCopyPoints.get(0);
-				if (!GeometryUtils.polygonContainsPoint(firstPoint, rings.get(0))) {
+				if (!GeometryUtils.pointInPolygon(firstPoint, rings.get(0))) {
 					simple = false;
 					break;
 				}
 				// Make sure the hole first points are not inside of one another
 				for (int j = 1; j < i; j++) {
 					List<Point> holePoints = rings.get(j).getPoints();
-					if (GeometryUtils.polygonContainsPoint(firstPoint, holePoints)
-							|| GeometryUtils.polygonContainsPoint(holePoints.get(0),
+					if (GeometryUtils.pointInPolygon(firstPoint, holePoints)
+							|| GeometryUtils.pointInPolygon(holePoints.get(0),
 									ringCopyPoints)) {
 						simple = false;
 						break;
