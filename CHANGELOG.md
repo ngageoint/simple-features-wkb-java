@@ -6,7 +6,9 @@ Adheres to [Semantic Versioning](http://semver.org/).
 
 ## 1.0.5 (TBD)
 
-* TBD
+* Additional Curve Polygon support
+* Geometry utilities: pointInPolygon, pointOnPolygonEdge, closedPolygon, pointOnLine, and pointOnPath
+* Shamos-Hoey simple polygon detection
 
 ## [1.0.4](https://github.com/ngageoint/geopackage-wkb-java/releases/tag/1.0.4) (11-20-2017)
 
