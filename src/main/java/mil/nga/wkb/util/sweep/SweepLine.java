@@ -236,7 +236,13 @@ public class SweepLine {
 	 */
 	public void remove(Segment segment) {
 
-		if (tree.remove(segment)) {
+		boolean removed = tree.remove(segment);
+		if (!removed) {
+			comparator.setX(segment.getLeftPoint().getX());
+			removed = tree.remove(segment);
+		}
+
+		if (removed) {
 
 			Segment above = segment.getAbove();
 			Segment below = segment.getBelow();
@@ -306,12 +312,13 @@ public class SweepLine {
 	 *            point
 	 * @return > 0 if left, 0 if on, < 0 if right
 	 */
-	public static double isLeft(Segment segment, Point point) {
+	private static double isLeft(Segment segment, Point point) {
 		return isLeft(segment.getLeftPoint(), segment.getRightPoint(), point);
 	}
 
 	/**
 	 * Check where point 2 is (left, on, right) relative to the line from point
+	 * 0 to point 1
 	 * 
 	 * @param point0
 	 *            point 0
@@ -321,7 +328,7 @@ public class SweepLine {
 	 *            point 2
 	 * @return > 0 if left, 0 if on, < 0 if right
 	 */
-	public static double isLeft(Point point0, Point point1, Point point2) {
+	private static double isLeft(Point point0, Point point1, Point point2) {
 		return (point1.getX() - point0.getX())
 				* (point2.getY() - point0.getY())
 				- (point2.getX() - point0.getX())

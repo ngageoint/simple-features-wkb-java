@@ -135,16 +135,6 @@ public class CentroidSurface {
 	}
 
 	/**
-	 * Add a line string to the centroid total
-	 * 
-	 * @param lineString
-	 *            line string
-	 */
-	private void add(LineString lineString) {
-		add(true, lineString);
-	}
-
-	/**
 	 * Add a curve polygon to the centroid total
 	 * 
 	 * @param curvePolygon
@@ -192,6 +182,16 @@ public class CentroidSurface {
 						+ curveHoleGeometryType);
 			}
 		}
+	}
+
+	/**
+	 * Add a line string to the centroid total
+	 * 
+	 * @param lineString
+	 *            line string
+	 */
+	private void add(LineString lineString) {
+		add(true, lineString);
 	}
 
 	/**

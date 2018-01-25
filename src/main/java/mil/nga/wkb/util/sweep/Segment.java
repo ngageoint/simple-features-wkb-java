@@ -133,35 +133,4 @@ public class Segment {
 		this.below = below;
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public int hashCode() {
-		final int prime = 31;
-		int result = 1;
-		result = prime * result + edge;
-		result = prime * result + ring;
-		return result;
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public boolean equals(Object obj) {
-		if (this == obj)
-			return true;
-		if (obj == null)
-			return false;
-		if (getClass() != obj.getClass())
-			return false;
-		Segment other = (Segment) obj;
-		if (edge != other.edge)
-			return false;
-		if (ring != other.ring)
-			return false;
-		return true;
-	}
-
 }
