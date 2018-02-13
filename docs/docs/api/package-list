@@ -1,3 +1,5 @@
 mil.nga.wkb.geom
 mil.nga.wkb.io
 mil.nga.wkb.util
+mil.nga.wkb.util.centroid
+mil.nga.wkb.util.sweep
