@@ -1,4 +1,4 @@
-package mil.nga.wkb.util;
+package mil.nga.wkb.util.centroid;
 
 import java.util.List;
 
@@ -9,6 +9,8 @@ import mil.nga.wkb.geom.GeometryType;
 import mil.nga.wkb.geom.LineString;
 import mil.nga.wkb.geom.MultiLineString;
 import mil.nga.wkb.geom.Point;
+import mil.nga.wkb.util.GeometryUtils;
+import mil.nga.wkb.util.WkbException;
 
 /**
  * Calculate the centroid from curve based geometries. Implementation based on

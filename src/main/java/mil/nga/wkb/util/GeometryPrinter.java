@@ -4,6 +4,8 @@ import java.util.List;
 
 import mil.nga.wkb.geom.CircularString;
 import mil.nga.wkb.geom.CompoundCurve;
+import mil.nga.wkb.geom.Curve;
+import mil.nga.wkb.geom.CurvePolygon;
 import mil.nga.wkb.geom.Geometry;
 import mil.nga.wkb.geom.GeometryCollection;
 import mil.nga.wkb.geom.GeometryType;
@@ -61,6 +63,11 @@ public class GeometryPrinter {
 		case COMPOUNDCURVE:
 			addCompoundCurveMessage(message, (CompoundCurve) geometry);
 			break;
+		case CURVEPOLYGON:
+			@SuppressWarnings("unchecked")
+			CurvePolygon<Curve> curvePolygon = (CurvePolygon<Curve>) geometry;
+			addCurvePolygonMessage(message, curvePolygon);
+			break;
 		case POLYHEDRALSURFACE:
 			addPolyhedralSurfaceMessage(message, (PolyhedralSurface) geometry);
 			break;
@@ -95,7 +102,9 @@ public class GeometryPrinter {
 	 * Add Point message
 	 * 
 	 * @param message
+	 *            string message
 	 * @param point
+	 *            point
 	 */
 	private static void addPointMessage(StringBuilder message, Point point) {
 		message.append("Latitude: ").append(point.getY());
@@ -106,7 +115,9 @@ public class GeometryPrinter {
 	 * Add MultiPoint message
 	 * 
 	 * @param message
+	 *            string message
 	 * @param multiPoint
+	 *            multi point
 	 */
 	private static void addMultiPointMessage(StringBuilder message,
 			MultiPoint multiPoint) {
@@ -126,7 +137,9 @@ public class GeometryPrinter {
 	 * Add LineString message
 	 * 
 	 * @param message
+	 *            string message
 	 * @param lineString
+	 *            line string
 	 */
 	private static void addLineStringMessage(StringBuilder message,
 			LineString lineString) {
@@ -142,7 +155,9 @@ public class GeometryPrinter {
 	 * Add MultiLineString message
 	 * 
 	 * @param message
+	 *            string message
 	 * @param multiLineString
+	 *            multi line string
 	 */
 	private static void addMultiLineStringMessage(StringBuilder message,
 			MultiLineString multiLineString) {
@@ -162,7 +177,9 @@ public class GeometryPrinter {
 	 * Add Polygon message
 	 * 
 	 * @param message
+	 *            string message
 	 * @param polygon
+	 *            polygon
 	 */
 	private static void addPolygonMessage(StringBuilder message, Polygon polygon) {
 		message.append("Rings: " + polygon.numRings());
@@ -182,7 +199,9 @@ public class GeometryPrinter {
 	 * Add MultiPolygon message
 	 * 
 	 * @param message
+	 *            string message
 	 * @param multiPolygon
+	 *            multi polygon
 	 */
 	private static void addMultiPolygonMessage(StringBuilder message,
 			MultiPolygon multiPolygon) {
@@ -202,7 +221,9 @@ public class GeometryPrinter {
 	 * Add CompoundCurve message
 	 * 
 	 * @param message
+	 *            string message
 	 * @param compoundCurve
+	 *            compound curve
 	 */
 	private static void addCompoundCurveMessage(StringBuilder message,
 			CompoundCurve compoundCurve) {
@@ -219,10 +240,35 @@ public class GeometryPrinter {
 	}
 
 	/**
+	 * Add CurvePolygon message
+	 * 
+	 * @param message
+	 *            string message
+	 * @param curvePolygon
+	 *            curve polygon
+	 */
+	private static void addCurvePolygonMessage(StringBuilder message,
+			CurvePolygon<Curve> curvePolygon) {
+		message.append("Rings: " + curvePolygon.numRings());
+		List<Curve> rings = curvePolygon.getRings();
+		for (int i = 0; i < rings.size(); i++) {
+			Curve ring = rings.get(i);
+			message.append("\n\n");
+			if (i > 0) {
+				message.append("Hole " + i);
+				message.append("\n");
+			}
+			message.append(getGeometryString(ring));
+		}
+	}
+
+	/**
 	 * Add PolyhedralSurface message
 	 * 
 	 * @param message
+	 *            string message
 	 * @param polyhedralSurface
+	 *            polyhedral surface
 	 */
 	private static void addPolyhedralSurfaceMessage(StringBuilder message,
 			PolyhedralSurface polyhedralSurface) {
