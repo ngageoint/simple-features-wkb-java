@@ -1,17 +1,19 @@
-package mil.nga.wkb.test;
+package mil.nga.sf.wkb.test;
 
 import java.io.IOException;
 import java.nio.ByteOrder;
 
 import junit.framework.TestCase;
-import mil.nga.wkb.geom.Geometry;
-import mil.nga.wkb.geom.GeometryCollection;
-import mil.nga.wkb.geom.LineString;
-import mil.nga.wkb.geom.MultiLineString;
-import mil.nga.wkb.geom.MultiPoint;
-import mil.nga.wkb.geom.MultiPolygon;
-import mil.nga.wkb.geom.Point;
-import mil.nga.wkb.geom.Polygon;
+import mil.nga.sf.Geometry;
+import mil.nga.sf.GeometryCollection;
+import mil.nga.sf.GeometryEnvelope;
+import mil.nga.sf.LineString;
+import mil.nga.sf.MultiLineString;
+import mil.nga.sf.MultiPoint;
+import mil.nga.sf.MultiPolygon;
+import mil.nga.sf.Point;
+import mil.nga.sf.Polygon;
+import mil.nga.sf.util.GeometryEnvelopeBuilder;
 
 import org.junit.Test;
 
@@ -154,6 +156,16 @@ public class WKBTest {
 		WKBTestUtils.compareGeometries(geometry, geometry1);
 		WKBTestUtils.compareGeometries(geometry, geometry2);
 		WKBTestUtils.compareGeometries(geometry1, geometry2);
+
+		GeometryEnvelope envelope = GeometryEnvelopeBuilder
+				.buildEnvelope(geometry);
+		GeometryEnvelope envelope1 = GeometryEnvelopeBuilder
+				.buildEnvelope(geometry1);
+		GeometryEnvelope envelope2 = GeometryEnvelopeBuilder
+				.buildEnvelope(geometry2);
+
+		WKBTestUtils.compareEnvelopes(envelope, envelope1);
+		WKBTestUtils.compareEnvelopes(envelope1, envelope2);
 	}
 
 }

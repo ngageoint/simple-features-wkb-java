@@ -1,32 +1,33 @@
-package mil.nga.wkb.io;
+package mil.nga.sf.wkb;
 
 import java.io.IOException;
 import java.nio.ByteOrder;
 
-import mil.nga.wkb.geom.CircularString;
-import mil.nga.wkb.geom.CompoundCurve;
-import mil.nga.wkb.geom.Curve;
-import mil.nga.wkb.geom.CurvePolygon;
-import mil.nga.wkb.geom.Geometry;
-import mil.nga.wkb.geom.GeometryCollection;
-import mil.nga.wkb.geom.GeometryType;
-import mil.nga.wkb.geom.LineString;
-import mil.nga.wkb.geom.MultiLineString;
-import mil.nga.wkb.geom.MultiPoint;
-import mil.nga.wkb.geom.MultiPolygon;
-import mil.nga.wkb.geom.Point;
-import mil.nga.wkb.geom.Polygon;
-import mil.nga.wkb.geom.PolyhedralSurface;
-import mil.nga.wkb.geom.TIN;
-import mil.nga.wkb.geom.Triangle;
-import mil.nga.wkb.util.WkbException;
+import mil.nga.sf.CircularString;
+import mil.nga.sf.CompoundCurve;
+import mil.nga.sf.Curve;
+import mil.nga.sf.CurvePolygon;
+import mil.nga.sf.Geometry;
+import mil.nga.sf.GeometryCollection;
+import mil.nga.sf.GeometryType;
+import mil.nga.sf.LineString;
+import mil.nga.sf.MultiLineString;
+import mil.nga.sf.MultiPoint;
+import mil.nga.sf.MultiPolygon;
+import mil.nga.sf.Point;
+import mil.nga.sf.Polygon;
+import mil.nga.sf.PolyhedralSurface;
+import mil.nga.sf.TIN;
+import mil.nga.sf.Triangle;
+import mil.nga.sf.util.ByteWriter;
+import mil.nga.sf.util.SFException;
 
 /**
  * Well Known Binary writer
  * 
  * @author osbornb
  */
-public class WkbGeometryWriter {
+public class GeometryWriter {
 
 	/**
 	 * Write a geometry to the byte writer
@@ -44,14 +45,14 @@ public class WkbGeometryWriter {
 		writer.writeByte(byteOrder);
 
 		// Write the geometry type integer
-		writer.writeInt(geometry.getWkbCode());
+		writer.writeInt(GeometryCodes.getCode(geometry));
 
 		GeometryType geometryType = geometry.getGeometryType();
 
 		switch (geometryType) {
 
 		case GEOMETRY:
-			throw new WkbException("Unexpected Geometry Type of "
+			throw new SFException("Unexpected Geometry Type of "
 					+ geometryType.name() + " which is abstract");
 		case POINT:
 			writePoint(writer, (Point) geometry);
@@ -84,16 +85,16 @@ public class WkbGeometryWriter {
 			writeCurvePolygon(writer, (CurvePolygon<?>) geometry);
 			break;
 		case MULTICURVE:
-			throw new WkbException("Unexpected Geometry Type of "
+			throw new SFException("Unexpected Geometry Type of "
 					+ geometryType.name() + " which is abstract");
 		case MULTISURFACE:
-			throw new WkbException("Unexpected Geometry Type of "
+			throw new SFException("Unexpected Geometry Type of "
 					+ geometryType.name() + " which is abstract");
 		case CURVE:
-			throw new WkbException("Unexpected Geometry Type of "
+			throw new SFException("Unexpected Geometry Type of "
 					+ geometryType.name() + " which is abstract");
 		case SURFACE:
-			throw new WkbException("Unexpected Geometry Type of "
+			throw new SFException("Unexpected Geometry Type of "
 					+ geometryType.name() + " which is abstract");
 		case POLYHEDRALSURFACE:
 			writePolyhedralSurface(writer, (PolyhedralSurface) geometry);
@@ -105,7 +106,7 @@ public class WkbGeometryWriter {
 			writeTriangle(writer, (Triangle) geometry);
 			break;
 		default:
-			throw new WkbException("Geometry Type not supported: "
+			throw new SFException("Geometry Type not supported: "
 					+ geometryType);
 		}
 

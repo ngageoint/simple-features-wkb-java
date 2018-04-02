@@ -1,29 +1,30 @@
-package mil.nga.wkb.test;
+package mil.nga.sf.wkb.test;
 
 import java.io.IOException;
 import java.nio.ByteOrder;
 
 import junit.framework.TestCase;
-import mil.nga.wkb.geom.CircularString;
-import mil.nga.wkb.geom.CompoundCurve;
-import mil.nga.wkb.geom.CurvePolygon;
-import mil.nga.wkb.geom.Geometry;
-import mil.nga.wkb.geom.GeometryCollection;
-import mil.nga.wkb.geom.GeometryEnvelope;
-import mil.nga.wkb.geom.GeometryType;
-import mil.nga.wkb.geom.LineString;
-import mil.nga.wkb.geom.MultiLineString;
-import mil.nga.wkb.geom.MultiPoint;
-import mil.nga.wkb.geom.MultiPolygon;
-import mil.nga.wkb.geom.Point;
-import mil.nga.wkb.geom.Polygon;
-import mil.nga.wkb.geom.PolyhedralSurface;
-import mil.nga.wkb.geom.TIN;
-import mil.nga.wkb.geom.Triangle;
-import mil.nga.wkb.io.ByteReader;
-import mil.nga.wkb.io.ByteWriter;
-import mil.nga.wkb.io.WkbGeometryReader;
-import mil.nga.wkb.io.WkbGeometryWriter;
+import mil.nga.sf.CircularString;
+import mil.nga.sf.CompoundCurve;
+import mil.nga.sf.CurvePolygon;
+import mil.nga.sf.Geometry;
+import mil.nga.sf.GeometryCollection;
+import mil.nga.sf.GeometryEnvelope;
+import mil.nga.sf.GeometryType;
+import mil.nga.sf.LineString;
+import mil.nga.sf.MultiLineString;
+import mil.nga.sf.MultiPoint;
+import mil.nga.sf.MultiPolygon;
+import mil.nga.sf.Point;
+import mil.nga.sf.Polygon;
+import mil.nga.sf.PolyhedralSurface;
+import mil.nga.sf.TIN;
+import mil.nga.sf.Triangle;
+import mil.nga.sf.util.ByteReader;
+import mil.nga.sf.util.ByteWriter;
+import mil.nga.sf.wkb.GeometryCodes;
+import mil.nga.sf.wkb.GeometryReader;
+import mil.nga.sf.wkb.GeometryWriter;
 
 /**
  * WKB test utils
@@ -36,7 +37,9 @@ public class WKBTestUtils {
 	 * Compare two geometry envelopes and verify they are equal
 	 * 
 	 * @param expected
+	 *            expected geometry envelope
 	 * @param actual
+	 *            actual geometry envelope
 	 */
 	public static void compareEnvelopes(GeometryEnvelope expected,
 			GeometryEnvelope actual) {
@@ -64,7 +67,9 @@ public class WKBTestUtils {
 	 * Compare two geometries and verify they are equal
 	 * 
 	 * @param expected
+	 *            expected geometry
 	 * @param actual
+	 *            actual geometry
 	 */
 	public static void compareGeometries(Geometry expected, Geometry actual) {
 		if (expected == null) {
@@ -147,7 +152,9 @@ public class WKBTestUtils {
 	 * Compare to the base attributes of two geometries
 	 * 
 	 * @param expected
+	 *            expected geometry
 	 * @param actual
+	 *            actual geometry
 	 */
 	public static void compareBaseGeometryAttributes(Geometry expected,
 			Geometry actual) {
@@ -155,14 +162,23 @@ public class WKBTestUtils {
 				actual.getGeometryType());
 		TestCase.assertEquals(expected.hasZ(), actual.hasZ());
 		TestCase.assertEquals(expected.hasM(), actual.hasM());
-		TestCase.assertEquals(expected.getWkbCode(), actual.getWkbCode());
+		TestCase.assertEquals(GeometryCodes.getCode(expected),
+				GeometryCodes.getCode(actual));
+		TestCase.assertEquals(expected.isEmpty(), actual.isEmpty());
+		TestCase.assertEquals(expected.getDimension(), actual.getDimension());
+		TestCase.assertEquals(expected.is3D(), actual.is3D());
+		TestCase.assertEquals(expected.isMeasured(), actual.isMeasured());
+		TestCase.assertEquals(expected.getCentroid(), actual.getCentroid());
+		TestCase.assertEquals(expected.getEnvelope(), actual.getEnvelope());
 	}
 
 	/**
 	 * Compare the two points for equality
 	 * 
 	 * @param expected
+	 *            expected point
 	 * @param actual
+	 *            actual point
 	 */
 	public static void comparePoint(Point expected, Point actual) {
 
@@ -177,7 +193,9 @@ public class WKBTestUtils {
 	 * Compare the two line strings for equality
 	 * 
 	 * @param expected
+	 *            expected line string
 	 * @param actual
+	 *            actual line string
 	 */
 	public static void compareLineString(LineString expected, LineString actual) {
 
@@ -192,7 +210,9 @@ public class WKBTestUtils {
 	 * Compare the two polygons for equality
 	 * 
 	 * @param expected
+	 *            expected polygon
 	 * @param actual
+	 *            actual polygon
 	 */
 	public static void comparePolygon(Polygon expected, Polygon actual) {
 
@@ -208,7 +228,9 @@ public class WKBTestUtils {
 	 * Compare the two multi points for equality
 	 * 
 	 * @param expected
+	 *            expected multi point
 	 * @param actual
+	 *            actual multi point
 	 */
 	public static void compareMultiPoint(MultiPoint expected, MultiPoint actual) {
 
@@ -223,7 +245,9 @@ public class WKBTestUtils {
 	 * Compare the two multi line strings for equality
 	 * 
 	 * @param expected
+	 *            expected multi line string
 	 * @param actual
+	 *            actual multi line string
 	 */
 	public static void compareMultiLineString(MultiLineString expected,
 			MultiLineString actual) {
@@ -241,7 +265,9 @@ public class WKBTestUtils {
 	 * Compare the two multi polygons for equality
 	 * 
 	 * @param expected
+	 *            expected multi polygon
 	 * @param actual
+	 *            actual multi polygon
 	 */
 	public static void compareMultiPolygon(MultiPolygon expected,
 			MultiPolygon actual) {
@@ -258,7 +284,9 @@ public class WKBTestUtils {
 	 * Compare the two geometry collections for equality
 	 * 
 	 * @param expected
+	 *            expected geometry collection
 	 * @param actual
+	 *            actual geometry collection
 	 */
 	public static void compareGeometryCollection(
 			GeometryCollection<?> expected, GeometryCollection<?> actual) {
@@ -275,7 +303,9 @@ public class WKBTestUtils {
 	 * Compare the two circular strings for equality
 	 * 
 	 * @param expected
+	 *            expected circular string
 	 * @param actual
+	 *            actual circular string
 	 */
 	public static void compareCircularString(CircularString expected,
 			CircularString actual) {
@@ -291,7 +321,9 @@ public class WKBTestUtils {
 	 * Compare the two compound curves for equality
 	 * 
 	 * @param expected
+	 *            expected compound curve
 	 * @param actual
+	 *            actual compound curve
 	 */
 	public static void compareCompoundCurve(CompoundCurve expected,
 			CompoundCurve actual) {
@@ -309,7 +341,9 @@ public class WKBTestUtils {
 	 * Compare the two curve polygons for equality
 	 * 
 	 * @param expected
+	 *            expected curve polygon
 	 * @param actual
+	 *            actual curve polygon
 	 */
 	public static void compareCurvePolygon(CurvePolygon<?> expected,
 			CurvePolygon<?> actual) {
@@ -326,7 +360,9 @@ public class WKBTestUtils {
 	 * Compare the two polyhedral surfaces for equality
 	 * 
 	 * @param expected
+	 *            expected polyhedral surface
 	 * @param actual
+	 *            actual polyhedral surface
 	 */
 	public static void comparePolyhedralSurface(PolyhedralSurface expected,
 			PolyhedralSurface actual) {
@@ -343,7 +379,9 @@ public class WKBTestUtils {
 	 * Compare the two TINs for equality
 	 * 
 	 * @param expected
+	 *            expected TIN
 	 * @param actual
+	 *            actual TIN
 	 */
 	public static void compareTIN(TIN expected, TIN actual) {
 
@@ -359,7 +397,9 @@ public class WKBTestUtils {
 	 * Compare the two triangles for equality
 	 * 
 	 * @param expected
+	 *            expected triangle
 	 * @param actual
+	 *            actual triangle
 	 */
 	public static void compareTriangle(Triangle expected, Triangle actual) {
 
@@ -375,7 +415,9 @@ public class WKBTestUtils {
 	 * Write and compare the bytes of the geometries
 	 * 
 	 * @param expected
+	 *            expected geometry
 	 * @param actual
+	 *            actual geometry
 	 * @throws IOException
 	 */
 	public static void compareGeometryBytes(Geometry expected, Geometry actual)
@@ -387,8 +429,11 @@ public class WKBTestUtils {
 	 * Write and compare the bytes of the geometries using the byte order
 	 * 
 	 * @param expected
+	 *            expected geometry
 	 * @param actual
+	 *            actual geometry
 	 * @param byteOrder
+	 *            byte order
 	 * @throws IOException
 	 */
 	public static void compareGeometryBytes(Geometry expected, Geometry actual,
@@ -404,7 +449,9 @@ public class WKBTestUtils {
 	 * Read and compare the byte geometries
 	 * 
 	 * @param expected
+	 *            expected bytes
 	 * @param actual
+	 *            actual bytes
 	 * @throws IOException
 	 */
 	public static void compareByteGeometries(byte[] expected, byte[] actual)
@@ -416,8 +463,11 @@ public class WKBTestUtils {
 	 * Read and compare the byte geometries using the byte order
 	 * 
 	 * @param expected
+	 *            expected bytes
 	 * @param actual
+	 *            actual bytes
 	 * @param byteOrder
+	 *            byte order
 	 * @throws IOException
 	 */
 	public static void compareByteGeometries(byte[] expected, byte[] actual,
@@ -433,7 +483,8 @@ public class WKBTestUtils {
 	 * Write the geometry to bytes as big endian
 	 * 
 	 * @param geometry
-	 * @return
+	 *            geometry
+	 * @return bytes
 	 * @throws IOException
 	 */
 	public static byte[] writeBytes(Geometry geometry) throws IOException {
@@ -444,15 +495,17 @@ public class WKBTestUtils {
 	 * Write the geometry to bytes in the provided byte order
 	 * 
 	 * @param geometry
+	 *            geometry
 	 * @param byteOrder
-	 * @return
+	 *            byte order
+	 * @return bytes
 	 * @throws IOException
 	 */
 	public static byte[] writeBytes(Geometry geometry, ByteOrder byteOrder)
 			throws IOException {
 		ByteWriter writer = new ByteWriter();
 		writer.setByteOrder(byteOrder);
-		WkbGeometryWriter.writeGeometry(writer, geometry);
+		GeometryWriter.writeGeometry(writer, geometry);
 		byte[] bytes = writer.getBytes();
 		writer.close();
 		return bytes;
@@ -462,7 +515,8 @@ public class WKBTestUtils {
 	 * Read a geometry from bytes as big endian
 	 * 
 	 * @param bytes
-	 * @return
+	 *            bytes
+	 * @return geometry
 	 */
 	public static Geometry readGeometry(byte[] bytes) {
 		return readGeometry(bytes, ByteOrder.BIG_ENDIAN);
@@ -472,13 +526,15 @@ public class WKBTestUtils {
 	 * Read a geometry from bytes as the provided byte order
 	 * 
 	 * @param bytes
+	 *            bytes
 	 * @param byteOrder
-	 * @return
+	 *            byte order
+	 * @return geometry
 	 */
 	public static Geometry readGeometry(byte[] bytes, ByteOrder byteOrder) {
 		ByteReader reader = new ByteReader(bytes);
 		reader.setByteOrder(byteOrder);
-		Geometry geometry = WkbGeometryReader.readGeometry(reader);
+		Geometry geometry = GeometryReader.readGeometry(reader);
 		return geometry;
 	}
 
@@ -486,7 +542,9 @@ public class WKBTestUtils {
 	 * Compare two byte arrays and verify they are equal
 	 * 
 	 * @param expected
+	 *            expected bytes
 	 * @param actual
+	 *            actual bytes
 	 */
 	public static void compareByteArrays(byte[] expected, byte[] actual) {
 
@@ -502,7 +560,9 @@ public class WKBTestUtils {
 	 * Compare two byte arrays and verify they are equal
 	 * 
 	 * @param expected
+	 *            expected bytes
 	 * @param actual
+	 *            actual bytes
 	 * @return true if equal
 	 */
 	public static boolean equalByteArrays(byte[] expected, byte[] actual) {
@@ -520,8 +580,10 @@ public class WKBTestUtils {
 	 * Create a random point
 	 * 
 	 * @param hasZ
+	 *            has z
 	 * @param hasM
-	 * @return
+	 *            has m
+	 * @return point
 	 */
 	public static Point createPoint(boolean hasZ, boolean hasM) {
 
@@ -547,8 +609,10 @@ public class WKBTestUtils {
 	 * Create a random line string
 	 * 
 	 * @param hasZ
+	 *            has z
 	 * @param hasM
-	 * @return
+	 *            has m
+	 * @return line string
 	 */
 	public static LineString createLineString(boolean hasZ, boolean hasM) {
 		return createLineString(hasZ, hasM, false);
@@ -558,9 +622,12 @@ public class WKBTestUtils {
 	 * Create a random line string
 	 * 
 	 * @param hasZ
+	 *            has z
 	 * @param hasM
+	 *            has m
 	 * @param ring
-	 * @return
+	 *            ring
+	 * @return line string
 	 */
 	public static LineString createLineString(boolean hasZ, boolean hasM,
 			boolean ring) {
@@ -584,8 +651,10 @@ public class WKBTestUtils {
 	 * Create a random polygon
 	 * 
 	 * @param hasZ
+	 *            has z
 	 * @param hasM
-	 * @return
+	 *            has m
+	 * @return polygon
 	 */
 	public static Polygon createPolygon(boolean hasZ, boolean hasM) {
 
@@ -604,8 +673,10 @@ public class WKBTestUtils {
 	 * Create a random multi point
 	 * 
 	 * @param hasZ
+	 *            has z
 	 * @param hasM
-	 * @return
+	 *            has m
+	 * @return multi point
 	 */
 	public static MultiPoint createMultiPoint(boolean hasZ, boolean hasM) {
 
@@ -624,8 +695,10 @@ public class WKBTestUtils {
 	 * Create a random multi line string
 	 * 
 	 * @param hasZ
+	 *            has z
 	 * @param hasM
-	 * @return
+	 *            has m
+	 * @return multi line string
 	 */
 	public static MultiLineString createMultiLineString(boolean hasZ,
 			boolean hasM) {
@@ -645,8 +718,10 @@ public class WKBTestUtils {
 	 * Create a random multi polygon
 	 * 
 	 * @param hasZ
+	 *            has z
 	 * @param hasM
-	 * @return
+	 *            has m
+	 * @return multi polygon
 	 */
 	public static MultiPolygon createMultiPolygon(boolean hasZ, boolean hasM) {
 
@@ -665,8 +740,10 @@ public class WKBTestUtils {
 	 * Create a random geometry collection
 	 * 
 	 * @param hasZ
+	 *            has z
 	 * @param hasM
-	 * @return
+	 *            has m
+	 * @return geometry collection
 	 */
 	public static GeometryCollection<Geometry> createGeometryCollection(
 			boolean hasZ, boolean hasM) {
@@ -711,7 +788,7 @@ public class WKBTestUtils {
 	/**
 	 * Randomly return true or false
 	 * 
-	 * @return
+	 * @return true or false
 	 */
 	public static boolean coinFlip() {
 		return Math.random() < 0.5;

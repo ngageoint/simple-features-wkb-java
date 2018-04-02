@@ -1,13 +1,13 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
-	<groupId>mil.nga</groupId>
-	<artifactId>wkb</artifactId>
-	<version>1.0.6</version>
+	<groupId>mil.nga.sf</groupId>
+	<artifactId>sf-wkb</artifactId>
+	<version>2.0.0</version>
 	<packaging>jar</packaging>
-	<name>Well-Known Binary</name>
+	<name>Simple Features Well-Known Binary</name>
 	<url>https://github.com/ngageoint/geopackage-wkb-java</url>
-	<description>Library for writing and reading Well-Known Binary Geometries to and from bytes</description>
+	<description>Library for writing and reading Simple Feature Geometries to and from Well-Known Binary</description>
 	<scm>
 		<url>git@github.com:ngageoint/geopackage-wkb-java.git</url>
 		<connection>scm:git:git@github.com:ngageoint/geopackage-wkb-java.git</connection>
@@ -42,6 +42,11 @@
 		<maven.compiler.target>1.7</maven.compiler.target>
 	</properties>
 	<dependencies>
+		<dependency>
+			<groupId>mil.nga</groupId>
+			<artifactId>sf</artifactId>
+			<version>2.0.0</version>
+		</dependency>
 		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>

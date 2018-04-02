@@ -1,31 +1,32 @@
-package mil.nga.wkb.io;
+package mil.nga.sf.wkb;
 
 import java.nio.ByteOrder;
 
-import mil.nga.wkb.geom.CircularString;
-import mil.nga.wkb.geom.CompoundCurve;
-import mil.nga.wkb.geom.Curve;
-import mil.nga.wkb.geom.CurvePolygon;
-import mil.nga.wkb.geom.Geometry;
-import mil.nga.wkb.geom.GeometryCollection;
-import mil.nga.wkb.geom.GeometryType;
-import mil.nga.wkb.geom.LineString;
-import mil.nga.wkb.geom.MultiLineString;
-import mil.nga.wkb.geom.MultiPoint;
-import mil.nga.wkb.geom.MultiPolygon;
-import mil.nga.wkb.geom.Point;
-import mil.nga.wkb.geom.Polygon;
-import mil.nga.wkb.geom.PolyhedralSurface;
-import mil.nga.wkb.geom.TIN;
-import mil.nga.wkb.geom.Triangle;
-import mil.nga.wkb.util.WkbException;
+import mil.nga.sf.CircularString;
+import mil.nga.sf.CompoundCurve;
+import mil.nga.sf.Curve;
+import mil.nga.sf.CurvePolygon;
+import mil.nga.sf.Geometry;
+import mil.nga.sf.GeometryCollection;
+import mil.nga.sf.GeometryType;
+import mil.nga.sf.LineString;
+import mil.nga.sf.MultiLineString;
+import mil.nga.sf.MultiPoint;
+import mil.nga.sf.MultiPolygon;
+import mil.nga.sf.Point;
+import mil.nga.sf.Polygon;
+import mil.nga.sf.PolyhedralSurface;
+import mil.nga.sf.TIN;
+import mil.nga.sf.Triangle;
+import mil.nga.sf.util.ByteReader;
+import mil.nga.sf.util.SFException;
 
 /**
  * Well Known Binary reader
  * 
  * @author osbornb
  */
-public class WkbGeometryReader {
+public class GeometryReader {
 
 	/**
 	 * Read a geometry from the byte reader
@@ -56,45 +57,23 @@ public class WkbGeometryReader {
 		reader.setByteOrder(byteOrder);
 
 		// Read the geometry type integer
-		int geometryTypeWkbCode = reader.readInt();
+		int geometryTypeCode = reader.readInt();
 
-		// Look at the last 2 digits to find the geometry type code (1 - 14)
-		int geometryTypeCode = geometryTypeWkbCode % 1000;
-
-		// Look at the first digit to find the options (z when 1 or 3, m when 2
-		// or 3)
-		int geometryTypeMode = geometryTypeWkbCode / 1000;
+		// Determine the geometry type
+		GeometryType geometryType = GeometryCodes
+				.getGeometryType(geometryTypeCode);
 
 		// Determine if the geometry has a z (3d) or m (linear referencing
 		// system) value
-		boolean hasZ = false;
-		boolean hasM = false;
-		switch (geometryTypeMode) {
-		case 0:
-			break;
-
-		case 1:
-			hasZ = true;
-			break;
-
-		case 2:
-			hasM = true;
-			break;
-
-		case 3:
-			hasZ = true;
-			hasM = true;
-			break;
-		}
-
-		GeometryType geometryType = GeometryType.fromCode(geometryTypeCode);
+		boolean hasZ = GeometryCodes.hasZ(geometryTypeCode);
+		boolean hasM = GeometryCodes.hasM(geometryTypeCode);
 
 		Geometry geometry = null;
 
 		switch (geometryType) {
 
 		case GEOMETRY:
-			throw new WkbException("Unexpected Geometry Type of "
+			throw new SFException("Unexpected Geometry Type of "
 					+ geometryType.name() + " which is abstract");
 		case POINT:
 			geometry = readPoint(reader, hasZ, hasM);
@@ -127,16 +106,16 @@ public class WkbGeometryReader {
 			geometry = readCurvePolygon(reader, hasZ, hasM);
 			break;
 		case MULTICURVE:
-			throw new WkbException("Unexpected Geometry Type of "
+			throw new SFException("Unexpected Geometry Type of "
 					+ geometryType.name() + " which is abstract");
 		case MULTISURFACE:
-			throw new WkbException("Unexpected Geometry Type of "
+			throw new SFException("Unexpected Geometry Type of "
 					+ geometryType.name() + " which is abstract");
 		case CURVE:
-			throw new WkbException("Unexpected Geometry Type of "
+			throw new SFException("Unexpected Geometry Type of "
 					+ geometryType.name() + " which is abstract");
 		case SURFACE:
-			throw new WkbException("Unexpected Geometry Type of "
+			throw new SFException("Unexpected Geometry Type of "
 					+ geometryType.name() + " which is abstract");
 		case POLYHEDRALSURFACE:
 			geometry = readPolyhedralSurface(reader, hasZ, hasM);
@@ -148,14 +127,14 @@ public class WkbGeometryReader {
 			geometry = readTriangle(reader, hasZ, hasM);
 			break;
 		default:
-			throw new WkbException("Geometry Type not supported: "
+			throw new SFException("Geometry Type not supported: "
 					+ geometryType);
 		}
 
 		// If there is an expected type, verify the geometry if of that type
 		if (expectedType != null && geometry != null
 				&& !expectedType.isAssignableFrom(geometry.getClass())) {
-			throw new WkbException("Unexpected Geometry Type. Expected: "
+			throw new SFException("Unexpected Geometry Type. Expected: "
 					+ expectedType.getSimpleName() + ", Actual: "
 					+ geometry.getClass().getSimpleName());
 		}
@@ -165,7 +144,7 @@ public class WkbGeometryReader {
 
 		@SuppressWarnings("unchecked")
 		T result = (T) geometry;
-		
+
 		return result;
 	}
 
