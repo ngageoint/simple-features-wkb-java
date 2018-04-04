@@ -146,6 +146,8 @@ public class WKBTestUtils {
 						+ geometryType);
 			}
 		}
+		
+		TestCase.assertEquals(expected, actual);
 	}
 
 	/**
