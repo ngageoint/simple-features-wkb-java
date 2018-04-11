@@ -106,11 +106,11 @@ public class GeometryReader {
 			geometry = readCurvePolygon(reader, hasZ, hasM);
 			break;
 		case MULTICURVE:
-			throw new SFException("Unexpected Geometry Type of "
-					+ geometryType.name() + " which is abstract");
+			geometry = readGeometryCollection(reader, hasZ, hasM);
+			break;
 		case MULTISURFACE:
-			throw new SFException("Unexpected Geometry Type of "
-					+ geometryType.name() + " which is abstract");
+			geometry = readGeometryCollection(reader, hasZ, hasM);
+			break;
 		case CURVE:
 			throw new SFException("Unexpected Geometry Type of "
 					+ geometryType.name() + " which is abstract");
@@ -266,7 +266,6 @@ public class GeometryReader {
 		for (int i = 0; i < numLineStrings; i++) {
 			LineString lineString = readGeometry(reader, LineString.class);
 			multiLineString.addLineString(lineString);
-
 		}
 
 		return multiLineString;
