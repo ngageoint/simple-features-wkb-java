@@ -127,11 +127,11 @@ public class WkbGeometryReader {
 			geometry = readCurvePolygon(reader, hasZ, hasM);
 			break;
 		case MULTICURVE:
-			throw new WkbException("Unexpected Geometry Type of "
-					+ geometryType.name() + " which is abstract");
+			geometry = readGeometryCollection(reader, hasZ, hasM);
+			break;
 		case MULTISURFACE:
-			throw new WkbException("Unexpected Geometry Type of "
-					+ geometryType.name() + " which is abstract");
+			geometry = readGeometryCollection(reader, hasZ, hasM);
+			break;
 		case CURVE:
 			throw new WkbException("Unexpected Geometry Type of "
 					+ geometryType.name() + " which is abstract");
@@ -165,7 +165,7 @@ public class WkbGeometryReader {
 
 		@SuppressWarnings("unchecked")
 		T result = (T) geometry;
-		
+
 		return result;
 	}
 
