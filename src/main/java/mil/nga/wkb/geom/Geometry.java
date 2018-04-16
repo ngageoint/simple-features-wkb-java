@@ -88,4 +88,39 @@ public abstract class Geometry {
 	 */
 	public abstract Geometry copy();
 
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result
+				+ ((geometryType == null) ? 0 : geometryType.hashCode());
+		result = prime * result + (hasM ? 1231 : 1237);
+		result = prime * result + (hasZ ? 1231 : 1237);
+		return result;
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		Geometry other = (Geometry) obj;
+		if (geometryType != other.geometryType)
+			return false;
+		if (hasM != other.hasM)
+			return false;
+		if (hasZ != other.hasZ)
+			return false;
+		return true;
+	}
+
 }

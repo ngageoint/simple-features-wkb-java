@@ -110,4 +110,36 @@ public class CurvePolygon<T extends Curve> extends Surface {
 		return new CurvePolygon<T>(this);
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = super.hashCode();
+		result = prime * result + ((rings == null) ? 0 : rings.hashCode());
+		return result;
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (!super.equals(obj))
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		@SuppressWarnings("unchecked")
+		CurvePolygon<T> other = (CurvePolygon<T>) obj;
+		if (rings == null) {
+			if (other.rings != null)
+				return false;
+		} else if (!rings.equals(other.rings))
+			return false;
+		return true;
+	}
+	
 }

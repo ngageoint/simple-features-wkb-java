@@ -48,46 +48,14 @@ public class WkbGeometryReader {
 	public static <T extends Geometry> T readGeometry(ByteReader reader,
 			Class<T> expectedType) {
 
-		// Read the single byte order byte
-		byte byteOrderValue = reader.readByte();
-		ByteOrder byteOrder = byteOrderValue == 0 ? ByteOrder.BIG_ENDIAN
-				: ByteOrder.LITTLE_ENDIAN;
 		ByteOrder originalByteOrder = reader.getByteOrder();
-		reader.setByteOrder(byteOrder);
 
-		// Read the geometry type integer
-		int geometryTypeWkbCode = reader.readInt();
+		// Read the byte order and geometry type
+		GeometryTypeInfo geometryTypeInfo = readGeometryType(reader);
 
-		// Look at the last 2 digits to find the geometry type code (1 - 14)
-		int geometryTypeCode = geometryTypeWkbCode % 1000;
-
-		// Look at the first digit to find the options (z when 1 or 3, m when 2
-		// or 3)
-		int geometryTypeMode = geometryTypeWkbCode / 1000;
-
-		// Determine if the geometry has a z (3d) or m (linear referencing
-		// system) value
-		boolean hasZ = false;
-		boolean hasM = false;
-		switch (geometryTypeMode) {
-		case 0:
-			break;
-
-		case 1:
-			hasZ = true;
-			break;
-
-		case 2:
-			hasM = true;
-			break;
-
-		case 3:
-			hasZ = true;
-			hasM = true;
-			break;
-		}
-
-		GeometryType geometryType = GeometryType.fromCode(geometryTypeCode);
+		GeometryType geometryType = geometryTypeInfo.getGeometryType();
+		boolean hasZ = geometryTypeInfo.hasZ();
+		boolean hasM = geometryTypeInfo.hasM();
 
 		Geometry geometry = null;
 
@@ -167,6 +135,61 @@ public class WkbGeometryReader {
 		T result = (T) geometry;
 
 		return result;
+	}
+
+	/**
+	 * Read the geometry type info
+	 * 
+	 * @param reader
+	 *            byte reader
+	 * @return geometry type info
+	 */
+	public static GeometryTypeInfo readGeometryType(ByteReader reader) {
+
+		// Read the single byte order byte
+		byte byteOrderValue = reader.readByte();
+		ByteOrder byteOrder = byteOrderValue == 0 ? ByteOrder.BIG_ENDIAN
+				: ByteOrder.LITTLE_ENDIAN;
+		reader.setByteOrder(byteOrder);
+
+		// Read the geometry type integer
+		int geometryTypeWkbCode = reader.readInt();
+
+		// Look at the last 2 digits to find the geometry type code (1 - 14)
+		int geometryTypeCode = geometryTypeWkbCode % 1000;
+
+		// Look at the first digit to find the options (z when 1 or 3, m when 2
+		// or 3)
+		int geometryTypeMode = geometryTypeWkbCode / 1000;
+
+		// Determine if the geometry has a z (3d) or m (linear referencing
+		// system) value
+		boolean hasZ = false;
+		boolean hasM = false;
+		switch (geometryTypeMode) {
+		case 0:
+			break;
+
+		case 1:
+			hasZ = true;
+			break;
+
+		case 2:
+			hasM = true;
+			break;
+
+		case 3:
+			hasZ = true;
+			hasM = true;
+			break;
+		}
+
+		GeometryType geometryType = GeometryType.fromCode(geometryTypeCode);
+
+		GeometryTypeInfo geometryInfo = new GeometryTypeInfo(geometryTypeCode,
+				geometryType, hasZ, hasM);
+
+		return geometryInfo;
 	}
 
 	/**

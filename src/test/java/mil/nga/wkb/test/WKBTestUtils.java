@@ -6,6 +6,7 @@ import java.nio.ByteOrder;
 import junit.framework.TestCase;
 import mil.nga.wkb.geom.CircularString;
 import mil.nga.wkb.geom.CompoundCurve;
+import mil.nga.wkb.geom.Curve;
 import mil.nga.wkb.geom.CurvePolygon;
 import mil.nga.wkb.geom.Geometry;
 import mil.nga.wkb.geom.GeometryCollection;
@@ -22,6 +23,7 @@ import mil.nga.wkb.geom.TIN;
 import mil.nga.wkb.geom.Triangle;
 import mil.nga.wkb.io.ByteReader;
 import mil.nga.wkb.io.ByteWriter;
+import mil.nga.wkb.io.GeometryTypeInfo;
 import mil.nga.wkb.io.WkbGeometryReader;
 import mil.nga.wkb.io.WkbGeometryWriter;
 
@@ -476,9 +478,30 @@ public class WKBTestUtils {
 	 * @return
 	 */
 	public static Geometry readGeometry(byte[] bytes, ByteOrder byteOrder) {
+
 		ByteReader reader = new ByteReader(bytes);
 		reader.setByteOrder(byteOrder);
 		Geometry geometry = WkbGeometryReader.readGeometry(reader);
+
+		ByteReader reader2 = new ByteReader(bytes);
+		reader2.setByteOrder(byteOrder);
+		GeometryTypeInfo geometryTypeInfo = WkbGeometryReader
+				.readGeometryType(reader2);
+		// TestCase.assertEquals(geometryTypeInfo.getGeometryType(),
+		// GeometryCodes
+		// .getGeometryType(geometryTypeInfo.getGeometryTypeCode()));
+		GeometryType expectedGeometryType = geometryTypeInfo.getGeometryType();
+		switch (expectedGeometryType) {
+		case MULTICURVE:
+		case MULTISURFACE:
+			expectedGeometryType = GeometryType.GEOMETRYCOLLECTION;
+			break;
+		default:
+		}
+		TestCase.assertEquals(expectedGeometryType, geometry.getGeometryType());
+		TestCase.assertEquals(geometryTypeInfo.hasZ(), geometry.hasZ());
+		TestCase.assertEquals(geometryTypeInfo.hasM(), geometry.hasM());
+
 		return geometry;
 	}
 
@@ -706,6 +729,69 @@ public class WKBTestUtils {
 		}
 
 		return geometryCollection;
+	}
+
+	/**
+	 * Create a random compound curve
+	 * 
+	 * @param hasZ
+	 * @param hasM
+	 * @return compound curve
+	 */
+	public static CompoundCurve createCompoundCurve(boolean hasZ, boolean hasM) {
+		return createCompoundCurve(hasZ, hasM, false);
+	}
+
+	/**
+	 * Create a random compound curve
+	 * 
+	 * @param hasZ
+	 * @param hasM
+	 * @param ring
+	 * @return compound curve
+	 */
+	public static CompoundCurve createCompoundCurve(boolean hasZ, boolean hasM,
+			boolean ring) {
+
+		CompoundCurve compoundCurve = new CompoundCurve(hasZ, hasM);
+
+		int num = 2 + ((int) (Math.random() * 9));
+
+		for (int i = 0; i < num; i++) {
+			compoundCurve.addLineString(createLineString(hasZ, hasM));
+		}
+
+		if (ring) {
+			compoundCurve
+					.getLineStrings()
+					.get(num - 1)
+					.addPoint(
+							compoundCurve.getLineStrings().get(0).getPoints()
+									.get(0));
+		}
+
+		return compoundCurve;
+	}
+
+	/**
+	 * Create a random curve polygon
+	 * 
+	 * @param hasZ
+	 * @param hasM
+	 * @return polygon
+	 */
+	public static CurvePolygon<Curve> createCurvePolygon(boolean hasZ,
+			boolean hasM) {
+
+		CurvePolygon<Curve> curvePolygon = new CurvePolygon<>(hasZ, hasM);
+
+		int num = 1 + ((int) (Math.random() * 5));
+
+		for (int i = 0; i < num; i++) {
+			curvePolygon.addRing(createCompoundCurve(hasZ, hasM, true));
+		}
+
+		return curvePolygon;
 	}
 
 	/**

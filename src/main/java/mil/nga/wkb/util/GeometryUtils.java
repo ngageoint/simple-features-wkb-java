@@ -1093,4 +1093,40 @@ public class GeometryUtils {
 		return onPath;
 	}
 
+	/**
+	 * Determine if the geometries contain a Z value
+	 * 
+	 * @param geometries
+	 *            list of geometries
+	 * @return true if has z
+	 */
+	public static <T extends Geometry> boolean hasZ(List<T> geometries) {
+		boolean hasZ = false;
+		for (Geometry geometry : geometries) {
+			if (geometry.hasZ()) {
+				hasZ = true;
+				break;
+			}
+		}
+		return hasZ;
+	}
+
+	/**
+	 * Determine if the geometries contain a M value
+	 * 
+	 * @param geometries
+	 *            list of geometries
+	 * @return true if has m
+	 */
+	public static <T extends Geometry> boolean hasM(List<T> geometries) {
+		boolean hasM = false;
+		for (Geometry geometry : geometries) {
+			if (geometry.hasM()) {
+				hasM = true;
+				break;
+			}
+		}
+		return hasM;
+	}
+
 }

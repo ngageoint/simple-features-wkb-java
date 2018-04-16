@@ -285,4 +285,80 @@ public class GeometryEnvelope {
 		this.maxM = maxM;
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + (hasM ? 1231 : 1237);
+		result = prime * result + (hasZ ? 1231 : 1237);
+		result = prime * result + ((maxM == null) ? 0 : maxM.hashCode());
+		long temp;
+		temp = Double.doubleToLongBits(maxX);
+		result = prime * result + (int) (temp ^ (temp >>> 32));
+		temp = Double.doubleToLongBits(maxY);
+		result = prime * result + (int) (temp ^ (temp >>> 32));
+		result = prime * result + ((maxZ == null) ? 0 : maxZ.hashCode());
+		result = prime * result + ((minM == null) ? 0 : minM.hashCode());
+		temp = Double.doubleToLongBits(minX);
+		result = prime * result + (int) (temp ^ (temp >>> 32));
+		temp = Double.doubleToLongBits(minY);
+		result = prime * result + (int) (temp ^ (temp >>> 32));
+		result = prime * result + ((minZ == null) ? 0 : minZ.hashCode());
+		return result;
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		GeometryEnvelope other = (GeometryEnvelope) obj;
+		if (hasM != other.hasM)
+			return false;
+		if (hasZ != other.hasZ)
+			return false;
+		if (maxM == null) {
+			if (other.maxM != null)
+				return false;
+		} else if (!maxM.equals(other.maxM))
+			return false;
+		if (Double.doubleToLongBits(maxX) != Double
+				.doubleToLongBits(other.maxX))
+			return false;
+		if (Double.doubleToLongBits(maxY) != Double
+				.doubleToLongBits(other.maxY))
+			return false;
+		if (maxZ == null) {
+			if (other.maxZ != null)
+				return false;
+		} else if (!maxZ.equals(other.maxZ))
+			return false;
+		if (minM == null) {
+			if (other.minM != null)
+				return false;
+		} else if (!minM.equals(other.minM))
+			return false;
+		if (Double.doubleToLongBits(minX) != Double
+				.doubleToLongBits(other.minX))
+			return false;
+		if (Double.doubleToLongBits(minY) != Double
+				.doubleToLongBits(other.minY))
+			return false;
+		if (minZ == null) {
+			if (other.minZ != null)
+				return false;
+		} else if (!minZ.equals(other.minZ))
+			return false;
+		return true;
+	}
+
 }

@@ -2,6 +2,8 @@ package mil.nga.wkb.geom;
 
 import java.util.List;
 
+import mil.nga.wkb.util.GeometryUtils;
+
 /**
  * A restricted form of MultiSurface where each Surface in the collection must
  * be of type Polygon.
@@ -27,6 +29,17 @@ public class MultiPolygon extends MultiSurface<Polygon> {
 	 */
 	public MultiPolygon(boolean hasZ, boolean hasM) {
 		super(GeometryType.MULTIPOLYGON, hasZ, hasM);
+	}
+
+	/**
+	 * Constructor
+	 * 
+	 * @param polygons
+	 *            list of polygons
+	 */
+	public MultiPolygon(List<Polygon> polygons) {
+		this(GeometryUtils.hasZ(polygons), GeometryUtils.hasM(polygons));
+		setPolygons(polygons);
 	}
 
 	/**

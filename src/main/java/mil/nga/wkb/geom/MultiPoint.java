@@ -2,6 +2,8 @@ package mil.nga.wkb.geom;
 
 import java.util.List;
 
+import mil.nga.wkb.util.GeometryUtils;
+
 /**
  * A restricted form of GeometryCollection where each Geometry in the collection
  * must be of type Point.
@@ -27,6 +29,17 @@ public class MultiPoint extends GeometryCollection<Point> {
 	 */
 	public MultiPoint(boolean hasZ, boolean hasM) {
 		super(GeometryType.MULTIPOINT, hasZ, hasM);
+	}
+
+	/**
+	 * Constructor
+	 * 
+	 * @param points
+	 *            list of points
+	 */
+	public MultiPoint(List<Point> points) {
+		this(GeometryUtils.hasZ(points), GeometryUtils.hasM(points));
+		setPoints(points);
 	}
 
 	/**

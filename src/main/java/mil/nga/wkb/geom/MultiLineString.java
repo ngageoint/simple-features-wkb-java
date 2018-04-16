@@ -2,6 +2,8 @@ package mil.nga.wkb.geom;
 
 import java.util.List;
 
+import mil.nga.wkb.util.GeometryUtils;
+
 /**
  * A restricted form of MultiCurve where each Curve in the collection must be of
  * type LineString.
@@ -27,6 +29,17 @@ public class MultiLineString extends MultiCurve<LineString> {
 	 */
 	public MultiLineString(boolean hasZ, boolean hasM) {
 		super(GeometryType.MULTILINESTRING, hasZ, hasM);
+	}
+
+	/**
+	 * Constructor
+	 * 
+	 * @param lineStrings
+	 *            list of line strings
+	 */
+	public MultiLineString(List<LineString> lineStrings) {
+		this(GeometryUtils.hasZ(lineStrings), GeometryUtils.hasM(lineStrings));
+		setLineStrings(lineStrings);
 	}
 
 	/**

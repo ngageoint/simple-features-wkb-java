@@ -107,4 +107,36 @@ public class PolyhedralSurface extends Surface {
 		return new PolyhedralSurface(this);
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = super.hashCode();
+		result = prime * result
+				+ ((polygons == null) ? 0 : polygons.hashCode());
+		return result;
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (!super.equals(obj))
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		PolyhedralSurface other = (PolyhedralSurface) obj;
+		if (polygons == null) {
+			if (other.polygons != null)
+				return false;
+		} else if (!polygons.equals(other.polygons))
+			return false;
+		return true;
+	}
+
 }
