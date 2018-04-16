@@ -49,24 +49,14 @@ public class GeometryReader {
 	public static <T extends Geometry> T readGeometry(ByteReader reader,
 			Class<T> expectedType) {
 
-		// Read the single byte order byte
-		byte byteOrderValue = reader.readByte();
-		ByteOrder byteOrder = byteOrderValue == 0 ? ByteOrder.BIG_ENDIAN
-				: ByteOrder.LITTLE_ENDIAN;
 		ByteOrder originalByteOrder = reader.getByteOrder();
-		reader.setByteOrder(byteOrder);
 
-		// Read the geometry type integer
-		int geometryTypeCode = reader.readInt();
+		// Read the byte order and geometry type
+		GeometryTypeInfo geometryTypeInfo = readGeometryType(reader);
 
-		// Determine the geometry type
-		GeometryType geometryType = GeometryCodes
-				.getGeometryType(geometryTypeCode);
-
-		// Determine if the geometry has a z (3d) or m (linear referencing
-		// system) value
-		boolean hasZ = GeometryCodes.hasZ(geometryTypeCode);
-		boolean hasM = GeometryCodes.hasM(geometryTypeCode);
+		GeometryType geometryType = geometryTypeInfo.getGeometryType();
+		boolean hasZ = geometryTypeInfo.hasZ();
+		boolean hasM = geometryTypeInfo.hasM();
 
 		Geometry geometry = null;
 
@@ -146,6 +136,39 @@ public class GeometryReader {
 		T result = (T) geometry;
 
 		return result;
+	}
+
+	/**
+	 * Read the geometry type info
+	 * 
+	 * @param reader
+	 *            byte reader
+	 * @return geometry type info
+	 */
+	public static GeometryTypeInfo readGeometryType(ByteReader reader) {
+
+		// Read the single byte order byte
+		byte byteOrderValue = reader.readByte();
+		ByteOrder byteOrder = byteOrderValue == 0 ? ByteOrder.BIG_ENDIAN
+				: ByteOrder.LITTLE_ENDIAN;
+		reader.setByteOrder(byteOrder);
+
+		// Read the geometry type integer
+		int geometryTypeCode = reader.readInt();
+
+		// Determine the geometry type
+		GeometryType geometryType = GeometryCodes
+				.getGeometryType(geometryTypeCode);
+
+		// Determine if the geometry has a z (3d) or m (linear referencing
+		// system) value
+		boolean hasZ = GeometryCodes.hasZ(geometryTypeCode);
+		boolean hasM = GeometryCodes.hasM(geometryTypeCode);
+
+		GeometryTypeInfo geometryInfo = new GeometryTypeInfo(geometryTypeCode,
+				geometryType, hasZ, hasM);
+
+		return geometryInfo;
 	}
 
 	/**

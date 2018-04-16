@@ -24,6 +24,7 @@ import mil.nga.sf.util.ByteReader;
 import mil.nga.sf.util.ByteWriter;
 import mil.nga.sf.wkb.GeometryCodes;
 import mil.nga.sf.wkb.GeometryReader;
+import mil.nga.sf.wkb.GeometryTypeInfo;
 import mil.nga.sf.wkb.GeometryWriter;
 
 /**
@@ -146,7 +147,7 @@ public class WKBTestUtils {
 						+ geometryType);
 			}
 		}
-		
+
 		TestCase.assertEquals(expected, actual);
 	}
 
@@ -534,9 +535,29 @@ public class WKBTestUtils {
 	 * @return geometry
 	 */
 	public static Geometry readGeometry(byte[] bytes, ByteOrder byteOrder) {
+
 		ByteReader reader = new ByteReader(bytes);
 		reader.setByteOrder(byteOrder);
 		Geometry geometry = GeometryReader.readGeometry(reader);
+
+		ByteReader reader2 = new ByteReader(bytes);
+		reader2.setByteOrder(byteOrder);
+		GeometryTypeInfo geometryTypeInfo = GeometryReader
+				.readGeometryType(reader2);
+		TestCase.assertEquals(geometryTypeInfo.getGeometryType(), GeometryCodes
+				.getGeometryType(geometryTypeInfo.getGeometryTypeCode()));
+		GeometryType expectedGeometryType = geometryTypeInfo.getGeometryType();
+		switch (expectedGeometryType) {
+		case MULTICURVE:
+		case MULTISURFACE:
+			expectedGeometryType = GeometryType.GEOMETRYCOLLECTION;
+			break;
+		default:
+		}
+		TestCase.assertEquals(expectedGeometryType, geometry.getGeometryType());
+		TestCase.assertEquals(geometryTypeInfo.hasZ(), geometry.hasZ());
+		TestCase.assertEquals(geometryTypeInfo.hasM(), geometry.hasM());
+
 		return geometry;
 	}
 
