@@ -260,7 +260,11 @@ public class GeometryCollection<T extends Geometry> extends Geometry {
 	 * @return true if contains only curves
 	 */
 	public boolean isMultiCurve() {
-		return isCollectionOfType(Curve.class);
+		boolean isMultiCurve = this instanceof MultiLineString;
+		if (!isMultiCurve) {
+			isMultiCurve = isCollectionOfType(Curve.class);
+		}
+		return isMultiCurve;
 	}
 
 	/**
@@ -294,7 +298,11 @@ public class GeometryCollection<T extends Geometry> extends Geometry {
 	 * @return true if contains only surfaces
 	 */
 	public boolean isMultiSurface() {
-		return isCollectionOfType(Surface.class);
+		boolean isMultiSurface = this instanceof MultiPolygon;
+		if (!isMultiSurface) {
+			isMultiSurface = isCollectionOfType(Surface.class);
+		}
+		return isMultiSurface;
 	}
 
 	/**
