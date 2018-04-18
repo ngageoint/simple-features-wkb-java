@@ -63,3 +63,7 @@ Pull from the [Maven Central Repository](http://search.maven.org/#artifactdetail
 Build this repository using Eclipse and/or Maven:
 
     mvn clean install
+
+### Remote Dependencies ###
+
+* [Simple Features](https://github.com/ngageoint/simple-features-java) (The MIT License (MIT)) - Simple Features Lib
