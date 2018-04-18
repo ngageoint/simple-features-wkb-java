@@ -11,7 +11,7 @@ Software source code previously released under an open source license and then m
 
 ### About ###
 
-[Simple Features WKB](http://ngageoint.github.io/simple-features-wkb-java/) is a Java library for writing and reading Simple Feature Geometries to and from Well-Known Binary.
+[Simple Features WKB](http://ngageoint.github.io/simple-features-wkb-java/) is a Java library for writing and reading [Simple Feature](https://github.com/ngageoint/simple-features-java) Geometries to and from Well-Known Binary.
 
 ### Usage ###
 
