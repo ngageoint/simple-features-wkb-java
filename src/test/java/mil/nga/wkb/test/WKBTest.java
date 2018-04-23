@@ -16,6 +16,7 @@ import mil.nga.wkb.geom.MultiPoint;
 import mil.nga.wkb.geom.MultiPolygon;
 import mil.nga.wkb.geom.Point;
 import mil.nga.wkb.geom.Polygon;
+import mil.nga.wkb.geom.Surface;
 import mil.nga.wkb.geom.extended.ExtendedGeometryCollection;
 import mil.nga.wkb.util.GeometryEnvelopeBuilder;
 
@@ -228,6 +229,97 @@ public class WKBTest {
 		byte[] bytes2 = WKBTestUtils.writeBytes(extendedMultiCurve);
 		TestCase.assertEquals(GeometryType.MULTICURVE.getCode(), bytes2[4]);
 		WKBTestUtils.compareByteArrays(bytes, bytes2);
+	}
+
+	@Test
+	public void testMultiCurve() throws IOException {
+
+		// Test the abstract MultiCurve type
+
+		GeometryCollection<Curve> multiCurve = WKBTestUtils.createMultiCurve();
+
+		byte[] bytes = WKBTestUtils.writeBytes(multiCurve);
+
+		ExtendedGeometryCollection<Curve> extendedMultiCurve = new ExtendedGeometryCollection<>(
+				multiCurve);
+		TestCase.assertEquals(GeometryType.MULTICURVE,
+				extendedMultiCurve.getGeometryType());
+
+		byte[] extendedBytes = WKBTestUtils.writeBytes(extendedMultiCurve);
+
+		TestCase.assertEquals(GeometryType.GEOMETRYCOLLECTION.getCode(),
+				bytes[4]);
+		TestCase.assertEquals(GeometryType.MULTICURVE.getCode(),
+				extendedBytes[4]);
+
+		Geometry geometry1 = WKBTestUtils.readGeometry(bytes);
+		Geometry geometry2 = WKBTestUtils.readGeometry(extendedBytes);
+
+		TestCase.assertTrue(geometry1 instanceof GeometryCollection);
+		TestCase.assertTrue(geometry2 instanceof GeometryCollection);
+		TestCase.assertEquals(GeometryType.GEOMETRYCOLLECTION,
+				geometry1.getGeometryType());
+		TestCase.assertEquals(GeometryType.GEOMETRYCOLLECTION,
+				geometry2.getGeometryType());
+
+		TestCase.assertEquals(multiCurve, geometry1);
+		TestCase.assertEquals(geometry1, geometry2);
+
+		@SuppressWarnings("unchecked")
+		GeometryCollection<Geometry> geometryCollection1 = (GeometryCollection<Geometry>) geometry1;
+		@SuppressWarnings("unchecked")
+		GeometryCollection<Geometry> geometryCollection2 = (GeometryCollection<Geometry>) geometry2;
+		TestCase.assertTrue(geometryCollection1.isMultiCurve());
+		TestCase.assertTrue(geometryCollection2.isMultiCurve());
+
+		geometryTester(multiCurve);
+		geometryTester(extendedMultiCurve, multiCurve);
+	}
+
+	@Test
+	public void testMultiSurface() throws IOException {
+
+		// Test the abstract MultiSurface type
+
+		GeometryCollection<Surface> multiSurface = WKBTestUtils
+				.createMultiSurface();
+
+		byte[] bytes = WKBTestUtils.writeBytes(multiSurface);
+
+		ExtendedGeometryCollection<Surface> extendedMultiSurface = new ExtendedGeometryCollection<>(
+				multiSurface);
+		TestCase.assertEquals(GeometryType.MULTISURFACE,
+				extendedMultiSurface.getGeometryType());
+
+		byte[] extendedBytes = WKBTestUtils.writeBytes(extendedMultiSurface);
+
+		TestCase.assertEquals(GeometryType.GEOMETRYCOLLECTION.getCode(),
+				bytes[4]);
+		TestCase.assertEquals(GeometryType.MULTISURFACE.getCode(),
+				extendedBytes[4]);
+
+		Geometry geometry1 = WKBTestUtils.readGeometry(bytes);
+		Geometry geometry2 = WKBTestUtils.readGeometry(extendedBytes);
+
+		TestCase.assertTrue(geometry1 instanceof GeometryCollection);
+		TestCase.assertTrue(geometry2 instanceof GeometryCollection);
+		TestCase.assertEquals(GeometryType.GEOMETRYCOLLECTION,
+				geometry1.getGeometryType());
+		TestCase.assertEquals(GeometryType.GEOMETRYCOLLECTION,
+				geometry2.getGeometryType());
+
+		TestCase.assertEquals(multiSurface, geometry1);
+		TestCase.assertEquals(geometry1, geometry2);
+
+		@SuppressWarnings("unchecked")
+		GeometryCollection<Geometry> geometryCollection1 = (GeometryCollection<Geometry>) geometry1;
+		@SuppressWarnings("unchecked")
+		GeometryCollection<Geometry> geometryCollection2 = (GeometryCollection<Geometry>) geometry2;
+		TestCase.assertTrue(geometryCollection1.isMultiSurface());
+		TestCase.assertTrue(geometryCollection2.isMultiSurface());
+
+		geometryTester(multiSurface);
+		geometryTester(extendedMultiSurface, multiSurface);
 	}
 
 	@Test
