@@ -16,6 +16,7 @@ import mil.nga.wkb.geom.MultiPolygon;
 import mil.nga.wkb.geom.Point;
 import mil.nga.wkb.geom.Polygon;
 import mil.nga.wkb.geom.Surface;
+import mil.nga.wkb.geom.extended.ExtendedGeometryCollection;
 
 import org.junit.Test;
 
@@ -82,6 +83,15 @@ public class GeometryCollectionTest {
 		TestCase.assertEquals(geometryCollection2,
 				geometryCollection.getAsGeometryCollection());
 
+		ExtendedGeometryCollection<Geometry> extendedGeometryCollection = new ExtendedGeometryCollection<>(
+				geometryCollection);
+		TestCase.assertEquals(GeometryType.GEOMETRYCOLLECTION,
+				extendedGeometryCollection.getGeometryType());
+		TestCase.assertEquals(GeometryType.MULTIPOINT,
+				extendedGeometryCollection.getCollectionType());
+		TestCase.assertEquals(extendedGeometryCollection,
+				new ExtendedGeometryCollection<>(geometryCollection));
+
 	}
 
 	@Test
@@ -143,6 +153,15 @@ public class GeometryCollectionTest {
 				.getAsMultiCurve();
 		TestCase.assertEquals(multiCurve, multiCurve2);
 
+		ExtendedGeometryCollection<Geometry> extendedGeometryCollection = new ExtendedGeometryCollection<>(
+				geometryCollection);
+		TestCase.assertEquals(GeometryType.MULTICURVE,
+				extendedGeometryCollection.getGeometryType());
+		TestCase.assertEquals(GeometryType.MULTILINESTRING,
+				extendedGeometryCollection.getCollectionType());
+		TestCase.assertEquals(extendedGeometryCollection,
+				new ExtendedGeometryCollection<>(geometryCollection));
+
 	}
 
 	@Test
@@ -202,6 +221,15 @@ public class GeometryCollectionTest {
 				.getAsMultiSurface();
 		TestCase.assertEquals(multiSurface, multiSurface2);
 
+		ExtendedGeometryCollection<Geometry> extendedGeometryCollection = new ExtendedGeometryCollection<>(
+				geometryCollection);
+		TestCase.assertEquals(GeometryType.MULTISURFACE,
+				extendedGeometryCollection.getGeometryType());
+		TestCase.assertEquals(GeometryType.MULTIPOLYGON,
+				extendedGeometryCollection.getCollectionType());
+		TestCase.assertEquals(extendedGeometryCollection,
+				new ExtendedGeometryCollection<>(geometryCollection));
+
 	}
 
 	@Test
@@ -256,6 +284,15 @@ public class GeometryCollectionTest {
 		TestCase.assertEquals(geometryCollection, geometryCollection2);
 		TestCase.assertEquals(geometryCollection2,
 				geometryCollection.getAsGeometryCollection());
+
+		ExtendedGeometryCollection<Geometry> extendedGeometryCollection = new ExtendedGeometryCollection<>(
+				geometryCollection);
+		TestCase.assertEquals(GeometryType.MULTICURVE,
+				extendedGeometryCollection.getGeometryType());
+		TestCase.assertEquals(GeometryType.MULTICURVE,
+				extendedGeometryCollection.getCollectionType());
+		TestCase.assertEquals(extendedGeometryCollection,
+				new ExtendedGeometryCollection<>(geometryCollection));
 
 	}
 
@@ -312,6 +349,15 @@ public class GeometryCollectionTest {
 		TestCase.assertEquals(geometryCollection, geometryCollection2);
 		TestCase.assertEquals(geometryCollection2,
 				geometryCollection.getAsGeometryCollection());
+
+		ExtendedGeometryCollection<Surface> extendedGeometryCollection = new ExtendedGeometryCollection<>(
+				multiSurface);
+		TestCase.assertEquals(GeometryType.MULTISURFACE,
+				extendedGeometryCollection.getGeometryType());
+		TestCase.assertEquals(GeometryType.MULTISURFACE,
+				extendedGeometryCollection.getCollectionType());
+		TestCase.assertEquals(extendedGeometryCollection,
+				new ExtendedGeometryCollection<>(geometryCollection));
 
 	}
 

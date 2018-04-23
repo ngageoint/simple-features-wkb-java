@@ -71,7 +71,7 @@ public abstract class Geometry {
 	 * @return Well-Known Binary code
 	 */
 	public int getWkbCode() {
-		int code = geometryType.getCode();
+		int code = getGeometryType().getCode();
 		if (hasZ) {
 			code += 1000;
 		}

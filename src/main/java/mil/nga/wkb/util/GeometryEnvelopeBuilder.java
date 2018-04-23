@@ -100,6 +100,8 @@ public class GeometryEnvelopeBuilder {
 			addPolygon(envelope, (Triangle) geometry);
 			break;
 		case GEOMETRYCOLLECTION:
+		case MULTICURVE:
+		case MULTISURFACE:
 			updateHasZandM(envelope, geometry);
 			@SuppressWarnings("unchecked")
 			GeometryCollection<Geometry> geomCollection = (GeometryCollection<Geometry>) geometry;

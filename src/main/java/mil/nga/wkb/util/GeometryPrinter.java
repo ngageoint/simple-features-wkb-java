@@ -78,6 +78,8 @@ public class GeometryPrinter {
 			addPolygonMessage(message, (Triangle) geometry);
 			break;
 		case GEOMETRYCOLLECTION:
+		case MULTICURVE:
+		case MULTISURFACE:
 			@SuppressWarnings("unchecked")
 			GeometryCollection<Geometry> geomCollection = (GeometryCollection<Geometry>) geometry;
 			message.append("Geometries: " + geomCollection.numGeometries());

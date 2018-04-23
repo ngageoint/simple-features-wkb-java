@@ -86,6 +86,8 @@ public class CentroidSurface {
 			add(polyhedralSurface.getPolygons());
 			break;
 		case GEOMETRYCOLLECTION:
+		case MULTICURVE:
+		case MULTISURFACE:
 			@SuppressWarnings("unchecked")
 			GeometryCollection<Geometry> geomCollection = (GeometryCollection<Geometry>) geometry;
 			List<Geometry> geometries = geomCollection.getGeometries();

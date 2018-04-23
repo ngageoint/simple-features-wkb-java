@@ -8,6 +8,7 @@ import mil.nga.wkb.geom.CompoundCurve;
 import mil.nga.wkb.geom.Curve;
 import mil.nga.wkb.geom.Geometry;
 import mil.nga.wkb.geom.GeometryCollection;
+import mil.nga.wkb.geom.GeometryEnvelope;
 import mil.nga.wkb.geom.GeometryType;
 import mil.nga.wkb.geom.LineString;
 import mil.nga.wkb.geom.MultiLineString;
@@ -15,6 +16,8 @@ import mil.nga.wkb.geom.MultiPoint;
 import mil.nga.wkb.geom.MultiPolygon;
 import mil.nga.wkb.geom.Point;
 import mil.nga.wkb.geom.Polygon;
+import mil.nga.wkb.geom.extended.ExtendedGeometryCollection;
+import mil.nga.wkb.util.GeometryEnvelopeBuilder;
 
 import org.junit.Test;
 
@@ -123,6 +126,8 @@ public class WKBTest {
 				83, 33, -36, -86, 106, -84, -16, 64, 70, 30, -104, -50, -57,
 				15, -7 };
 
+		TestCase.assertEquals(GeometryType.MULTICURVE.getCode(), bytes[4]);
+
 		Geometry geometry = WKBTestUtils.readGeometry(bytes);
 		TestCase.assertTrue(geometry instanceof GeometryCollection);
 		TestCase.assertEquals(geometry.getGeometryType(),
@@ -145,6 +150,17 @@ public class WKBTest {
 		TestCase.assertEquals(-76.52909336488278, point2.getX());
 		TestCase.assertEquals(44.2390383216843, point2.getY());
 
+		ExtendedGeometryCollection<Curve> extendedMultiCurve = new ExtendedGeometryCollection<>(
+				multiCurve);
+		TestCase.assertEquals(GeometryType.MULTICURVE,
+				extendedMultiCurve.getGeometryType());
+
+		geometryTester(extendedMultiCurve, multiCurve);
+
+		byte[] bytes2 = WKBTestUtils.writeBytes(extendedMultiCurve);
+		TestCase.assertEquals(GeometryType.MULTICURVE.getCode(), bytes2[4]);
+		WKBTestUtils.compareByteArrays(bytes, bytes2);
+
 	}
 
 	@Test
@@ -161,6 +177,8 @@ public class WKBTest {
 				0, 0, 0, 2, 0, 0, 0, 2, 65, 74, 85, 8, -1, 92, 40, -10, 65, 84,
 				-23, 83, -81, -99, -78, 45, 65, 74, 85, 13, 0, -60, -101, -90,
 				65, 84, -23, 84, 60, -35, 47, 27 };
+
+		TestCase.assertEquals(GeometryType.MULTICURVE.getCode(), bytes[4]);
 
 		Geometry geometry = WKBTestUtils.readGeometry(bytes);
 		TestCase.assertTrue(geometry instanceof GeometryCollection);
@@ -199,6 +217,17 @@ public class WKBTest {
 				.getX());
 		TestCase.assertEquals(5481808.951, lineString2.getPoints().get(1)
 				.getY());
+
+		ExtendedGeometryCollection<Curve> extendedMultiCurve = new ExtendedGeometryCollection<>(
+				multiCurve);
+		TestCase.assertEquals(GeometryType.MULTICURVE,
+				extendedMultiCurve.getGeometryType());
+
+		geometryTester(extendedMultiCurve, multiCurve);
+
+		byte[] bytes2 = WKBTestUtils.writeBytes(extendedMultiCurve);
+		TestCase.assertEquals(GeometryType.MULTICURVE.getCode(), bytes2[4]);
+		WKBTestUtils.compareByteArrays(bytes, bytes2);
 	}
 
 	@Test
@@ -230,9 +259,27 @@ public class WKBTest {
 	 * Test the geometry writing to and reading from bytes
 	 * 
 	 * @param geometry
+	 *            geometry
 	 * @throws IOException
 	 */
 	private void geometryTester(Geometry geometry) throws IOException {
+
+		geometryTester(geometry, geometry);
+
+	}
+
+	/**
+	 * Test the geometry writing to and reading from bytes, compare with the
+	 * provided geometry
+	 * 
+	 * @param geometry
+	 *            geometry
+	 * @param compareGeometry
+	 *            compare geometry
+	 * @throws IOException
+	 */
+	private void geometryTester(Geometry geometry, Geometry compareGeometry)
+			throws IOException {
 
 		// Write the geometries to bytes
 		byte[] bytes1 = WKBTestUtils.writeBytes(geometry, ByteOrder.BIG_ENDIAN);
@@ -247,9 +294,11 @@ public class WKBTest {
 				ByteOrder.LITTLE_ENDIAN);
 		Geometry geometry2opposite = WKBTestUtils.readGeometry(bytes2,
 				ByteOrder.BIG_ENDIAN);
-		WKBTestUtils.compareByteArrays(WKBTestUtils.writeBytes(geometry),
+		WKBTestUtils.compareByteArrays(
+				WKBTestUtils.writeBytes(compareGeometry),
 				WKBTestUtils.writeBytes(geometry1opposite));
-		WKBTestUtils.compareByteArrays(WKBTestUtils.writeBytes(geometry),
+		WKBTestUtils.compareByteArrays(
+				WKBTestUtils.writeBytes(compareGeometry),
 				WKBTestUtils.writeBytes(geometry2opposite));
 
 		Geometry geometry1 = WKBTestUtils.readGeometry(bytes1,
@@ -257,9 +306,19 @@ public class WKBTest {
 		Geometry geometry2 = WKBTestUtils.readGeometry(bytes2,
 				ByteOrder.LITTLE_ENDIAN);
 
-		WKBTestUtils.compareGeometries(geometry, geometry1);
-		WKBTestUtils.compareGeometries(geometry, geometry2);
+		WKBTestUtils.compareGeometries(compareGeometry, geometry1);
+		WKBTestUtils.compareGeometries(compareGeometry, geometry2);
 		WKBTestUtils.compareGeometries(geometry1, geometry2);
+
+		GeometryEnvelope envelope = GeometryEnvelopeBuilder
+				.buildEnvelope(compareGeometry);
+		GeometryEnvelope envelope1 = GeometryEnvelopeBuilder
+				.buildEnvelope(geometry1);
+		GeometryEnvelope envelope2 = GeometryEnvelopeBuilder
+				.buildEnvelope(geometry2);
+
+		WKBTestUtils.compareEnvelopes(envelope, envelope1);
+		WKBTestUtils.compareEnvelopes(envelope1, envelope2);
 	}
 
 }

@@ -135,6 +135,8 @@ public class GeometryCollection<T extends Geometry> extends Geometry {
 		case MULTIPOLYGON:
 			break;
 		case GEOMETRYCOLLECTION:
+		case MULTICURVE:
+		case MULTISURFACE:
 			if (isMultiPoint()) {
 				geometryType = GeometryType.MULTIPOINT;
 			} else if (isMultiLineString()) {

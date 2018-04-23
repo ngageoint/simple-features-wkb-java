@@ -83,6 +83,8 @@ public class WkbGeometryReader {
 			geometry = readMultiPolygon(reader, hasZ, hasM);
 			break;
 		case GEOMETRYCOLLECTION:
+		case MULTICURVE:
+		case MULTISURFACE:
 			geometry = readGeometryCollection(reader, hasZ, hasM);
 			break;
 		case CIRCULARSTRING:
@@ -93,12 +95,6 @@ public class WkbGeometryReader {
 			break;
 		case CURVEPOLYGON:
 			geometry = readCurvePolygon(reader, hasZ, hasM);
-			break;
-		case MULTICURVE:
-			geometry = readGeometryCollection(reader, hasZ, hasM);
-			break;
-		case MULTISURFACE:
-			geometry = readGeometryCollection(reader, hasZ, hasM);
 			break;
 		case CURVE:
 			throw new WkbException("Unexpected Geometry Type of "

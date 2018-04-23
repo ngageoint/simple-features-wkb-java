@@ -103,6 +103,8 @@ public class GeometryJSONCompatible {
 			geometryObject = getPolygon((Triangle) geometry);
 			break;
 		case GEOMETRYCOLLECTION:
+		case MULTICURVE:
+		case MULTISURFACE:
 			List<Object> jsonGeoCollectionObject = new ArrayList<>();
 			@SuppressWarnings("unchecked")
 			GeometryCollection<Geometry> geomCollection = (GeometryCollection<Geometry>) geometry;

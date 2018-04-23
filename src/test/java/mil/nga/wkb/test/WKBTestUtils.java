@@ -19,6 +19,7 @@ import mil.nga.wkb.geom.MultiPolygon;
 import mil.nga.wkb.geom.Point;
 import mil.nga.wkb.geom.Polygon;
 import mil.nga.wkb.geom.PolyhedralSurface;
+import mil.nga.wkb.geom.Surface;
 import mil.nga.wkb.geom.TIN;
 import mil.nga.wkb.geom.Triangle;
 import mil.nga.wkb.io.ByteReader;
@@ -101,6 +102,8 @@ public class WKBTestUtils {
 						(MultiPolygon) actual);
 				break;
 			case GEOMETRYCOLLECTION:
+			case MULTICURVE:
+			case MULTISURFACE:
 				compareGeometryCollection((GeometryCollection<?>) expected,
 						(GeometryCollection<?>) actual);
 				break;
@@ -116,12 +119,6 @@ public class WKBTestUtils {
 				compareCurvePolygon((CurvePolygon<?>) expected,
 						(CurvePolygon<?>) actual);
 				break;
-			case MULTICURVE:
-				TestCase.fail("Unexpected Geometry Type of "
-						+ geometryType.name() + " which is abstract");
-			case MULTISURFACE:
-				TestCase.fail("Unexpected Geometry Type of "
-						+ geometryType.name() + " which is abstract");
 			case CURVE:
 				TestCase.fail("Unexpected Geometry Type of "
 						+ geometryType.name() + " which is abstract");
@@ -792,6 +789,54 @@ public class WKBTestUtils {
 		}
 
 		return curvePolygon;
+	}
+
+	/**
+	 * Create a random multi curve
+	 * 
+	 * @return multi curve
+	 */
+	public static GeometryCollection<Curve> createMultiCurve() {
+
+		GeometryCollection<Curve> multiCurve = new GeometryCollection<>();
+
+		int num = 1 + ((int) (Math.random() * 5));
+
+		for (int i = 0; i < num; i++) {
+			if (i % 2 == 0) {
+				multiCurve.addGeometry(WKBTestUtils.createCompoundCurve(
+						WKBTestUtils.coinFlip(), WKBTestUtils.coinFlip()));
+			} else {
+				multiCurve.addGeometry(WKBTestUtils.createLineString(
+						WKBTestUtils.coinFlip(), WKBTestUtils.coinFlip()));
+			}
+		}
+
+		return multiCurve;
+	}
+
+	/**
+	 * Create a random multi surface
+	 * 
+	 * @return multi surface
+	 */
+	public static GeometryCollection<Surface> createMultiSurface() {
+
+		GeometryCollection<Surface> multiSurface = new GeometryCollection<>();
+
+		int num = 1 + ((int) (Math.random() * 5));
+
+		for (int i = 0; i < num; i++) {
+			if (i % 2 == 0) {
+				multiSurface.addGeometry(WKBTestUtils.createCurvePolygon(
+						WKBTestUtils.coinFlip(), WKBTestUtils.coinFlip()));
+			} else {
+				multiSurface.addGeometry(WKBTestUtils.createPolygon(
+						WKBTestUtils.coinFlip(), WKBTestUtils.coinFlip()));
+			}
+		}
+
+		return multiSurface;
 	}
 
 	/**

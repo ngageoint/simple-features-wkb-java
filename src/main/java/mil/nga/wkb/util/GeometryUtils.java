@@ -71,6 +71,8 @@ public class GeometryUtils {
 			dimension = 2;
 			break;
 		case GEOMETRYCOLLECTION:
+		case MULTICURVE:
+		case MULTISURFACE:
 			@SuppressWarnings("unchecked")
 			GeometryCollection<Geometry> geomCollection = (GeometryCollection<Geometry>) geometry;
 			List<Geometry> geometries = geomCollection.getGeometries();
@@ -184,6 +186,8 @@ public class GeometryUtils {
 			minimize((Triangle) geometry, maxX);
 			break;
 		case GEOMETRYCOLLECTION:
+		case MULTICURVE:
+		case MULTISURFACE:
 			@SuppressWarnings("unchecked")
 			GeometryCollection<Geometry> geomCollection = (GeometryCollection<Geometry>) geometry;
 			for (Geometry subGeometry : geomCollection.getGeometries()) {
@@ -378,6 +382,8 @@ public class GeometryUtils {
 			normalize((Triangle) geometry, maxX);
 			break;
 		case GEOMETRYCOLLECTION:
+		case MULTICURVE:
+		case MULTISURFACE:
 			@SuppressWarnings("unchecked")
 			GeometryCollection<Geometry> geomCollection = (GeometryCollection<Geometry>) geometry;
 			for (Geometry subGeometry : geomCollection.getGeometries()) {
