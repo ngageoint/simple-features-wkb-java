@@ -6,6 +6,7 @@ import java.nio.ByteOrder;
 import junit.framework.TestCase;
 import mil.nga.sf.CircularString;
 import mil.nga.sf.CompoundCurve;
+import mil.nga.sf.Curve;
 import mil.nga.sf.CurvePolygon;
 import mil.nga.sf.Geometry;
 import mil.nga.sf.GeometryCollection;
@@ -18,6 +19,7 @@ import mil.nga.sf.MultiPolygon;
 import mil.nga.sf.Point;
 import mil.nga.sf.Polygon;
 import mil.nga.sf.PolyhedralSurface;
+import mil.nga.sf.Surface;
 import mil.nga.sf.TIN;
 import mil.nga.sf.Triangle;
 import mil.nga.sf.util.ByteReader;
@@ -105,6 +107,8 @@ public class WKBTestUtils {
 						(MultiPolygon) actual);
 				break;
 			case GEOMETRYCOLLECTION:
+			case MULTICURVE:
+			case MULTISURFACE:
 				compareGeometryCollection((GeometryCollection<?>) expected,
 						(GeometryCollection<?>) actual);
 				break;
@@ -120,12 +124,6 @@ public class WKBTestUtils {
 				compareCurvePolygon((CurvePolygon<?>) expected,
 						(CurvePolygon<?>) actual);
 				break;
-			case MULTICURVE:
-				TestCase.fail("Unexpected Geometry Type of "
-						+ geometryType.name() + " which is abstract");
-			case MULTISURFACE:
-				TestCase.fail("Unexpected Geometry Type of "
-						+ geometryType.name() + " which is abstract");
 			case CURVE:
 				TestCase.fail("Unexpected Geometry Type of "
 						+ geometryType.name() + " which is abstract");
@@ -806,6 +804,113 @@ public class WKBTestUtils {
 		}
 
 		return geometryCollection;
+	}
+
+	/**
+	 * Create a random compound curve
+	 * 
+	 * @param hasZ
+	 * @param hasM
+	 * @return compound curve
+	 */
+	public static CompoundCurve createCompoundCurve(boolean hasZ, boolean hasM) {
+		return createCompoundCurve(hasZ, hasM, false);
+	}
+
+	/**
+	 * Create a random compound curve
+	 * 
+	 * @param hasZ
+	 * @param hasM
+	 * @param ring
+	 * @return compound curve
+	 */
+	public static CompoundCurve createCompoundCurve(boolean hasZ, boolean hasM,
+			boolean ring) {
+
+		CompoundCurve compoundCurve = new CompoundCurve(hasZ, hasM);
+
+		int num = 2 + ((int) (Math.random() * 9));
+
+		for (int i = 0; i < num; i++) {
+			compoundCurve.addLineString(createLineString(hasZ, hasM));
+		}
+
+		if (ring) {
+			compoundCurve.getLineString(num - 1).addPoint(
+					compoundCurve.getLineString(0).startPoint());
+		}
+
+		return compoundCurve;
+	}
+
+	/**
+	 * Create a random curve polygon
+	 * 
+	 * @param hasZ
+	 * @param hasM
+	 * @return polygon
+	 */
+	public static CurvePolygon<Curve> createCurvePolygon(boolean hasZ,
+			boolean hasM) {
+
+		CurvePolygon<Curve> curvePolygon = new CurvePolygon<>(hasZ, hasM);
+
+		int num = 1 + ((int) (Math.random() * 5));
+
+		for (int i = 0; i < num; i++) {
+			curvePolygon.addRing(createCompoundCurve(hasZ, hasM, true));
+		}
+
+		return curvePolygon;
+	}
+
+	/**
+	 * Create a random multi curve
+	 * 
+	 * @return multi curve
+	 */
+	public static GeometryCollection<Curve> createMultiCurve() {
+
+		GeometryCollection<Curve> multiCurve = new GeometryCollection<>();
+
+		int num = 1 + ((int) (Math.random() * 5));
+
+		for (int i = 0; i < num; i++) {
+			if (i % 2 == 0) {
+				multiCurve.addGeometry(WKBTestUtils.createCompoundCurve(
+						WKBTestUtils.coinFlip(), WKBTestUtils.coinFlip()));
+			} else {
+				multiCurve.addGeometry(WKBTestUtils.createLineString(
+						WKBTestUtils.coinFlip(), WKBTestUtils.coinFlip()));
+			}
+		}
+
+		return multiCurve;
+	}
+
+	/**
+	 * Create a random multi surface
+	 * 
+	 * @return multi surface
+	 */
+	public static GeometryCollection<Surface> createMultiSurface() {
+
+		GeometryCollection<Surface> multiSurface = new GeometryCollection<>();
+
+		int num = 1 + ((int) (Math.random() * 5));
+
+		for (int i = 0; i < num; i++) {
+			if (i % 2 == 0) {
+				multiSurface.addGeometry(WKBTestUtils.createCurvePolygon(
+						WKBTestUtils.coinFlip(), WKBTestUtils.coinFlip()));
+			} else {
+				multiSurface.addGeometry(WKBTestUtils.createPolygon(
+						WKBTestUtils.coinFlip(), WKBTestUtils.coinFlip()));
+			}
+		}
+
+		return multiSurface;
 	}
 
 	/**

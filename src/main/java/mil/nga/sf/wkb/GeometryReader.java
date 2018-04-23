@@ -84,6 +84,8 @@ public class GeometryReader {
 			geometry = readMultiPolygon(reader, hasZ, hasM);
 			break;
 		case GEOMETRYCOLLECTION:
+		case MULTICURVE:
+		case MULTISURFACE:
 			geometry = readGeometryCollection(reader, hasZ, hasM);
 			break;
 		case CIRCULARSTRING:
@@ -94,12 +96,6 @@ public class GeometryReader {
 			break;
 		case CURVEPOLYGON:
 			geometry = readCurvePolygon(reader, hasZ, hasM);
-			break;
-		case MULTICURVE:
-			geometry = readGeometryCollection(reader, hasZ, hasM);
-			break;
-		case MULTISURFACE:
-			geometry = readGeometryCollection(reader, hasZ, hasM);
 			break;
 		case CURVE:
 			throw new SFException("Unexpected Geometry Type of "

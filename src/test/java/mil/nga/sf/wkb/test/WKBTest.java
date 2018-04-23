@@ -16,7 +16,10 @@ import mil.nga.sf.MultiPoint;
 import mil.nga.sf.MultiPolygon;
 import mil.nga.sf.Point;
 import mil.nga.sf.Polygon;
+import mil.nga.sf.Surface;
+import mil.nga.sf.extended.ExtendedGeometryCollection;
 import mil.nga.sf.util.GeometryEnvelopeBuilder;
+import mil.nga.sf.wkb.GeometryCodes;
 
 import org.junit.Test;
 
@@ -125,6 +128,9 @@ public class WKBTest {
 				83, 33, -36, -86, 106, -84, -16, 64, 70, 30, -104, -50, -57,
 				15, -7 };
 
+		TestCase.assertEquals(GeometryCodes.getCode(GeometryType.MULTICURVE),
+				bytes[4]);
+
 		Geometry geometry = WKBTestUtils.readGeometry(bytes);
 		TestCase.assertTrue(geometry instanceof GeometryCollection);
 		TestCase.assertEquals(geometry.getGeometryType(),
@@ -147,6 +153,18 @@ public class WKBTest {
 		TestCase.assertEquals(-76.52909336488278, point2.getX());
 		TestCase.assertEquals(44.2390383216843, point2.getY());
 
+		ExtendedGeometryCollection<Curve> extendedMultiCurve = new ExtendedGeometryCollection<>(
+				multiCurve);
+		TestCase.assertEquals(GeometryType.MULTICURVE,
+				extendedMultiCurve.getGeometryType());
+
+		geometryTester(extendedMultiCurve, multiCurve);
+
+		byte[] bytes2 = WKBTestUtils.writeBytes(extendedMultiCurve);
+		TestCase.assertEquals(GeometryCodes.getCode(GeometryType.MULTICURVE),
+				bytes2[4]);
+		WKBTestUtils.compareByteArrays(bytes, bytes2);
+
 	}
 
 	@Test
@@ -163,6 +181,9 @@ public class WKBTest {
 				0, 0, 0, 2, 0, 0, 0, 2, 65, 74, 85, 8, -1, 92, 40, -10, 65, 84,
 				-23, 83, -81, -99, -78, 45, 65, 74, 85, 13, 0, -60, -101, -90,
 				65, 84, -23, 84, 60, -35, 47, 27 };
+
+		TestCase.assertEquals(GeometryCodes.getCode(GeometryType.MULTICURVE),
+				bytes[4]);
 
 		Geometry geometry = WKBTestUtils.readGeometry(bytes);
 		TestCase.assertTrue(geometry instanceof GeometryCollection);
@@ -191,6 +212,112 @@ public class WKBTest {
 				lineString2.getPoint(0));
 		TestCase.assertEquals(new Point(3451418.006, 5481808.951),
 				lineString2.getPoint(1));
+
+		ExtendedGeometryCollection<Curve> extendedMultiCurve = new ExtendedGeometryCollection<>(
+				multiCurve);
+		TestCase.assertEquals(GeometryType.MULTICURVE,
+				extendedMultiCurve.getGeometryType());
+
+		geometryTester(extendedMultiCurve, multiCurve);
+
+		byte[] bytes2 = WKBTestUtils.writeBytes(extendedMultiCurve);
+		TestCase.assertEquals(GeometryCodes.getCode(GeometryType.MULTICURVE),
+				bytes2[4]);
+		WKBTestUtils.compareByteArrays(bytes, bytes2);
+
+	}
+
+	@Test
+	public void testMultiCurve() throws IOException {
+
+		// Test the abstract MultiCurve type
+
+		GeometryCollection<Curve> multiCurve = WKBTestUtils.createMultiCurve();
+
+		byte[] bytes = WKBTestUtils.writeBytes(multiCurve);
+
+		ExtendedGeometryCollection<Curve> extendedMultiCurve = new ExtendedGeometryCollection<>(
+				multiCurve);
+		TestCase.assertEquals(GeometryType.MULTICURVE,
+				extendedMultiCurve.getGeometryType());
+
+		byte[] extendedBytes = WKBTestUtils.writeBytes(extendedMultiCurve);
+
+		TestCase.assertEquals(
+				GeometryCodes.getCode(GeometryType.GEOMETRYCOLLECTION),
+				bytes[4]);
+		TestCase.assertEquals(GeometryCodes.getCode(GeometryType.MULTICURVE),
+				extendedBytes[4]);
+
+		Geometry geometry1 = WKBTestUtils.readGeometry(bytes);
+		Geometry geometry2 = WKBTestUtils.readGeometry(extendedBytes);
+
+		TestCase.assertTrue(geometry1 instanceof GeometryCollection);
+		TestCase.assertTrue(geometry2 instanceof GeometryCollection);
+		TestCase.assertEquals(GeometryType.GEOMETRYCOLLECTION,
+				geometry1.getGeometryType());
+		TestCase.assertEquals(GeometryType.GEOMETRYCOLLECTION,
+				geometry2.getGeometryType());
+
+		TestCase.assertEquals(multiCurve, geometry1);
+		TestCase.assertEquals(geometry1, geometry2);
+
+		@SuppressWarnings("unchecked")
+		GeometryCollection<Geometry> geometryCollection1 = (GeometryCollection<Geometry>) geometry1;
+		@SuppressWarnings("unchecked")
+		GeometryCollection<Geometry> geometryCollection2 = (GeometryCollection<Geometry>) geometry2;
+		TestCase.assertTrue(geometryCollection1.isMultiCurve());
+		TestCase.assertTrue(geometryCollection2.isMultiCurve());
+
+		geometryTester(multiCurve);
+		geometryTester(extendedMultiCurve, multiCurve);
+	}
+
+	@Test
+	public void testMultiSurface() throws IOException {
+
+		// Test the abstract MultiSurface type
+
+		GeometryCollection<Surface> multiSurface = WKBTestUtils
+				.createMultiSurface();
+
+		byte[] bytes = WKBTestUtils.writeBytes(multiSurface);
+
+		ExtendedGeometryCollection<Surface> extendedMultiSurface = new ExtendedGeometryCollection<>(
+				multiSurface);
+		TestCase.assertEquals(GeometryType.MULTISURFACE,
+				extendedMultiSurface.getGeometryType());
+
+		byte[] extendedBytes = WKBTestUtils.writeBytes(extendedMultiSurface);
+
+		TestCase.assertEquals(
+				GeometryCodes.getCode(GeometryType.GEOMETRYCOLLECTION),
+				bytes[4]);
+		TestCase.assertEquals(GeometryCodes.getCode(GeometryType.MULTISURFACE),
+				extendedBytes[4]);
+
+		Geometry geometry1 = WKBTestUtils.readGeometry(bytes);
+		Geometry geometry2 = WKBTestUtils.readGeometry(extendedBytes);
+
+		TestCase.assertTrue(geometry1 instanceof GeometryCollection);
+		TestCase.assertTrue(geometry2 instanceof GeometryCollection);
+		TestCase.assertEquals(GeometryType.GEOMETRYCOLLECTION,
+				geometry1.getGeometryType());
+		TestCase.assertEquals(GeometryType.GEOMETRYCOLLECTION,
+				geometry2.getGeometryType());
+
+		TestCase.assertEquals(multiSurface, geometry1);
+		TestCase.assertEquals(geometry1, geometry2);
+
+		@SuppressWarnings("unchecked")
+		GeometryCollection<Geometry> geometryCollection1 = (GeometryCollection<Geometry>) geometry1;
+		@SuppressWarnings("unchecked")
+		GeometryCollection<Geometry> geometryCollection2 = (GeometryCollection<Geometry>) geometry2;
+		TestCase.assertTrue(geometryCollection1.isMultiSurface());
+		TestCase.assertTrue(geometryCollection2.isMultiSurface());
+
+		geometryTester(multiSurface);
+		geometryTester(extendedMultiSurface, multiSurface);
 	}
 
 	@Test
@@ -222,9 +349,27 @@ public class WKBTest {
 	 * Test the geometry writing to and reading from bytes
 	 * 
 	 * @param geometry
+	 *            geometry
 	 * @throws IOException
 	 */
 	private void geometryTester(Geometry geometry) throws IOException {
+
+		geometryTester(geometry, geometry);
+
+	}
+
+	/**
+	 * Test the geometry writing to and reading from bytes, compare with the
+	 * provided geometry
+	 * 
+	 * @param geometry
+	 *            geometry
+	 * @param compareGeometry
+	 *            compare geometry
+	 * @throws IOException
+	 */
+	private void geometryTester(Geometry geometry, Geometry compareGeometry)
+			throws IOException {
 
 		// Write the geometries to bytes
 		byte[] bytes1 = WKBTestUtils.writeBytes(geometry, ByteOrder.BIG_ENDIAN);
@@ -239,9 +384,11 @@ public class WKBTest {
 				ByteOrder.LITTLE_ENDIAN);
 		Geometry geometry2opposite = WKBTestUtils.readGeometry(bytes2,
 				ByteOrder.BIG_ENDIAN);
-		WKBTestUtils.compareByteArrays(WKBTestUtils.writeBytes(geometry),
+		WKBTestUtils.compareByteArrays(
+				WKBTestUtils.writeBytes(compareGeometry),
 				WKBTestUtils.writeBytes(geometry1opposite));
-		WKBTestUtils.compareByteArrays(WKBTestUtils.writeBytes(geometry),
+		WKBTestUtils.compareByteArrays(
+				WKBTestUtils.writeBytes(compareGeometry),
 				WKBTestUtils.writeBytes(geometry2opposite));
 
 		Geometry geometry1 = WKBTestUtils.readGeometry(bytes1,
@@ -249,12 +396,12 @@ public class WKBTest {
 		Geometry geometry2 = WKBTestUtils.readGeometry(bytes2,
 				ByteOrder.LITTLE_ENDIAN);
 
-		WKBTestUtils.compareGeometries(geometry, geometry1);
-		WKBTestUtils.compareGeometries(geometry, geometry2);
+		WKBTestUtils.compareGeometries(compareGeometry, geometry1);
+		WKBTestUtils.compareGeometries(compareGeometry, geometry2);
 		WKBTestUtils.compareGeometries(geometry1, geometry2);
 
 		GeometryEnvelope envelope = GeometryEnvelopeBuilder
-				.buildEnvelope(geometry);
+				.buildEnvelope(compareGeometry);
 		GeometryEnvelope envelope1 = GeometryEnvelopeBuilder
 				.buildEnvelope(geometry1);
 		GeometryEnvelope envelope2 = GeometryEnvelopeBuilder

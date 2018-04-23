@@ -73,6 +73,8 @@ public class GeometryWriter {
 			writeMultiPolygon(writer, (MultiPolygon) geometry);
 			break;
 		case GEOMETRYCOLLECTION:
+		case MULTICURVE:
+		case MULTISURFACE:
 			writeGeometryCollection(writer, (GeometryCollection<?>) geometry);
 			break;
 		case CIRCULARSTRING:
@@ -84,12 +86,6 @@ public class GeometryWriter {
 		case CURVEPOLYGON:
 			writeCurvePolygon(writer, (CurvePolygon<?>) geometry);
 			break;
-		case MULTICURVE:
-			throw new SFException("Unexpected Geometry Type of "
-					+ geometryType.name() + " which is abstract");
-		case MULTISURFACE:
-			throw new SFException("Unexpected Geometry Type of "
-					+ geometryType.name() + " which is abstract");
 		case CURVE:
 			throw new SFException("Unexpected Geometry Type of "
 					+ geometryType.name() + " which is abstract");
