@@ -345,6 +345,59 @@ public class WKBTest {
 
 	}
 
+	@Test
+	public void testMultiPolygon25() throws IOException {
+
+		// Test a pre-created WKB hex saved as a 2.5D MultiPolygon
+
+		byte[] bytes = hexStringToByteArray("0106000080010000000103000080010000000F0000007835454789C456C0DFDB63124D3F2C4000000000000000004CE4512E89C456C060BF20D13F3F2C400000000000000000A42EC6388CC456C0E0A50400423F2C400000000000000000B4E3B1608CC456C060034E67433F2C400000000000000000F82138508DC456C09FD015C5473F2C400000000000000000ECD6591B8CC456C000C305BC5B3F2C4000000000000000001002AD0F8CC456C060DB367D5C3F2C40000000000000000010996DEF8AC456C0BF01756A6C3F2C4000000000000000007054A08B8AC456C0806A0C1F733F2C4000000000000000009422D81D8AC456C041CA3C5B8A3F2C4000000000000000003CCB05C489C456C03FC4FC52AA3F2C400000000000000000740315A689C456C0BFC8635EB33F2C400000000000000000E4A5630B89C456C0DFE726D6B33F2C400000000000000000F45A4F3389C456C000B07950703F2C4000000000000000007835454789C456C0DFDB63124D3F2C400000000000000000");
+
+		TestCase.assertEquals(1, bytes[0]); // little endian
+		TestCase.assertEquals(GeometryCodes.getCode(GeometryType.MULTIPOLYGON),
+				bytes[1]);
+		TestCase.assertEquals(0, bytes[2]);
+		TestCase.assertEquals(0, bytes[3]);
+		TestCase.assertEquals(-128, bytes[4]);
+
+		Geometry geometry = WKBTestUtils.readGeometry(bytes);
+		TestCase.assertTrue(geometry instanceof MultiPolygon);
+		TestCase.assertEquals(geometry.getGeometryType(),
+				GeometryType.MULTIPOLYGON);
+		MultiPolygon multiPolygon = (MultiPolygon) geometry;
+		TestCase.assertTrue(multiPolygon.hasZ());
+		TestCase.assertFalse(multiPolygon.hasM());
+		TestCase.assertEquals(1, multiPolygon.numGeometries());
+		Polygon polygon = multiPolygon.getPolygons().get(0);
+		TestCase.assertTrue(polygon.hasZ());
+		TestCase.assertFalse(polygon.hasM());
+		TestCase.assertEquals(1, polygon.numRings());
+		LineString ring = polygon.getRings().get(0);
+		TestCase.assertTrue(ring.hasZ());
+		TestCase.assertFalse(ring.hasM());
+		TestCase.assertEquals(15, ring.numPoints());
+		for (Point point : ring.getPoints()) {
+			TestCase.assertTrue(point.hasZ());
+			TestCase.assertFalse(point.hasM());
+			TestCase.assertNotNull(point.getZ());
+			TestCase.assertNull(point.getM());
+		}
+
+		byte[] multiPolygonBytes = WKBTestUtils.writeBytes(multiPolygon,
+				ByteOrder.LITTLE_ENDIAN);
+		Geometry geometry2 = WKBTestUtils.readGeometry(multiPolygonBytes);
+
+		geometryTester(geometry, geometry2);
+
+		TestCase.assertEquals(bytes.length, multiPolygonBytes.length);
+		int equalBytes = 0;
+		for (int i = 0; i < bytes.length; i++) {
+			if (bytes[i] == multiPolygonBytes[i]) {
+				equalBytes++;
+			}
+		}
+		TestCase.assertEquals(bytes.length - 6, equalBytes);
+	}
+
 	/**
 	 * Test the geometry writing to and reading from bytes
 	 * 
@@ -409,6 +462,23 @@ public class WKBTest {
 
 		WKBTestUtils.compareEnvelopes(envelope, envelope1);
 		WKBTestUtils.compareEnvelopes(envelope1, envelope2);
+	}
+
+	/**
+	 * Convert the hex string to a byte array
+	 * 
+	 * @param hex
+	 *            hex string
+	 * @return byte array
+	 */
+	private static byte[] hexStringToByteArray(String hex) {
+		int len = hex.length();
+		byte[] bytes = new byte[len / 2];
+		for (int i = 0; i < len; i += 2) {
+			bytes[i / 2] = (byte) ((Character.digit(hex.charAt(i), 16) << 4) + Character
+					.digit(hex.charAt(i + 1), 16));
+		}
+		return bytes;
 	}
 
 }

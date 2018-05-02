@@ -29,6 +29,11 @@ import mil.nga.sf.util.SFException;
 public class GeometryReader {
 
 	/**
+	 * 2.5D bit
+	 */
+	private static final long WKB25D = Long.decode("0x80000000");
+
+	/**
 	 * Read a geometry from the byte reader
 	 * 
 	 * @param reader
@@ -149,8 +154,17 @@ public class GeometryReader {
 				: ByteOrder.LITTLE_ENDIAN;
 		reader.setByteOrder(byteOrder);
 
-		// Read the geometry type integer
-		int geometryTypeCode = reader.readInt();
+		// Read the geometry type unsigned integer
+		long unsignedGeometryTypeCode = reader.readUnsignedInt();
+
+		// Check for 2.5D geometry types
+		boolean hasZ = false;
+		if (unsignedGeometryTypeCode > WKB25D) {
+			hasZ = true;
+			unsignedGeometryTypeCode -= WKB25D;
+		}
+
+		int geometryTypeCode = (int) unsignedGeometryTypeCode;
 
 		// Determine the geometry type
 		GeometryType geometryType = GeometryCodes
@@ -158,7 +172,9 @@ public class GeometryReader {
 
 		// Determine if the geometry has a z (3d) or m (linear referencing
 		// system) value
-		boolean hasZ = GeometryCodes.hasZ(geometryTypeCode);
+		if (!hasZ) {
+			hasZ = GeometryCodes.hasZ(geometryTypeCode);
+		}
 		boolean hasM = GeometryCodes.hasM(geometryTypeCode);
 
 		GeometryTypeInfo geometryInfo = new GeometryTypeInfo(geometryTypeCode,
