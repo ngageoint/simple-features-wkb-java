@@ -28,6 +28,11 @@ import mil.nga.wkb.util.WkbException;
 public class WkbGeometryReader {
 
 	/**
+	 * 2.5D bit
+	 */
+	private static final long WKB25D = Long.decode("0x80000000");
+
+	/**
 	 * Read a geometry from the byte reader
 	 * 
 	 * @param reader
@@ -148,8 +153,19 @@ public class WkbGeometryReader {
 				: ByteOrder.LITTLE_ENDIAN;
 		reader.setByteOrder(byteOrder);
 
-		// Read the geometry type integer
-		int geometryTypeWkbCode = reader.readInt();
+		// Read the geometry type unsigned integer
+		long unsignedGeometryTypeWkbCode = reader.readUnsignedInt();
+
+		boolean hasZ = false;
+		boolean hasM = false;
+
+		// Check for 2.5D geometry types
+		if (unsignedGeometryTypeWkbCode > WKB25D) {
+			hasZ = true;
+			unsignedGeometryTypeWkbCode -= WKB25D;
+		}
+
+		int geometryTypeWkbCode = (int) unsignedGeometryTypeWkbCode;
 
 		// Look at the last 2 digits to find the geometry type code (1 - 14)
 		int geometryTypeCode = geometryTypeWkbCode % 1000;
@@ -160,8 +176,6 @@ public class WkbGeometryReader {
 
 		// Determine if the geometry has a z (3d) or m (linear referencing
 		// system) value
-		boolean hasZ = false;
-		boolean hasM = false;
 		switch (geometryTypeMode) {
 		case 0:
 			break;

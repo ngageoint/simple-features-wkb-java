@@ -112,6 +112,17 @@ public class ByteReader {
 	}
 
 	/**
+	 * Read an unsigned integer
+	 * 
+	 * @return unsigned integer
+	 */
+	public long readUnsignedInt() {
+		int intValue = readInt();
+		long value = intValue & 0xffffffffL;
+		return value;
+	}
+
+	/**
 	 * Read a double
 	 * 
 	 * @return double
