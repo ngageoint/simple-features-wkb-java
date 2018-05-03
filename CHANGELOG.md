@@ -4,9 +4,12 @@ Adheres to [Semantic Versioning](http://semver.org/).
 
 ---
 
-## 1.0.6 (TBD)
+## [1.0.6](https://github.com/ngageoint/geopackage-wkb-java/releases/tag/1.0.6) (05-02-2018)
 
-* TBD
+* MultiCurve and MultiSurface read support
+* MultiCurve and MultiSurface write support as Extended Geometry Collections
+* Geometry Collection utility methods for collection type checks and conversions
+* Handle reading 2.5D geometry type codes
 
 ## [1.0.5](https://github.com/ngageoint/geopackage-wkb-java/releases/tag/1.0.5) (02-13-2018)
 
