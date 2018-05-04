@@ -176,8 +176,7 @@ public class GeometryCodes {
 			break;
 		default:
 			throw new SFException(
-					"Unsupported Geometry code for type retrieval: "
-							+ geometryType);
+					"Unsupported Geometry code for type retrieval: " + code);
 		}
 
 		return geometryType;
