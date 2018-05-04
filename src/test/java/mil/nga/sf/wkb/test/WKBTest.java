@@ -367,11 +367,11 @@ public class WKBTest {
 		TestCase.assertTrue(multiPolygon.hasZ());
 		TestCase.assertFalse(multiPolygon.hasM());
 		TestCase.assertEquals(1, multiPolygon.numGeometries());
-		Polygon polygon = multiPolygon.getPolygons().get(0);
+		Polygon polygon = multiPolygon.getPolygon(0);
 		TestCase.assertTrue(polygon.hasZ());
 		TestCase.assertFalse(polygon.hasM());
 		TestCase.assertEquals(1, polygon.numRings());
-		LineString ring = polygon.getRings().get(0);
+		LineString ring = polygon.getRing(0);
 		TestCase.assertTrue(ring.hasZ());
 		TestCase.assertFalse(ring.hasM());
 		TestCase.assertEquals(15, ring.numPoints());
