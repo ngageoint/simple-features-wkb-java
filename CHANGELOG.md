@@ -4,6 +4,13 @@ Adheres to [Semantic Versioning](http://semver.org/).
 
 ---
 
+## 2.0.0 (TBD)
+
+* Simple Features refactor, geopackage-wkb-java refactored to be simple-features-wkb-java
+* "Wkb" prefix dropped from the Geometry Reader and Writer classes
+* Common simple features code moved to new dependency, [simple-features-java](https://github.com/ngageoint/simple-features-java). Requires package name changes.
+* Geometry Codes WKB utility class
+
 ## [1.0.6](https://github.com/ngageoint/geopackage-wkb-java/releases/tag/1.0.6) (05-02-2018)
 
 * MultiCurve and MultiSurface read support
