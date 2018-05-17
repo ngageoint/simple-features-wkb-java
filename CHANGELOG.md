@@ -4,7 +4,7 @@ Adheres to [Semantic Versioning](http://semver.org/).
 
 ---
 
-## 2.0.0 (TBD)
+## [2.0.0](https://github.com/ngageoint/simple-features-wkb-java/releases/tag/2.0.0) (05-17-2018)
 
 * Simple Features refactor, geopackage-wkb-java refactored to be simple-features-wkb-java
 * "Wkb" prefix dropped from the Geometry Reader and Writer classes
