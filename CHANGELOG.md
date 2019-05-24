@@ -6,7 +6,7 @@ Adheres to [Semantic Versioning](http://semver.org/).
 
 ## 2.0.2 (TBD)
 
-* TBD
+* simple-features-java version 2.0.2
 
 ## [2.0.1](https://github.com/ngageoint/simple-features-wkb-java/releases/tag/2.0.1) (04-01-2019)
 
