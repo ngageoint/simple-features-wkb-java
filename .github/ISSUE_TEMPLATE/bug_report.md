@@ -1,9 +1,18 @@
+---
+name: Bug report
+about: Report an issue
+title: ''
+labels: bug
+assignees: ''
+
+---
+
 Please fill out as much known and relevant information as possible.
 
 #### Version Information:
 
-  * WKB Java Version:
-  * WKB Java Source: (e.g. Central Repository, Release, Source Code Build)
+  * SF WKB Java Version:
+  * SF WKB Java Source: (e.g. Central Repository, Release, Source Code Build)
   * IDE Name & Version:
   * Maven Version: (mvn -version)
   * Java Version: (java -version)
