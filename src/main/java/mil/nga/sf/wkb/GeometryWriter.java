@@ -33,14 +33,18 @@ public class GeometryWriter {
 	 * Write a geometry to the byte writer
 	 * 
 	 * @param writer
+	 *            byte writer
 	 * @param geometry
+	 *            geometry
 	 * @throws IOException
+	 *             upon failure to write
 	 */
 	public static void writeGeometry(ByteWriter writer, Geometry geometry)
 			throws IOException {
 
 		// Write the single byte order byte
-		byte byteOrder = writer.getByteOrder() == ByteOrder.BIG_ENDIAN ? (byte) 0
+		byte byteOrder = writer.getByteOrder() == ByteOrder.BIG_ENDIAN
+				? (byte) 0
 				: (byte) 1;
 		writer.writeByte(byteOrder);
 
@@ -102,8 +106,8 @@ public class GeometryWriter {
 			writeTriangle(writer, (Triangle) geometry);
 			break;
 		default:
-			throw new SFException("Geometry Type not supported: "
-					+ geometryType);
+			throw new SFException(
+					"Geometry Type not supported: " + geometryType);
 		}
 
 	}
@@ -112,8 +116,11 @@ public class GeometryWriter {
 	 * Write a Point
 	 * 
 	 * @param writer
+	 *            byte writer
 	 * @param point
+	 *            point
 	 * @throws IOException
+	 *             upon failure to write
 	 */
 	public static void writePoint(ByteWriter writer, Point point)
 			throws IOException {
@@ -134,8 +141,11 @@ public class GeometryWriter {
 	 * Write a Line String
 	 * 
 	 * @param writer
+	 *            byte writer
 	 * @param lineString
+	 *            Line String
 	 * @throws IOException
+	 *             upon failure to write
 	 */
 	public static void writeLineString(ByteWriter writer, LineString lineString)
 			throws IOException {
@@ -151,8 +161,11 @@ public class GeometryWriter {
 	 * Write a Polygon
 	 * 
 	 * @param writer
+	 *            byte writer
 	 * @param polygon
+	 *            Polygon
 	 * @throws IOException
+	 *             upon failure to write
 	 */
 	public static void writePolygon(ByteWriter writer, Polygon polygon)
 			throws IOException {
@@ -168,8 +181,11 @@ public class GeometryWriter {
 	 * Write a Multi Point
 	 * 
 	 * @param writer
+	 *            byte writer
 	 * @param multiPoint
+	 *            Multi Point
 	 * @throws IOException
+	 *             upon failure to write
 	 */
 	public static void writeMultiPoint(ByteWriter writer, MultiPoint multiPoint)
 			throws IOException {
@@ -185,8 +201,11 @@ public class GeometryWriter {
 	 * Write a Multi Line String
 	 * 
 	 * @param writer
+	 *            byte writer
 	 * @param multiLineString
+	 *            Multi Line String
 	 * @throws IOException
+	 *             upon failure to write
 	 */
 	public static void writeMultiLineString(ByteWriter writer,
 			MultiLineString multiLineString) throws IOException {
@@ -202,8 +221,11 @@ public class GeometryWriter {
 	 * Write a Multi Polygon
 	 * 
 	 * @param writer
+	 *            byte writer
 	 * @param multiPolygon
+	 *            Multi Polygon
 	 * @throws IOException
+	 *             upon failure to write
 	 */
 	public static void writeMultiPolygon(ByteWriter writer,
 			MultiPolygon multiPolygon) throws IOException {
@@ -219,8 +241,11 @@ public class GeometryWriter {
 	 * Write a Geometry Collection
 	 * 
 	 * @param writer
+	 *            byte writer
 	 * @param geometryCollection
+	 *            Geometry Collection
 	 * @throws IOException
+	 *             upon failure to write
 	 */
 	public static void writeGeometryCollection(ByteWriter writer,
 			GeometryCollection<?> geometryCollection) throws IOException {
@@ -236,8 +261,11 @@ public class GeometryWriter {
 	 * Write a Circular String
 	 * 
 	 * @param writer
+	 *            byte writer
 	 * @param circularString
+	 *            Circular String
 	 * @throws IOException
+	 *             upon failure to write
 	 */
 	public static void writeCircularString(ByteWriter writer,
 			CircularString circularString) throws IOException {
@@ -253,8 +281,11 @@ public class GeometryWriter {
 	 * Write a Compound Curve
 	 * 
 	 * @param writer
+	 *            byte writer
 	 * @param compoundCurve
+	 *            Compound Curve
 	 * @throws IOException
+	 *             upon failure to write
 	 */
 	public static void writeCompoundCurve(ByteWriter writer,
 			CompoundCurve compoundCurve) throws IOException {
@@ -270,8 +301,11 @@ public class GeometryWriter {
 	 * Write a Curve Polygon
 	 * 
 	 * @param writer
+	 *            byte writer
 	 * @param curvePolygon
+	 *            Curve Polygon
 	 * @throws IOException
+	 *             upon failure to write
 	 */
 	public static void writeCurvePolygon(ByteWriter writer,
 			CurvePolygon<?> curvePolygon) throws IOException {
@@ -287,8 +321,11 @@ public class GeometryWriter {
 	 * Write a Polyhedral Surface
 	 * 
 	 * @param writer
+	 *            byte writer
 	 * @param polyhedralSurface
+	 *            Polyhedral Surface
 	 * @throws IOException
+	 *             upon failure to write
 	 */
 	public static void writePolyhedralSurface(ByteWriter writer,
 			PolyhedralSurface polyhedralSurface) throws IOException {
@@ -304,8 +341,11 @@ public class GeometryWriter {
 	 * Write a TIN
 	 * 
 	 * @param writer
+	 *            byte writer
 	 * @param tin
+	 *            TIN
 	 * @throws IOException
+	 *             upon failure to write
 	 */
 	public static void writeTIN(ByteWriter writer, TIN tin) throws IOException {
 
@@ -320,8 +360,11 @@ public class GeometryWriter {
 	 * Write a Triangle
 	 * 
 	 * @param writer
+	 *            byte writer
 	 * @param triangle
+	 *            Triangle
 	 * @throws IOException
+	 *             upon failure to write
 	 */
 	public static void writeTriangle(ByteWriter writer, Triangle triangle)
 			throws IOException {

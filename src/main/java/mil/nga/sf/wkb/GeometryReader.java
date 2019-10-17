@@ -37,6 +37,7 @@ public class GeometryReader {
 	 * Read a geometry from the byte reader
 	 * 
 	 * @param reader
+	 *            byte reader
 	 * @return geometry
 	 */
 	public static Geometry readGeometry(ByteReader reader) {
@@ -48,7 +49,11 @@ public class GeometryReader {
 	 * Read a geometry from the byte reader
 	 * 
 	 * @param reader
+	 *            byte reader
 	 * @param expectedType
+	 *            expected type
+	 * @param <T>
+	 *            geometry type
 	 * @return geometry
 	 */
 	public static <T extends Geometry> T readGeometry(ByteReader reader,
@@ -118,8 +123,8 @@ public class GeometryReader {
 			geometry = readTriangle(reader, hasZ, hasM);
 			break;
 		default:
-			throw new SFException("Geometry Type not supported: "
-					+ geometryType);
+			throw new SFException(
+					"Geometry Type not supported: " + geometryType);
 		}
 
 		// If there is an expected type, verify the geometry if of that type
@@ -187,11 +192,15 @@ public class GeometryReader {
 	 * Read a Point
 	 * 
 	 * @param reader
+	 *            byte reader
 	 * @param hasZ
+	 *            has z flag
 	 * @param hasM
+	 *            has m flag
 	 * @return point
 	 */
-	public static Point readPoint(ByteReader reader, boolean hasZ, boolean hasM) {
+	public static Point readPoint(ByteReader reader, boolean hasZ,
+			boolean hasM) {
 
 		double x = reader.readDouble();
 		double y = reader.readDouble();
@@ -215,8 +224,11 @@ public class GeometryReader {
 	 * Read a Line String
 	 * 
 	 * @param reader
+	 *            byte reader
 	 * @param hasZ
+	 *            has z flag
 	 * @param hasM
+	 *            has m flag
 	 * @return line string
 	 */
 	public static LineString readLineString(ByteReader reader, boolean hasZ,
@@ -239,8 +251,11 @@ public class GeometryReader {
 	 * Read a Polygon
 	 * 
 	 * @param reader
+	 *            byte reader
 	 * @param hasZ
+	 *            has z flag
 	 * @param hasM
+	 *            has m flag
 	 * @return polygon
 	 */
 	public static Polygon readPolygon(ByteReader reader, boolean hasZ,
@@ -263,8 +278,11 @@ public class GeometryReader {
 	 * Read a Multi Point
 	 * 
 	 * @param reader
+	 *            byte reader
 	 * @param hasZ
+	 *            has z flag
 	 * @param hasM
+	 *            has m flag
 	 * @return multi point
 	 */
 	public static MultiPoint readMultiPoint(ByteReader reader, boolean hasZ,
@@ -287,8 +305,11 @@ public class GeometryReader {
 	 * Read a Multi Line String
 	 * 
 	 * @param reader
+	 *            byte reader
 	 * @param hasZ
+	 *            has z flag
 	 * @param hasM
+	 *            has m flag
 	 * @return multi line string
 	 */
 	public static MultiLineString readMultiLineString(ByteReader reader,
@@ -310,12 +331,15 @@ public class GeometryReader {
 	 * Read a Multi Polygon
 	 * 
 	 * @param reader
+	 *            byte reader
 	 * @param hasZ
+	 *            has z flag
 	 * @param hasM
+	 *            has m flag
 	 * @return multi polygon
 	 */
-	public static MultiPolygon readMultiPolygon(ByteReader reader,
-			boolean hasZ, boolean hasM) {
+	public static MultiPolygon readMultiPolygon(ByteReader reader, boolean hasZ,
+			boolean hasM) {
 
 		MultiPolygon multiPolygon = new MultiPolygon(hasZ, hasM);
 
@@ -334,8 +358,11 @@ public class GeometryReader {
 	 * Read a Geometry Collection
 	 * 
 	 * @param reader
+	 *            byte reader
 	 * @param hasZ
+	 *            has z flag
 	 * @param hasM
+	 *            has m flag
 	 * @return geometry collection
 	 */
 	public static GeometryCollection<Geometry> readGeometryCollection(
@@ -359,8 +386,11 @@ public class GeometryReader {
 	 * Read a Circular String
 	 * 
 	 * @param reader
+	 *            byte reader
 	 * @param hasZ
+	 *            has z flag
 	 * @param hasM
+	 *            has m flag
 	 * @return circular string
 	 */
 	public static CircularString readCircularString(ByteReader reader,
@@ -383,8 +413,11 @@ public class GeometryReader {
 	 * Read a Compound Curve
 	 * 
 	 * @param reader
+	 *            byte reader
 	 * @param hasZ
+	 *            has z flag
 	 * @param hasM
+	 *            has m flag
 	 * @return compound curve
 	 */
 	public static CompoundCurve readCompoundCurve(ByteReader reader,
@@ -407,8 +440,11 @@ public class GeometryReader {
 	 * Read a Curve Polygon
 	 * 
 	 * @param reader
+	 *            byte reader
 	 * @param hasZ
+	 *            has z flag
 	 * @param hasM
+	 *            has m flag
 	 * @return curve polygon
 	 */
 	public static CurvePolygon<Curve> readCurvePolygon(ByteReader reader,
@@ -431,8 +467,11 @@ public class GeometryReader {
 	 * Read a Polyhedral Surface
 	 * 
 	 * @param reader
+	 *            byte reader
 	 * @param hasZ
+	 *            has z flag
 	 * @param hasM
+	 *            has m flag
 	 * @return polyhedral surface
 	 */
 	public static PolyhedralSurface readPolyhedralSurface(ByteReader reader,
@@ -455,8 +494,11 @@ public class GeometryReader {
 	 * Read a TIN
 	 * 
 	 * @param reader
+	 *            byte reader
 	 * @param hasZ
+	 *            has z flag
 	 * @param hasM
+	 *            has m flag
 	 * @return TIN
 	 */
 	public static TIN readTIN(ByteReader reader, boolean hasZ, boolean hasM) {
@@ -478,8 +520,11 @@ public class GeometryReader {
 	 * Read a Triangle
 	 * 
 	 * @param reader
+	 *            byte reader
 	 * @param hasZ
+	 *            has z flag
 	 * @param hasM
+	 *            has m flag
 	 * @return triangle
 	 */
 	public static Triangle readTriangle(ByteReader reader, boolean hasZ,
