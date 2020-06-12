@@ -20,6 +20,7 @@ import mil.nga.sf.TIN;
 import mil.nga.sf.Triangle;
 import mil.nga.sf.util.ByteReader;
 import mil.nga.sf.util.SFException;
+import mil.nga.sf.util.filter.GeometryFilter;
 
 /**
  * Well Known Binary reader
@@ -41,8 +42,22 @@ public class GeometryReader {
 	 * @return geometry
 	 */
 	public static Geometry readGeometry(ByteReader reader) {
-		Geometry geometry = readGeometry(reader, null);
-		return geometry;
+		return readGeometry(reader, null, null);
+	}
+
+	/**
+	 * Read a geometry from the byte reader
+	 * 
+	 * @param reader
+	 *            byte reader
+	 * @param filter
+	 *            geometry filter
+	 * @return geometry
+	 * @since 2.0.3
+	 */
+	public static Geometry readGeometry(ByteReader reader,
+			GeometryFilter filter) {
+		return readGeometry(reader, filter, null);
 	}
 
 	/**
@@ -57,6 +72,47 @@ public class GeometryReader {
 	 * @return geometry
 	 */
 	public static <T extends Geometry> T readGeometry(ByteReader reader,
+			Class<T> expectedType) {
+		return readGeometry(reader, null, expectedType);
+	}
+
+	/**
+	 * Read a geometry from the byte reader
+	 * 
+	 * @param reader
+	 *            byte reader
+	 * @param filter
+	 *            geometry filter
+	 * @param expectedType
+	 *            expected type
+	 * @param <T>
+	 *            geometry type
+	 * @return geometry
+	 * @since 2.0.3
+	 */
+	public static <T extends Geometry> T readGeometry(ByteReader reader,
+			GeometryFilter filter, Class<T> expectedType) {
+		return readGeometry(reader, filter, null, expectedType);
+	}
+
+	/**
+	 * Read a geometry from the byte reader
+	 * 
+	 * @param reader
+	 *            byte reader
+	 * @param filter
+	 *            geometry filter
+	 * @param containingType
+	 *            containing geometry type
+	 * @param expectedType
+	 *            expected type
+	 * @param <T>
+	 *            geometry type
+	 * @return geometry
+	 * @since 2.0.3
+	 */
+	public static <T extends Geometry> T readGeometry(ByteReader reader,
+			GeometryFilter filter, GeometryType containingType,
 			Class<T> expectedType) {
 
 		ByteOrder originalByteOrder = reader.getByteOrder();
@@ -79,33 +135,33 @@ public class GeometryReader {
 			geometry = readPoint(reader, hasZ, hasM);
 			break;
 		case LINESTRING:
-			geometry = readLineString(reader, hasZ, hasM);
+			geometry = readLineString(reader, filter, hasZ, hasM);
 			break;
 		case POLYGON:
-			geometry = readPolygon(reader, hasZ, hasM);
+			geometry = readPolygon(reader, filter, hasZ, hasM);
 			break;
 		case MULTIPOINT:
-			geometry = readMultiPoint(reader, hasZ, hasM);
+			geometry = readMultiPoint(reader, filter, hasZ, hasM);
 			break;
 		case MULTILINESTRING:
-			geometry = readMultiLineString(reader, hasZ, hasM);
+			geometry = readMultiLineString(reader, filter, hasZ, hasM);
 			break;
 		case MULTIPOLYGON:
-			geometry = readMultiPolygon(reader, hasZ, hasM);
+			geometry = readMultiPolygon(reader, filter, hasZ, hasM);
 			break;
 		case GEOMETRYCOLLECTION:
 		case MULTICURVE:
 		case MULTISURFACE:
-			geometry = readGeometryCollection(reader, hasZ, hasM);
+			geometry = readGeometryCollection(reader, filter, hasZ, hasM);
 			break;
 		case CIRCULARSTRING:
-			geometry = readCircularString(reader, hasZ, hasM);
+			geometry = readCircularString(reader, filter, hasZ, hasM);
 			break;
 		case COMPOUNDCURVE:
-			geometry = readCompoundCurve(reader, hasZ, hasM);
+			geometry = readCompoundCurve(reader, filter, hasZ, hasM);
 			break;
 		case CURVEPOLYGON:
-			geometry = readCurvePolygon(reader, hasZ, hasM);
+			geometry = readCurvePolygon(reader, filter, hasZ, hasM);
 			break;
 		case CURVE:
 			throw new SFException("Unexpected Geometry Type of "
@@ -114,20 +170,24 @@ public class GeometryReader {
 			throw new SFException("Unexpected Geometry Type of "
 					+ geometryType.name() + " which is abstract");
 		case POLYHEDRALSURFACE:
-			geometry = readPolyhedralSurface(reader, hasZ, hasM);
+			geometry = readPolyhedralSurface(reader, filter, hasZ, hasM);
 			break;
 		case TIN:
-			geometry = readTIN(reader, hasZ, hasM);
+			geometry = readTIN(reader, filter, hasZ, hasM);
 			break;
 		case TRIANGLE:
-			geometry = readTriangle(reader, hasZ, hasM);
+			geometry = readTriangle(reader, filter, hasZ, hasM);
 			break;
 		default:
 			throw new SFException(
 					"Geometry Type not supported: " + geometryType);
 		}
 
-		// If there is an expected type, verify the geometry if of that type
+		if (!filter(filter, containingType, geometry)) {
+			geometry = null;
+		}
+
+		// If there is an expected type, verify the geometry is of that type
 		if (expectedType != null && geometry != null
 				&& !expectedType.isAssignableFrom(geometry.getClass())) {
 			throw new SFException("Unexpected Geometry Type. Expected: "
@@ -233,6 +293,25 @@ public class GeometryReader {
 	 */
 	public static LineString readLineString(ByteReader reader, boolean hasZ,
 			boolean hasM) {
+		return readLineString(reader, null, hasZ, hasM);
+	}
+
+	/**
+	 * Read a Line String
+	 * 
+	 * @param reader
+	 *            byte reader
+	 * @param filter
+	 *            geometry filter
+	 * @param hasZ
+	 *            has z flag
+	 * @param hasM
+	 *            has m flag
+	 * @return line string
+	 * @since 2.0.3
+	 */
+	public static LineString readLineString(ByteReader reader,
+			GeometryFilter filter, boolean hasZ, boolean hasM) {
 
 		LineString lineString = new LineString(hasZ, hasM);
 
@@ -240,8 +319,9 @@ public class GeometryReader {
 
 		for (int i = 0; i < numPoints; i++) {
 			Point point = readPoint(reader, hasZ, hasM);
-			lineString.addPoint(point);
-
+			if (filter(filter, GeometryType.LINESTRING, point)) {
+				lineString.addPoint(point);
+			}
 		}
 
 		return lineString;
@@ -260,15 +340,35 @@ public class GeometryReader {
 	 */
 	public static Polygon readPolygon(ByteReader reader, boolean hasZ,
 			boolean hasM) {
+		return readPolygon(reader, null, hasZ, hasM);
+	}
+
+	/**
+	 * Read a Polygon
+	 * 
+	 * @param reader
+	 *            byte reader
+	 * @param filter
+	 *            geometry filter
+	 * @param hasZ
+	 *            has z flag
+	 * @param hasM
+	 *            has m flag
+	 * @return polygon
+	 * @since 2.0.3
+	 */
+	public static Polygon readPolygon(ByteReader reader, GeometryFilter filter,
+			boolean hasZ, boolean hasM) {
 
 		Polygon polygon = new Polygon(hasZ, hasM);
 
 		int numRings = reader.readInt();
 
 		for (int i = 0; i < numRings; i++) {
-			LineString ring = readLineString(reader, hasZ, hasM);
-			polygon.addRing(ring);
-
+			LineString ring = readLineString(reader, filter, hasZ, hasM);
+			if (filter(filter, GeometryType.POLYGON, ring)) {
+				polygon.addRing(ring);
+			}
 		}
 
 		return polygon;
@@ -287,15 +387,36 @@ public class GeometryReader {
 	 */
 	public static MultiPoint readMultiPoint(ByteReader reader, boolean hasZ,
 			boolean hasM) {
+		return readMultiPoint(reader, null, hasZ, hasM);
+	}
+
+	/**
+	 * Read a Multi Point
+	 * 
+	 * @param reader
+	 *            byte reader
+	 * @param filter
+	 *            geometry filter
+	 * @param hasZ
+	 *            has z flag
+	 * @param hasM
+	 *            has m flag
+	 * @return multi point
+	 * @since 2.0.3
+	 */
+	public static MultiPoint readMultiPoint(ByteReader reader,
+			GeometryFilter filter, boolean hasZ, boolean hasM) {
 
 		MultiPoint multiPoint = new MultiPoint(hasZ, hasM);
 
 		int numPoints = reader.readInt();
 
 		for (int i = 0; i < numPoints; i++) {
-			Point point = readGeometry(reader, Point.class);
-			multiPoint.addPoint(point);
-
+			Point point = readGeometry(reader, filter, GeometryType.MULTIPOINT,
+					Point.class);
+			if (point != null) {
+				multiPoint.addPoint(point);
+			}
 		}
 
 		return multiPoint;
@@ -314,14 +435,36 @@ public class GeometryReader {
 	 */
 	public static MultiLineString readMultiLineString(ByteReader reader,
 			boolean hasZ, boolean hasM) {
+		return readMultiLineString(reader, null, hasZ, hasM);
+	}
+
+	/**
+	 * Read a Multi Line String
+	 * 
+	 * @param reader
+	 *            byte reader
+	 * @param filter
+	 *            geometry filter
+	 * @param hasZ
+	 *            has z flag
+	 * @param hasM
+	 *            has m flag
+	 * @return multi line string
+	 * @since 2.0.3
+	 */
+	public static MultiLineString readMultiLineString(ByteReader reader,
+			GeometryFilter filter, boolean hasZ, boolean hasM) {
 
 		MultiLineString multiLineString = new MultiLineString(hasZ, hasM);
 
 		int numLineStrings = reader.readInt();
 
 		for (int i = 0; i < numLineStrings; i++) {
-			LineString lineString = readGeometry(reader, LineString.class);
-			multiLineString.addLineString(lineString);
+			LineString lineString = readGeometry(reader, filter,
+					GeometryType.MULTILINESTRING, LineString.class);
+			if (lineString != null) {
+				multiLineString.addLineString(lineString);
+			}
 		}
 
 		return multiLineString;
@@ -340,15 +483,36 @@ public class GeometryReader {
 	 */
 	public static MultiPolygon readMultiPolygon(ByteReader reader, boolean hasZ,
 			boolean hasM) {
+		return readMultiPolygon(reader, null, hasZ, hasM);
+	}
+
+	/**
+	 * Read a Multi Polygon
+	 * 
+	 * @param reader
+	 *            byte reader
+	 * @param filter
+	 *            geometry filter
+	 * @param hasZ
+	 *            has z flag
+	 * @param hasM
+	 *            has m flag
+	 * @return multi polygon
+	 * @since 2.0.3
+	 */
+	public static MultiPolygon readMultiPolygon(ByteReader reader,
+			GeometryFilter filter, boolean hasZ, boolean hasM) {
 
 		MultiPolygon multiPolygon = new MultiPolygon(hasZ, hasM);
 
 		int numPolygons = reader.readInt();
 
 		for (int i = 0; i < numPolygons; i++) {
-			Polygon polygon = readGeometry(reader, Polygon.class);
-			multiPolygon.addPolygon(polygon);
-
+			Polygon polygon = readGeometry(reader, filter,
+					GeometryType.MULTIPOLYGON, Polygon.class);
+			if (polygon != null) {
+				multiPolygon.addPolygon(polygon);
+			}
 		}
 
 		return multiPolygon;
@@ -367,6 +531,26 @@ public class GeometryReader {
 	 */
 	public static GeometryCollection<Geometry> readGeometryCollection(
 			ByteReader reader, boolean hasZ, boolean hasM) {
+		return readGeometryCollection(reader, null, hasZ, hasM);
+	}
+
+	/**
+	 * Read a Geometry Collection
+	 * 
+	 * @param reader
+	 *            byte reader
+	 * @param filter
+	 *            geometry filter
+	 * @param hasZ
+	 *            has z flag
+	 * @param hasM
+	 *            has m flag
+	 * @return geometry collection
+	 * @since 2.0.3
+	 */
+	public static GeometryCollection<Geometry> readGeometryCollection(
+			ByteReader reader, GeometryFilter filter, boolean hasZ,
+			boolean hasM) {
 
 		GeometryCollection<Geometry> geometryCollection = new GeometryCollection<Geometry>(
 				hasZ, hasM);
@@ -374,9 +558,11 @@ public class GeometryReader {
 		int numGeometries = reader.readInt();
 
 		for (int i = 0; i < numGeometries; i++) {
-			Geometry geometry = readGeometry(reader, Geometry.class);
-			geometryCollection.addGeometry(geometry);
-
+			Geometry geometry = readGeometry(reader, filter,
+					GeometryType.GEOMETRYCOLLECTION, Geometry.class);
+			if (geometry != null) {
+				geometryCollection.addGeometry(geometry);
+			}
 		}
 
 		return geometryCollection;
@@ -395,6 +581,25 @@ public class GeometryReader {
 	 */
 	public static CircularString readCircularString(ByteReader reader,
 			boolean hasZ, boolean hasM) {
+		return readCircularString(reader, null, hasZ, hasM);
+	}
+
+	/**
+	 * Read a Circular String
+	 * 
+	 * @param reader
+	 *            byte reader
+	 * @param filter
+	 *            geometry filter
+	 * @param hasZ
+	 *            has z flag
+	 * @param hasM
+	 *            has m flag
+	 * @return circular string
+	 * @since 2.0.3
+	 */
+	public static CircularString readCircularString(ByteReader reader,
+			GeometryFilter filter, boolean hasZ, boolean hasM) {
 
 		CircularString circularString = new CircularString(hasZ, hasM);
 
@@ -402,8 +607,9 @@ public class GeometryReader {
 
 		for (int i = 0; i < numPoints; i++) {
 			Point point = readPoint(reader, hasZ, hasM);
-			circularString.addPoint(point);
-
+			if (filter(filter, GeometryType.CIRCULARSTRING, point)) {
+				circularString.addPoint(point);
+			}
 		}
 
 		return circularString;
@@ -422,15 +628,36 @@ public class GeometryReader {
 	 */
 	public static CompoundCurve readCompoundCurve(ByteReader reader,
 			boolean hasZ, boolean hasM) {
+		return readCompoundCurve(reader, null, hasZ, hasM);
+	}
+
+	/**
+	 * Read a Compound Curve
+	 * 
+	 * @param reader
+	 *            byte reader
+	 * @param filter
+	 *            geometry filter
+	 * @param hasZ
+	 *            has z flag
+	 * @param hasM
+	 *            has m flag
+	 * @return compound curve
+	 * @since 2.0.3
+	 */
+	public static CompoundCurve readCompoundCurve(ByteReader reader,
+			GeometryFilter filter, boolean hasZ, boolean hasM) {
 
 		CompoundCurve compoundCurve = new CompoundCurve(hasZ, hasM);
 
 		int numLineStrings = reader.readInt();
 
 		for (int i = 0; i < numLineStrings; i++) {
-			LineString lineString = readGeometry(reader, LineString.class);
-			compoundCurve.addLineString(lineString);
-
+			LineString lineString = readGeometry(reader, filter,
+					GeometryType.COMPOUNDCURVE, LineString.class);
+			if (lineString != null) {
+				compoundCurve.addLineString(lineString);
+			}
 		}
 
 		return compoundCurve;
@@ -449,15 +676,36 @@ public class GeometryReader {
 	 */
 	public static CurvePolygon<Curve> readCurvePolygon(ByteReader reader,
 			boolean hasZ, boolean hasM) {
+		return readCurvePolygon(reader, null, hasZ, hasM);
+	}
+
+	/**
+	 * Read a Curve Polygon
+	 * 
+	 * @param reader
+	 *            byte reader
+	 * @param filter
+	 *            geometry filter
+	 * @param hasZ
+	 *            has z flag
+	 * @param hasM
+	 *            has m flag
+	 * @return curve polygon
+	 * @since 2.0.3
+	 */
+	public static CurvePolygon<Curve> readCurvePolygon(ByteReader reader,
+			GeometryFilter filter, boolean hasZ, boolean hasM) {
 
 		CurvePolygon<Curve> curvePolygon = new CurvePolygon<Curve>(hasZ, hasM);
 
 		int numRings = reader.readInt();
 
 		for (int i = 0; i < numRings; i++) {
-			Curve ring = readGeometry(reader, Curve.class);
-			curvePolygon.addRing(ring);
-
+			Curve ring = readGeometry(reader, filter, GeometryType.CURVEPOLYGON,
+					Curve.class);
+			if (ring != null) {
+				curvePolygon.addRing(ring);
+			}
 		}
 
 		return curvePolygon;
@@ -476,15 +724,36 @@ public class GeometryReader {
 	 */
 	public static PolyhedralSurface readPolyhedralSurface(ByteReader reader,
 			boolean hasZ, boolean hasM) {
+		return readPolyhedralSurface(reader, null, hasZ, hasM);
+	}
+
+	/**
+	 * Read a Polyhedral Surface
+	 * 
+	 * @param reader
+	 *            byte reader
+	 * @param filter
+	 *            geometry filter
+	 * @param hasZ
+	 *            has z flag
+	 * @param hasM
+	 *            has m flag
+	 * @return polyhedral surface
+	 * @since 2.0.3
+	 */
+	public static PolyhedralSurface readPolyhedralSurface(ByteReader reader,
+			GeometryFilter filter, boolean hasZ, boolean hasM) {
 
 		PolyhedralSurface polyhedralSurface = new PolyhedralSurface(hasZ, hasM);
 
 		int numPolygons = reader.readInt();
 
 		for (int i = 0; i < numPolygons; i++) {
-			Polygon polygon = readGeometry(reader, Polygon.class);
-			polyhedralSurface.addPolygon(polygon);
-
+			Polygon polygon = readGeometry(reader, filter,
+					GeometryType.POLYHEDRALSURFACE, Polygon.class);
+			if (polygon != null) {
+				polyhedralSurface.addPolygon(polygon);
+			}
 		}
 
 		return polyhedralSurface;
@@ -502,15 +771,36 @@ public class GeometryReader {
 	 * @return TIN
 	 */
 	public static TIN readTIN(ByteReader reader, boolean hasZ, boolean hasM) {
+		return readTIN(reader, null, hasZ, hasM);
+	}
+
+	/**
+	 * Read a TIN
+	 * 
+	 * @param reader
+	 *            byte reader
+	 * @param filter
+	 *            geometry filter
+	 * @param hasZ
+	 *            has z flag
+	 * @param hasM
+	 *            has m flag
+	 * @return TIN
+	 * @since 2.0.3
+	 */
+	public static TIN readTIN(ByteReader reader, GeometryFilter filter,
+			boolean hasZ, boolean hasM) {
 
 		TIN tin = new TIN(hasZ, hasM);
 
 		int numPolygons = reader.readInt();
 
 		for (int i = 0; i < numPolygons; i++) {
-			Polygon polygon = readGeometry(reader, Polygon.class);
-			tin.addPolygon(polygon);
-
+			Polygon polygon = readGeometry(reader, filter, GeometryType.TIN,
+					Polygon.class);
+			if (polygon != null) {
+				tin.addPolygon(polygon);
+			}
 		}
 
 		return tin;
@@ -529,18 +819,55 @@ public class GeometryReader {
 	 */
 	public static Triangle readTriangle(ByteReader reader, boolean hasZ,
 			boolean hasM) {
+		return readTriangle(reader, null, hasZ, hasM);
+	}
+
+	/**
+	 * Read a Triangle
+	 * 
+	 * @param reader
+	 *            byte reader
+	 * @param filter
+	 *            geometry filter
+	 * @param hasZ
+	 *            has z flag
+	 * @param hasM
+	 *            has m flag
+	 * @return triangle
+	 * @since 2.0.3
+	 */
+	public static Triangle readTriangle(ByteReader reader,
+			GeometryFilter filter, boolean hasZ, boolean hasM) {
 
 		Triangle triangle = new Triangle(hasZ, hasM);
 
 		int numRings = reader.readInt();
 
 		for (int i = 0; i < numRings; i++) {
-			LineString ring = readLineString(reader, hasZ, hasM);
-			triangle.addRing(ring);
-
+			LineString ring = readLineString(reader, filter, hasZ, hasM);
+			if (filter(filter, GeometryType.TRIANGLE, ring)) {
+				triangle.addRing(ring);
+			}
 		}
 
 		return triangle;
+	}
+
+	/**
+	 * Filter the geometry
+	 * 
+	 * @param filter
+	 *            geometry filter or null
+	 * @param containingType
+	 *            containing geometry type
+	 * @param geometry
+	 *            geometry or null
+	 * @return true if passes filter
+	 */
+	private static boolean filter(GeometryFilter filter,
+			GeometryType containingType, Geometry geometry) {
+		return filter == null || geometry == null
+				|| filter.filter(containingType, geometry);
 	}
 
 }
