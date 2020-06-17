@@ -141,8 +141,8 @@ public class WKBTestUtils {
 				compareTriangle((Triangle) expected, (Triangle) actual);
 				break;
 			default:
-				throw new RuntimeException("Geometry Type not supported: "
-						+ geometryType);
+				throw new RuntimeException(
+						"Geometry Type not supported: " + geometryType);
 			}
 		}
 
@@ -198,12 +198,14 @@ public class WKBTestUtils {
 	 * @param actual
 	 *            actual line string
 	 */
-	public static void compareLineString(LineString expected, LineString actual) {
+	public static void compareLineString(LineString expected,
+			LineString actual) {
 
 		compareBaseGeometryAttributes(expected, actual);
 		TestCase.assertEquals(expected.numPoints(), actual.numPoints());
 		for (int i = 0; i < expected.numPoints(); i++) {
-			comparePoint(expected.getPoints().get(i), actual.getPoints().get(i));
+			comparePoint(expected.getPoints().get(i),
+					actual.getPoints().get(i));
 		}
 	}
 
@@ -220,8 +222,8 @@ public class WKBTestUtils {
 		compareBaseGeometryAttributes(expected, actual);
 		TestCase.assertEquals(expected.numRings(), actual.numRings());
 		for (int i = 0; i < expected.numRings(); i++) {
-			compareLineString(expected.getRings().get(i), actual.getRings()
-					.get(i));
+			compareLineString(expected.getRings().get(i),
+					actual.getRings().get(i));
 		}
 	}
 
@@ -233,12 +235,14 @@ public class WKBTestUtils {
 	 * @param actual
 	 *            actual multi point
 	 */
-	public static void compareMultiPoint(MultiPoint expected, MultiPoint actual) {
+	public static void compareMultiPoint(MultiPoint expected,
+			MultiPoint actual) {
 
 		compareBaseGeometryAttributes(expected, actual);
 		TestCase.assertEquals(expected.numPoints(), actual.numPoints());
 		for (int i = 0; i < expected.numPoints(); i++) {
-			comparePoint(expected.getPoints().get(i), actual.getPoints().get(i));
+			comparePoint(expected.getPoints().get(i),
+					actual.getPoints().get(i));
 		}
 	}
 
@@ -257,8 +261,8 @@ public class WKBTestUtils {
 		TestCase.assertEquals(expected.numLineStrings(),
 				actual.numLineStrings());
 		for (int i = 0; i < expected.numLineStrings(); i++) {
-			compareLineString(expected.getLineStrings().get(i), actual
-					.getLineStrings().get(i));
+			compareLineString(expected.getLineStrings().get(i),
+					actual.getLineStrings().get(i));
 		}
 	}
 
@@ -276,8 +280,8 @@ public class WKBTestUtils {
 		compareBaseGeometryAttributes(expected, actual);
 		TestCase.assertEquals(expected.numPolygons(), actual.numPolygons());
 		for (int i = 0; i < expected.numPolygons(); i++) {
-			comparePolygon(expected.getPolygons().get(i), actual.getPolygons()
-					.get(i));
+			comparePolygon(expected.getPolygons().get(i),
+					actual.getPolygons().get(i));
 		}
 	}
 
@@ -289,14 +293,14 @@ public class WKBTestUtils {
 	 * @param actual
 	 *            actual geometry collection
 	 */
-	public static void compareGeometryCollection(
-			GeometryCollection<?> expected, GeometryCollection<?> actual) {
+	public static void compareGeometryCollection(GeometryCollection<?> expected,
+			GeometryCollection<?> actual) {
 
 		compareBaseGeometryAttributes(expected, actual);
 		TestCase.assertEquals(expected.numGeometries(), actual.numGeometries());
 		for (int i = 0; i < expected.numGeometries(); i++) {
-			compareGeometries(expected.getGeometries().get(i), actual
-					.getGeometries().get(i));
+			compareGeometries(expected.getGeometries().get(i),
+					actual.getGeometries().get(i));
 		}
 	}
 
@@ -314,7 +318,8 @@ public class WKBTestUtils {
 		compareBaseGeometryAttributes(expected, actual);
 		TestCase.assertEquals(expected.numPoints(), actual.numPoints());
 		for (int i = 0; i < expected.numPoints(); i++) {
-			comparePoint(expected.getPoints().get(i), actual.getPoints().get(i));
+			comparePoint(expected.getPoints().get(i),
+					actual.getPoints().get(i));
 		}
 	}
 
@@ -333,8 +338,8 @@ public class WKBTestUtils {
 		TestCase.assertEquals(expected.numLineStrings(),
 				actual.numLineStrings());
 		for (int i = 0; i < expected.numLineStrings(); i++) {
-			compareLineString(expected.getLineStrings().get(i), actual
-					.getLineStrings().get(i));
+			compareLineString(expected.getLineStrings().get(i),
+					actual.getLineStrings().get(i));
 		}
 	}
 
@@ -352,8 +357,8 @@ public class WKBTestUtils {
 		compareBaseGeometryAttributes(expected, actual);
 		TestCase.assertEquals(expected.numRings(), actual.numRings());
 		for (int i = 0; i < expected.numRings(); i++) {
-			compareGeometries(expected.getRings().get(i), actual.getRings()
-					.get(i));
+			compareGeometries(expected.getRings().get(i),
+					actual.getRings().get(i));
 		}
 	}
 
@@ -371,8 +376,8 @@ public class WKBTestUtils {
 		compareBaseGeometryAttributes(expected, actual);
 		TestCase.assertEquals(expected.numPolygons(), actual.numPolygons());
 		for (int i = 0; i < expected.numPolygons(); i++) {
-			compareGeometries(expected.getPolygons().get(i), actual
-					.getPolygons().get(i));
+			compareGeometries(expected.getPolygons().get(i),
+					actual.getPolygons().get(i));
 		}
 	}
 
@@ -389,8 +394,8 @@ public class WKBTestUtils {
 		compareBaseGeometryAttributes(expected, actual);
 		TestCase.assertEquals(expected.numPolygons(), actual.numPolygons());
 		for (int i = 0; i < expected.numPolygons(); i++) {
-			compareGeometries(expected.getPolygons().get(i), actual
-					.getPolygons().get(i));
+			compareGeometries(expected.getPolygons().get(i),
+					actual.getPolygons().get(i));
 		}
 	}
 
@@ -407,8 +412,8 @@ public class WKBTestUtils {
 		compareBaseGeometryAttributes(expected, actual);
 		TestCase.assertEquals(expected.numRings(), actual.numRings());
 		for (int i = 0; i < expected.numRings(); i++) {
-			compareLineString(expected.getRings().get(i), actual.getRings()
-					.get(i));
+			compareLineString(expected.getRings().get(i),
+					actual.getRings().get(i));
 		}
 	}
 
@@ -518,8 +523,10 @@ public class WKBTestUtils {
 	 * @param bytes
 	 *            bytes
 	 * @return geometry
+	 * @throws IOException
+	 *             upon error
 	 */
-	public static Geometry readGeometry(byte[] bytes) {
+	public static Geometry readGeometry(byte[] bytes) throws IOException {
 		return readGeometry(bytes, ByteOrder.BIG_ENDIAN);
 	}
 
@@ -531,17 +538,20 @@ public class WKBTestUtils {
 	 * @param byteOrder
 	 *            byte order
 	 * @return geometry
+	 * @throws IOException
+	 *             upon error
 	 */
-	public static Geometry readGeometry(byte[] bytes, ByteOrder byteOrder) {
+	public static Geometry readGeometry(byte[] bytes, ByteOrder byteOrder)
+			throws IOException {
 
-		ByteReader reader = new ByteReader(bytes);
-		reader.setByteOrder(byteOrder);
+		ByteReader reader = new ByteReader(bytes, byteOrder);
 		Geometry geometry = GeometryReader.readGeometry(reader);
+		reader.close();
 
-		ByteReader reader2 = new ByteReader(bytes);
-		reader2.setByteOrder(byteOrder);
+		ByteReader reader2 = new ByteReader(bytes, byteOrder);
 		GeometryTypeInfo geometryTypeInfo = GeometryReader
 				.readGeometryType(reader2);
+		reader2.close();
 		TestCase.assertEquals(geometryTypeInfo.getGeometryType(), GeometryCodes
 				.getGeometryType(geometryTypeInfo.getGeometryTypeCode()));
 		GeometryType expectedGeometryType = geometryTypeInfo.getGeometryType();
@@ -813,7 +823,8 @@ public class WKBTestUtils {
 	 * @param hasM
 	 * @return compound curve
 	 */
-	public static CompoundCurve createCompoundCurve(boolean hasZ, boolean hasM) {
+	public static CompoundCurve createCompoundCurve(boolean hasZ,
+			boolean hasM) {
 		return createCompoundCurve(hasZ, hasM, false);
 	}
 
@@ -837,8 +848,8 @@ public class WKBTestUtils {
 		}
 
 		if (ring) {
-			compoundCurve.getLineString(num - 1).addPoint(
-					compoundCurve.getLineString(0).startPoint());
+			compoundCurve.getLineString(num - 1)
+					.addPoint(compoundCurve.getLineString(0).startPoint());
 		}
 
 		return compoundCurve;

@@ -608,11 +608,15 @@ public class WKBTest {
 	 *            geometry bytes
 	 * @param filter
 	 *            point finite filter
+	 * @throws IOException
+	 *             upon error
 	 */
-	private void testFiniteFilter(byte[] bytes, PointFiniteFilter filter) {
+	private void testFiniteFilter(byte[] bytes, PointFiniteFilter filter)
+			throws IOException {
 
 		ByteReader reader = new ByteReader(bytes);
 		Geometry geometry = GeometryReader.readGeometry(reader, filter);
+		reader.close();
 
 		if (geometry != null) {
 
