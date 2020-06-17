@@ -1,5 +1,6 @@
 package mil.nga.sf.wkb;
 
+import java.io.IOException;
 import java.nio.ByteOrder;
 
 import mil.nga.sf.CircularString;
@@ -40,8 +41,10 @@ public class GeometryReader {
 	 * @param reader
 	 *            byte reader
 	 * @return geometry
+	 * @throws IOException
+	 *             upon failure to read
 	 */
-	public static Geometry readGeometry(ByteReader reader) {
+	public static Geometry readGeometry(ByteReader reader) throws IOException {
 		return readGeometry(reader, null, null);
 	}
 
@@ -53,10 +56,12 @@ public class GeometryReader {
 	 * @param filter
 	 *            geometry filter
 	 * @return geometry
+	 * @throws IOException
+	 *             upon failure to read
 	 * @since 2.0.3
 	 */
 	public static Geometry readGeometry(ByteReader reader,
-			GeometryFilter filter) {
+			GeometryFilter filter) throws IOException {
 		return readGeometry(reader, filter, null);
 	}
 
@@ -70,9 +75,11 @@ public class GeometryReader {
 	 * @param <T>
 	 *            geometry type
 	 * @return geometry
+	 * @throws IOException
+	 *             upon failure to read
 	 */
 	public static <T extends Geometry> T readGeometry(ByteReader reader,
-			Class<T> expectedType) {
+			Class<T> expectedType) throws IOException {
 		return readGeometry(reader, null, expectedType);
 	}
 
@@ -88,10 +95,12 @@ public class GeometryReader {
 	 * @param <T>
 	 *            geometry type
 	 * @return geometry
+	 * @throws IOException
+	 *             upon failure to read
 	 * @since 2.0.3
 	 */
 	public static <T extends Geometry> T readGeometry(ByteReader reader,
-			GeometryFilter filter, Class<T> expectedType) {
+			GeometryFilter filter, Class<T> expectedType) throws IOException {
 		return readGeometry(reader, filter, null, expectedType);
 	}
 
@@ -109,11 +118,13 @@ public class GeometryReader {
 	 * @param <T>
 	 *            geometry type
 	 * @return geometry
+	 * @throws IOException
+	 *             upon failure to read
 	 * @since 2.0.3
 	 */
 	public static <T extends Geometry> T readGeometry(ByteReader reader,
 			GeometryFilter filter, GeometryType containingType,
-			Class<T> expectedType) {
+			Class<T> expectedType) throws IOException {
 
 		ByteOrder originalByteOrder = reader.getByteOrder();
 
@@ -210,8 +221,11 @@ public class GeometryReader {
 	 * @param reader
 	 *            byte reader
 	 * @return geometry type info
+	 * @throws IOException
+	 *             upon failure to read
 	 */
-	public static GeometryTypeInfo readGeometryType(ByteReader reader) {
+	public static GeometryTypeInfo readGeometryType(ByteReader reader)
+			throws IOException {
 
 		// Read the single byte order byte
 		byte byteOrderValue = reader.readByte();
@@ -258,9 +272,11 @@ public class GeometryReader {
 	 * @param hasM
 	 *            has m flag
 	 * @return point
+	 * @throws IOException
+	 *             upon failure to read
 	 */
-	public static Point readPoint(ByteReader reader, boolean hasZ,
-			boolean hasM) {
+	public static Point readPoint(ByteReader reader, boolean hasZ, boolean hasM)
+			throws IOException {
 
 		double x = reader.readDouble();
 		double y = reader.readDouble();
@@ -290,9 +306,11 @@ public class GeometryReader {
 	 * @param hasM
 	 *            has m flag
 	 * @return line string
+	 * @throws IOException
+	 *             upon failure to read
 	 */
 	public static LineString readLineString(ByteReader reader, boolean hasZ,
-			boolean hasM) {
+			boolean hasM) throws IOException {
 		return readLineString(reader, null, hasZ, hasM);
 	}
 
@@ -308,10 +326,13 @@ public class GeometryReader {
 	 * @param hasM
 	 *            has m flag
 	 * @return line string
+	 * @throws IOException
+	 *             upon failure to read
 	 * @since 2.0.3
 	 */
 	public static LineString readLineString(ByteReader reader,
-			GeometryFilter filter, boolean hasZ, boolean hasM) {
+			GeometryFilter filter, boolean hasZ, boolean hasM)
+			throws IOException {
 
 		LineString lineString = new LineString(hasZ, hasM);
 
@@ -337,9 +358,11 @@ public class GeometryReader {
 	 * @param hasM
 	 *            has m flag
 	 * @return polygon
+	 * @throws IOException
+	 *             upon failure to read
 	 */
 	public static Polygon readPolygon(ByteReader reader, boolean hasZ,
-			boolean hasM) {
+			boolean hasM) throws IOException {
 		return readPolygon(reader, null, hasZ, hasM);
 	}
 
@@ -355,10 +378,12 @@ public class GeometryReader {
 	 * @param hasM
 	 *            has m flag
 	 * @return polygon
+	 * @throws IOException
+	 *             upon failure to read
 	 * @since 2.0.3
 	 */
 	public static Polygon readPolygon(ByteReader reader, GeometryFilter filter,
-			boolean hasZ, boolean hasM) {
+			boolean hasZ, boolean hasM) throws IOException {
 
 		Polygon polygon = new Polygon(hasZ, hasM);
 
@@ -384,9 +409,11 @@ public class GeometryReader {
 	 * @param hasM
 	 *            has m flag
 	 * @return multi point
+	 * @throws IOException
+	 *             upon failure to read
 	 */
 	public static MultiPoint readMultiPoint(ByteReader reader, boolean hasZ,
-			boolean hasM) {
+			boolean hasM) throws IOException {
 		return readMultiPoint(reader, null, hasZ, hasM);
 	}
 
@@ -402,10 +429,13 @@ public class GeometryReader {
 	 * @param hasM
 	 *            has m flag
 	 * @return multi point
+	 * @throws IOException
+	 *             upon failure to read
 	 * @since 2.0.3
 	 */
 	public static MultiPoint readMultiPoint(ByteReader reader,
-			GeometryFilter filter, boolean hasZ, boolean hasM) {
+			GeometryFilter filter, boolean hasZ, boolean hasM)
+			throws IOException {
 
 		MultiPoint multiPoint = new MultiPoint(hasZ, hasM);
 
@@ -432,9 +462,11 @@ public class GeometryReader {
 	 * @param hasM
 	 *            has m flag
 	 * @return multi line string
+	 * @throws IOException
+	 *             upon failure to read
 	 */
 	public static MultiLineString readMultiLineString(ByteReader reader,
-			boolean hasZ, boolean hasM) {
+			boolean hasZ, boolean hasM) throws IOException {
 		return readMultiLineString(reader, null, hasZ, hasM);
 	}
 
@@ -450,10 +482,13 @@ public class GeometryReader {
 	 * @param hasM
 	 *            has m flag
 	 * @return multi line string
+	 * @throws IOException
+	 *             upon failure to read
 	 * @since 2.0.3
 	 */
 	public static MultiLineString readMultiLineString(ByteReader reader,
-			GeometryFilter filter, boolean hasZ, boolean hasM) {
+			GeometryFilter filter, boolean hasZ, boolean hasM)
+			throws IOException {
 
 		MultiLineString multiLineString = new MultiLineString(hasZ, hasM);
 
@@ -480,9 +515,11 @@ public class GeometryReader {
 	 * @param hasM
 	 *            has m flag
 	 * @return multi polygon
+	 * @throws IOException
+	 *             upon failure to read
 	 */
 	public static MultiPolygon readMultiPolygon(ByteReader reader, boolean hasZ,
-			boolean hasM) {
+			boolean hasM) throws IOException {
 		return readMultiPolygon(reader, null, hasZ, hasM);
 	}
 
@@ -498,10 +535,13 @@ public class GeometryReader {
 	 * @param hasM
 	 *            has m flag
 	 * @return multi polygon
+	 * @throws IOException
+	 *             upon failure to read
 	 * @since 2.0.3
 	 */
 	public static MultiPolygon readMultiPolygon(ByteReader reader,
-			GeometryFilter filter, boolean hasZ, boolean hasM) {
+			GeometryFilter filter, boolean hasZ, boolean hasM)
+			throws IOException {
 
 		MultiPolygon multiPolygon = new MultiPolygon(hasZ, hasM);
 
@@ -528,9 +568,11 @@ public class GeometryReader {
 	 * @param hasM
 	 *            has m flag
 	 * @return geometry collection
+	 * @throws IOException
+	 *             upon failure to read
 	 */
 	public static GeometryCollection<Geometry> readGeometryCollection(
-			ByteReader reader, boolean hasZ, boolean hasM) {
+			ByteReader reader, boolean hasZ, boolean hasM) throws IOException {
 		return readGeometryCollection(reader, null, hasZ, hasM);
 	}
 
@@ -546,11 +588,13 @@ public class GeometryReader {
 	 * @param hasM
 	 *            has m flag
 	 * @return geometry collection
+	 * @throws IOException
+	 *             upon failure to read
 	 * @since 2.0.3
 	 */
 	public static GeometryCollection<Geometry> readGeometryCollection(
 			ByteReader reader, GeometryFilter filter, boolean hasZ,
-			boolean hasM) {
+			boolean hasM) throws IOException {
 
 		GeometryCollection<Geometry> geometryCollection = new GeometryCollection<Geometry>(
 				hasZ, hasM);
@@ -578,9 +622,11 @@ public class GeometryReader {
 	 * @param hasM
 	 *            has m flag
 	 * @return circular string
+	 * @throws IOException
+	 *             upon failure to read
 	 */
 	public static CircularString readCircularString(ByteReader reader,
-			boolean hasZ, boolean hasM) {
+			boolean hasZ, boolean hasM) throws IOException {
 		return readCircularString(reader, null, hasZ, hasM);
 	}
 
@@ -596,10 +642,13 @@ public class GeometryReader {
 	 * @param hasM
 	 *            has m flag
 	 * @return circular string
+	 * @throws IOException
+	 *             upon failure to read
 	 * @since 2.0.3
 	 */
 	public static CircularString readCircularString(ByteReader reader,
-			GeometryFilter filter, boolean hasZ, boolean hasM) {
+			GeometryFilter filter, boolean hasZ, boolean hasM)
+			throws IOException {
 
 		CircularString circularString = new CircularString(hasZ, hasM);
 
@@ -625,9 +674,11 @@ public class GeometryReader {
 	 * @param hasM
 	 *            has m flag
 	 * @return compound curve
+	 * @throws IOException
+	 *             upon failure to read
 	 */
 	public static CompoundCurve readCompoundCurve(ByteReader reader,
-			boolean hasZ, boolean hasM) {
+			boolean hasZ, boolean hasM) throws IOException {
 		return readCompoundCurve(reader, null, hasZ, hasM);
 	}
 
@@ -643,10 +694,13 @@ public class GeometryReader {
 	 * @param hasM
 	 *            has m flag
 	 * @return compound curve
+	 * @throws IOException
+	 *             upon failure to read
 	 * @since 2.0.3
 	 */
 	public static CompoundCurve readCompoundCurve(ByteReader reader,
-			GeometryFilter filter, boolean hasZ, boolean hasM) {
+			GeometryFilter filter, boolean hasZ, boolean hasM)
+			throws IOException {
 
 		CompoundCurve compoundCurve = new CompoundCurve(hasZ, hasM);
 
@@ -673,9 +727,11 @@ public class GeometryReader {
 	 * @param hasM
 	 *            has m flag
 	 * @return curve polygon
+	 * @throws IOException
+	 *             upon failure to read
 	 */
 	public static CurvePolygon<Curve> readCurvePolygon(ByteReader reader,
-			boolean hasZ, boolean hasM) {
+			boolean hasZ, boolean hasM) throws IOException {
 		return readCurvePolygon(reader, null, hasZ, hasM);
 	}
 
@@ -691,10 +747,13 @@ public class GeometryReader {
 	 * @param hasM
 	 *            has m flag
 	 * @return curve polygon
+	 * @throws IOException
+	 *             upon failure to read
 	 * @since 2.0.3
 	 */
 	public static CurvePolygon<Curve> readCurvePolygon(ByteReader reader,
-			GeometryFilter filter, boolean hasZ, boolean hasM) {
+			GeometryFilter filter, boolean hasZ, boolean hasM)
+			throws IOException {
 
 		CurvePolygon<Curve> curvePolygon = new CurvePolygon<Curve>(hasZ, hasM);
 
@@ -721,9 +780,11 @@ public class GeometryReader {
 	 * @param hasM
 	 *            has m flag
 	 * @return polyhedral surface
+	 * @throws IOException
+	 *             upon failure to read
 	 */
 	public static PolyhedralSurface readPolyhedralSurface(ByteReader reader,
-			boolean hasZ, boolean hasM) {
+			boolean hasZ, boolean hasM) throws IOException {
 		return readPolyhedralSurface(reader, null, hasZ, hasM);
 	}
 
@@ -739,10 +800,13 @@ public class GeometryReader {
 	 * @param hasM
 	 *            has m flag
 	 * @return polyhedral surface
+	 * @throws IOException
+	 *             upon failure to read
 	 * @since 2.0.3
 	 */
 	public static PolyhedralSurface readPolyhedralSurface(ByteReader reader,
-			GeometryFilter filter, boolean hasZ, boolean hasM) {
+			GeometryFilter filter, boolean hasZ, boolean hasM)
+			throws IOException {
 
 		PolyhedralSurface polyhedralSurface = new PolyhedralSurface(hasZ, hasM);
 
@@ -769,8 +833,11 @@ public class GeometryReader {
 	 * @param hasM
 	 *            has m flag
 	 * @return TIN
+	 * @throws IOException
+	 *             upon failure to read
 	 */
-	public static TIN readTIN(ByteReader reader, boolean hasZ, boolean hasM) {
+	public static TIN readTIN(ByteReader reader, boolean hasZ, boolean hasM)
+			throws IOException {
 		return readTIN(reader, null, hasZ, hasM);
 	}
 
@@ -786,10 +853,12 @@ public class GeometryReader {
 	 * @param hasM
 	 *            has m flag
 	 * @return TIN
+	 * @throws IOException
+	 *             upon failure to read
 	 * @since 2.0.3
 	 */
 	public static TIN readTIN(ByteReader reader, GeometryFilter filter,
-			boolean hasZ, boolean hasM) {
+			boolean hasZ, boolean hasM) throws IOException {
 
 		TIN tin = new TIN(hasZ, hasM);
 
@@ -816,9 +885,11 @@ public class GeometryReader {
 	 * @param hasM
 	 *            has m flag
 	 * @return triangle
+	 * @throws IOException
+	 *             upon failure to read
 	 */
 	public static Triangle readTriangle(ByteReader reader, boolean hasZ,
-			boolean hasM) {
+			boolean hasM) throws IOException {
 		return readTriangle(reader, null, hasZ, hasM);
 	}
 
@@ -834,10 +905,13 @@ public class GeometryReader {
 	 * @param hasM
 	 *            has m flag
 	 * @return triangle
+	 * @throws IOException
+	 *             upon failure to read
 	 * @since 2.0.3
 	 */
 	public static Triangle readTriangle(ByteReader reader,
-			GeometryFilter filter, boolean hasZ, boolean hasM) {
+			GeometryFilter filter, boolean hasZ, boolean hasM)
+			throws IOException {
 
 		Triangle triangle = new Triangle(hasZ, hasM);
 
