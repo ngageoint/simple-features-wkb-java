@@ -250,11 +250,20 @@ public class WKBTest {
 
 		byte[] extendedBytes = WKBTestUtils.writeBytes(extendedMultiCurve);
 
+		ByteReader byteReader = new ByteReader(
+				java.util.Arrays.copyOfRange(bytes, 1, 5));
+		int code = byteReader.readInt();
+		byteReader.close();
+		byteReader = new ByteReader(
+				java.util.Arrays.copyOfRange(extendedBytes, 1, 5));
+		int extendedCode = byteReader.readInt();
+		byteReader.close();
+
+		TestCase.assertEquals(GeometryCodes.getCode(multiCurve), code);
 		TestCase.assertEquals(
-				GeometryCodes.getCode(GeometryType.GEOMETRYCOLLECTION),
-				bytes[4]);
-		TestCase.assertEquals(GeometryCodes.getCode(GeometryType.MULTICURVE),
-				extendedBytes[4]);
+				GeometryCodes.getCode(GeometryType.MULTICURVE,
+						extendedMultiCurve.hasZ(), extendedMultiCurve.hasM()),
+				extendedCode);
 
 		Geometry geometry1 = WKBTestUtils.readGeometry(bytes);
 		Geometry geometry2 = WKBTestUtils.readGeometry(extendedBytes);
@@ -297,11 +306,19 @@ public class WKBTest {
 
 		byte[] extendedBytes = WKBTestUtils.writeBytes(extendedMultiSurface);
 
-		TestCase.assertEquals(
-				GeometryCodes.getCode(GeometryType.GEOMETRYCOLLECTION),
-				bytes[4]);
-		TestCase.assertEquals(GeometryCodes.getCode(GeometryType.MULTISURFACE),
-				extendedBytes[4]);
+		ByteReader byteReader = new ByteReader(
+				java.util.Arrays.copyOfRange(bytes, 1, 5));
+		int code = byteReader.readInt();
+		byteReader.close();
+		byteReader = new ByteReader(
+				java.util.Arrays.copyOfRange(extendedBytes, 1, 5));
+		int extendedCode = byteReader.readInt();
+		byteReader.close();
+
+		TestCase.assertEquals(GeometryCodes.getCode(multiSurface), code);
+		TestCase.assertEquals(GeometryCodes.getCode(GeometryType.MULTISURFACE,
+				extendedMultiSurface.hasZ(), extendedMultiSurface.hasM()),
+				extendedCode);
 
 		Geometry geometry1 = WKBTestUtils.readGeometry(bytes);
 		Geometry geometry2 = WKBTestUtils.readGeometry(extendedBytes);
@@ -446,41 +463,67 @@ public class WKBTest {
 		infiniteNanZM.setZ(Double.NEGATIVE_INFINITY);
 		infiniteNanZM.setM(Double.NaN);
 
-		LineString lineString = new LineString();
-		lineString.addPoint(point);
-		lineString.addPoint(nan);
-		lineString.addPoint(WKBTestUtils.createPoint(false, false));
-		lineString.addPoint(infinite);
-		lineString.addPoint(WKBTestUtils.createPoint(true, false));
-		lineString.addPoint(nanZ);
-		lineString.addPoint(WKBTestUtils.createPoint(false, true));
-		lineString.addPoint(infiniteZ);
-		lineString.addPoint(WKBTestUtils.createPoint(true, true));
-		lineString.addPoint(nanM);
-		lineString.addPoint(WKBTestUtils.createPoint(false, false));
-		lineString.addPoint(infiniteM);
-		lineString.addPoint(WKBTestUtils.createPoint(true, false));
-		lineString.addPoint(nanZM);
-		lineString.addPoint(WKBTestUtils.createPoint(false, true));
-		lineString.addPoint(infiniteZM);
-		lineString.addPoint(WKBTestUtils.createPoint(true, true));
-		lineString.addPoint(nanInfinite);
-		lineString.addPoint(WKBTestUtils.createPoint(false, false));
-		lineString.addPoint(infiniteNan);
-		lineString.addPoint(WKBTestUtils.createPoint(true, false));
-		lineString.addPoint(nanInfiniteZM);
-		lineString.addPoint(WKBTestUtils.createPoint(false, true));
-		lineString.addPoint(infiniteNanZM);
+		LineString lineString1 = new LineString();
+		lineString1.addPoint(point);
+		lineString1.addPoint(nan);
+		lineString1.addPoint(WKBTestUtils.createPoint(false, false));
+		lineString1.addPoint(infinite);
+		lineString1.addPoint(WKBTestUtils.createPoint(false, false));
+		lineString1.addPoint(nanInfinite);
+		lineString1.addPoint(WKBTestUtils.createPoint(false, false));
+		lineString1.addPoint(infiniteNan);
 
-		Polygon polygon = new Polygon();
-		polygon.addRing(lineString);
+		LineString lineString2 = new LineString(true, false);
+		lineString2.addPoint(WKBTestUtils.createPoint(true, false));
+		lineString2.addPoint(nanZ);
+		lineString2.addPoint(WKBTestUtils.createPoint(true, false));
+		lineString2.addPoint(infiniteZ);
 
-		for (Point pnt : lineString.getPoints()) {
+		LineString lineString3 = new LineString(false, true);
+		lineString3.addPoint(WKBTestUtils.createPoint(false, true));
+		lineString3.addPoint(nanM);
+		lineString3.addPoint(WKBTestUtils.createPoint(false, true));
+		lineString3.addPoint(infiniteM);
+
+		LineString lineString4 = new LineString(true, true);
+		lineString4.addPoint(WKBTestUtils.createPoint(true, true));
+		lineString4.addPoint(nanZM);
+		lineString4.addPoint(WKBTestUtils.createPoint(true, true));
+		lineString4.addPoint(infiniteZM);
+		lineString4.addPoint(WKBTestUtils.createPoint(true, true));
+		lineString4.addPoint(nanInfiniteZM);
+		lineString4.addPoint(WKBTestUtils.createPoint(true, true));
+		lineString4.addPoint(infiniteNanZM);
+
+		Polygon polygon1 = new Polygon(lineString1);
+		Polygon polygon2 = new Polygon(lineString2);
+		Polygon polygon3 = new Polygon(lineString3);
+		Polygon polygon4 = new Polygon(lineString4);
+
+		for (Point pnt : lineString1.getPoints()) {
 			testFiniteFilter(pnt);
 		}
 
-		testFiniteFilter(lineString);
-		testFiniteFilter(polygon);
+		for (Point pnt : lineString2.getPoints()) {
+			testFiniteFilter(pnt);
+		}
+
+		for (Point pnt : lineString3.getPoints()) {
+			testFiniteFilter(pnt);
+		}
+
+		for (Point pnt : lineString4.getPoints()) {
+			testFiniteFilter(pnt);
+		}
+
+		testFiniteFilter(lineString1);
+		testFiniteFilter(lineString2);
+		testFiniteFilter(lineString3);
+		testFiniteFilter(lineString4);
+		testFiniteFilter(polygon1);
+		testFiniteFilter(polygon2);
+		testFiniteFilter(polygon3);
+		testFiniteFilter(polygon4);
 
 	}
 
