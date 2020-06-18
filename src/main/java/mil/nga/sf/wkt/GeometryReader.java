@@ -1,6 +1,7 @@
 package mil.nga.sf.wkt;
 
 import java.io.IOException;
+import java.util.Locale;
 
 import mil.nga.sf.CircularString;
 import mil.nga.sf.CompoundCurve;
@@ -16,6 +17,7 @@ import mil.nga.sf.MultiPolygon;
 import mil.nga.sf.Point;
 import mil.nga.sf.Polygon;
 import mil.nga.sf.PolyhedralSurface;
+import mil.nga.sf.Surface;
 import mil.nga.sf.TIN;
 import mil.nga.sf.Triangle;
 import mil.nga.sf.util.SFException;
@@ -117,82 +119,90 @@ public class GeometryReader {
 			GeometryFilter filter, GeometryType containingType,
 			Class<T> expectedType) throws IOException {
 
+		Geometry geometry = null;
+
 		// Read the geometry type
 		GeometryTypeInfo geometryTypeInfo = readGeometryType(reader);
 
-		GeometryType geometryType = geometryTypeInfo.getGeometryType();
-		boolean hasZ = geometryTypeInfo.hasZ();
-		boolean hasM = geometryTypeInfo.hasM();
+		if (geometryTypeInfo != null) {
 
-		Geometry geometry = null;
+			GeometryType geometryType = geometryTypeInfo.getGeometryType();
+			boolean hasZ = geometryTypeInfo.hasZ();
+			boolean hasM = geometryTypeInfo.hasM();
 
-		switch (geometryType) {
+			switch (geometryType) {
 
-		case GEOMETRY:
-			throw new SFException("Unexpected Geometry Type of "
-					+ geometryType.name() + " which is abstract");
-		case POINT:
-			geometry = readPointText(reader, hasZ, hasM);
-			break;
-		case LINESTRING:
-			geometry = readLineString(reader, filter, hasZ, hasM);
-			break;
-		case POLYGON:
-			geometry = readPolygon(reader, filter, hasZ, hasM);
-			break;
-		case MULTIPOINT:
-			geometry = readMultiPoint(reader, filter, hasZ, hasM);
-			break;
-		case MULTILINESTRING:
-			geometry = readMultiLineString(reader, filter, hasZ, hasM);
-			break;
-		case MULTIPOLYGON:
-			geometry = readMultiPolygon(reader, filter, hasZ, hasM);
-			break;
-		case GEOMETRYCOLLECTION:
-		case MULTICURVE:
-		case MULTISURFACE:
-			geometry = readGeometryCollection(reader, filter, hasZ, hasM);
-			break;
-		case CIRCULARSTRING:
-			geometry = readCircularString(reader, filter, hasZ, hasM);
-			break;
-		case COMPOUNDCURVE:
-			geometry = readCompoundCurve(reader, filter, hasZ, hasM);
-			break;
-		case CURVEPOLYGON:
-			geometry = readCurvePolygon(reader, filter, hasZ, hasM);
-			break;
-		case CURVE:
-			throw new SFException("Unexpected Geometry Type of "
-					+ geometryType.name() + " which is abstract");
-		case SURFACE:
-			throw new SFException("Unexpected Geometry Type of "
-					+ geometryType.name() + " which is abstract");
-		case POLYHEDRALSURFACE:
-			geometry = readPolyhedralSurface(reader, filter, hasZ, hasM);
-			break;
-		case TIN:
-			geometry = readTIN(reader, filter, hasZ, hasM);
-			break;
-		case TRIANGLE:
-			geometry = readTriangle(reader, filter, hasZ, hasM);
-			break;
-		default:
-			throw new SFException(
-					"Geometry Type not supported: " + geometryType);
-		}
+			case GEOMETRY:
+				throw new SFException("Unexpected Geometry Type of "
+						+ geometryType.name() + " which is abstract");
+			case POINT:
+				geometry = readPointText(reader, hasZ, hasM);
+				break;
+			case LINESTRING:
+				geometry = readLineString(reader, filter, hasZ, hasM);
+				break;
+			case POLYGON:
+				geometry = readPolygon(reader, filter, hasZ, hasM);
+				break;
+			case MULTIPOINT:
+				geometry = readMultiPoint(reader, filter, hasZ, hasM);
+				break;
+			case MULTILINESTRING:
+				geometry = readMultiLineString(reader, filter, hasZ, hasM);
+				break;
+			case MULTIPOLYGON:
+				geometry = readMultiPolygon(reader, filter, hasZ, hasM);
+				break;
+			case GEOMETRYCOLLECTION:
+				geometry = readGeometryCollection(reader, filter, hasZ, hasM);
+				break;
+			case MULTICURVE:
+				geometry = readMultiCurve(reader, filter, hasZ, hasM);
+				break;
+			case MULTISURFACE:
+				geometry = readMultiSurface(reader, filter, hasZ, hasM);
+				break;
+			case CIRCULARSTRING:
+				geometry = readCircularString(reader, filter, hasZ, hasM);
+				break;
+			case COMPOUNDCURVE:
+				geometry = readCompoundCurve(reader, filter, hasZ, hasM);
+				break;
+			case CURVEPOLYGON:
+				geometry = readCurvePolygon(reader, filter, hasZ, hasM);
+				break;
+			case CURVE:
+				throw new SFException("Unexpected Geometry Type of "
+						+ geometryType.name() + " which is abstract");
+			case SURFACE:
+				throw new SFException("Unexpected Geometry Type of "
+						+ geometryType.name() + " which is abstract");
+			case POLYHEDRALSURFACE:
+				geometry = readPolyhedralSurface(reader, filter, hasZ, hasM);
+				break;
+			case TIN:
+				geometry = readTIN(reader, filter, hasZ, hasM);
+				break;
+			case TRIANGLE:
+				geometry = readTriangle(reader, filter, hasZ, hasM);
+				break;
+			default:
+				throw new SFException(
+						"Geometry Type not supported: " + geometryType);
+			}
 
-		if (!filter(filter, containingType, geometry)) {
-			geometry = null;
-		}
+			if (!filter(filter, containingType, geometry)) {
+				geometry = null;
+			}
 
-		// If there is an expected type, verify the geometry is of that type
-		if (expectedType != null && geometry != null
-				&& !expectedType.isAssignableFrom(geometry.getClass())) {
-			throw new SFException("Unexpected Geometry Type. Expected: "
-					+ expectedType.getSimpleName() + ", Actual: "
-					+ geometry.getClass().getSimpleName());
+			// If there is an expected type, verify the geometry is of that type
+			if (expectedType != null && geometry != null
+					&& !expectedType.isAssignableFrom(geometry.getClass())) {
+				throw new SFException("Unexpected Geometry Type. Expected: "
+						+ expectedType.getSimpleName() + ", Actual: "
+						+ geometry.getClass().getSimpleName());
+			}
+
 		}
 
 		@SuppressWarnings("unchecked")
@@ -213,43 +223,95 @@ public class GeometryReader {
 	public static GeometryTypeInfo readGeometryType(TextReader reader)
 			throws IOException {
 
+		GeometryTypeInfo geometryInfo = null;
+
 		// Read the geometry type
 		String geometryTypeValue = reader.readToken();
 
-		// Determine the geometry type
-		GeometryType geometryType = GeometryType.fromName(geometryTypeValue);
+		if (!geometryTypeValue.equalsIgnoreCase("EMPTY")) {
 
-		String next = reader.peekToken();
+			boolean hasZ = false;
+			boolean hasM = false;
 
-		// Determine if the geometry has a z (3d) or m (linear referencing
-		// system) value
-		boolean hasZ = false;
-		boolean hasM = false;
+			// Determine the geometry type
+			GeometryType geometryType = GeometryType
+					.findName(geometryTypeValue);
 
-		switch (next.toUpperCase()) {
-		case "Z":
-			hasZ = true;
-			break;
-		case "M":
-			hasM = true;
-			break;
-		case "ZM":
-			hasZ = true;
-			hasM = true;
-			break;
-		case "(":
-			break;
-		default:
-			throw new SFException("Invalid value following geometry type: '"
-					+ geometryTypeValue + "', value: '" + next);
+			// If not found, check if the geometry type has Z and/or M suffix
+			if (geometryType == null) {
+
+				// Check if the Z and/or M is appended to the geometry type
+				String geomType = geometryTypeValue.toUpperCase(Locale.US);
+				if (geomType.endsWith("Z")) {
+					hasZ = true;
+				} else if (geomType.endsWith("M")) {
+					hasM = true;
+					if (geomType.endsWith("ZM")) {
+						hasZ = true;
+					}
+				}
+
+				int suffixSize = 0;
+				if (hasZ) {
+					suffixSize++;
+				}
+				if (hasM) {
+					suffixSize++;
+				}
+
+				if (suffixSize > 0) {
+					// Check for the geometry type without the suffix
+					geomType = geometryTypeValue.substring(0,
+							geometryTypeValue.length() - suffixSize);
+					geometryType = GeometryType.findName(geomType);
+				}
+
+				if (geometryType == null) {
+					throw new SFException(
+							"Expected a valid geometry type, found: '"
+									+ geometryTypeValue + "'");
+
+				}
+
+			}
+
+			// Determine if the geometry has a z (3d) or m (linear referencing
+			// system) value
+			if (!hasZ && !hasM) {
+
+				// Peek at the next token without popping it off
+				String next = reader.peekToken();
+
+				switch (next.toUpperCase()) {
+				case "Z":
+					hasZ = true;
+					break;
+				case "M":
+					hasM = true;
+					break;
+				case "ZM":
+					hasZ = true;
+					hasM = true;
+					break;
+				case "(":
+				case "EMPTY":
+					break;
+				default:
+					throw new SFException(
+							"Invalid value following geometry type: '"
+									+ geometryTypeValue + "', value: '" + next);
+				}
+
+				if (hasZ || hasM) {
+					// Read off the Z and/or M token
+					reader.readToken();
+				}
+
+			}
+
+			geometryInfo = new GeometryTypeInfo(geometryType, hasZ, hasM);
+
 		}
-
-		if (hasZ || hasM) {
-			reader.readToken();
-		}
-
-		GeometryTypeInfo geometryInfo = new GeometryTypeInfo(geometryType, hasZ,
-				hasM);
 
 		return geometryInfo;
 	}
@@ -301,14 +363,24 @@ public class GeometryReader {
 
 		Point point = new Point(hasZ, hasM, x, y);
 
-		if (hasZ) {
-			double z = reader.readDouble();
-			point.setZ(z);
-		}
+		if (hasZ || hasM) {
+			if (hasZ) {
+				point.setZ(reader.readDouble());
+			}
 
-		if (hasM) {
-			double m = reader.readDouble();
-			point.setM(m);
+			if (hasM) {
+				point.setM(reader.readDouble());
+			}
+		} else if (!isCommaOrRightParenthesis(reader)) {
+
+			point.setZ(reader.readDouble());
+
+			if (!isCommaOrRightParenthesis(reader)) {
+
+				point.setM(reader.readDouble());
+
+			}
+
 		}
 
 		return point;
@@ -467,7 +539,12 @@ public class GeometryReader {
 			multiPoint = new MultiPoint(hasZ, hasM);
 
 			do {
-				Point point = readPointText(reader, hasZ, hasM);
+				Point point = null;
+				if (isLeftParenthesisOrEmpty(reader)) {
+					point = readPointText(reader, hasZ, hasM);
+				} else {
+					point = readPoint(reader, hasZ, hasM);
+				}
 				if (filter(filter, GeometryType.MULTIPOINT, point)) {
 					multiPoint.addPoint(point);
 				}
@@ -646,6 +723,98 @@ public class GeometryReader {
 	}
 
 	/**
+	 * Read a Multi Curve
+	 * 
+	 * @param reader
+	 *            text reader
+	 * @param filter
+	 *            geometry filter
+	 * @param hasZ
+	 *            has z flag
+	 * @param hasM
+	 *            has m flag
+	 * @return multi curve
+	 * @throws IOException
+	 *             upon failure to read
+	 */
+	public static GeometryCollection<Curve> readMultiCurve(TextReader reader,
+			GeometryFilter filter, boolean hasZ, boolean hasM)
+			throws IOException {
+
+		GeometryCollection<Curve> multiCurve = null;
+
+		if (leftParenthesisOrEmpty(reader)) {
+
+			multiCurve = new GeometryCollection<Curve>(hasZ, hasM);
+
+			do {
+				Curve curve = null;
+				if (isLeftParenthesisOrEmpty(reader)) {
+					curve = readLineString(reader, filter, hasZ, hasM);
+					if (!filter(filter, GeometryType.MULTICURVE, curve)) {
+						curve = null;
+					}
+				} else {
+					curve = readGeometry(reader, filter,
+							GeometryType.MULTICURVE, Curve.class);
+				}
+				if (curve != null) {
+					multiCurve.addGeometry(curve);
+				}
+			} while (commaOrRightParenthesis(reader));
+
+		}
+
+		return multiCurve;
+	}
+
+	/**
+	 * Read a Multi Surface
+	 * 
+	 * @param reader
+	 *            text reader
+	 * @param filter
+	 *            geometry filter
+	 * @param hasZ
+	 *            has z flag
+	 * @param hasM
+	 *            has m flag
+	 * @return multi surface
+	 * @throws IOException
+	 *             upon failure to read
+	 */
+	public static GeometryCollection<Surface> readMultiSurface(
+			TextReader reader, GeometryFilter filter, boolean hasZ,
+			boolean hasM) throws IOException {
+
+		GeometryCollection<Surface> multiSurface = null;
+
+		if (leftParenthesisOrEmpty(reader)) {
+
+			multiSurface = new GeometryCollection<Surface>(hasZ, hasM);
+
+			do {
+				Surface surface = null;
+				if (isLeftParenthesisOrEmpty(reader)) {
+					surface = readPolygon(reader, filter, hasZ, hasM);
+					if (!filter(filter, GeometryType.MULTISURFACE, surface)) {
+						surface = null;
+					}
+				} else {
+					surface = readGeometry(reader, filter,
+							GeometryType.MULTISURFACE, Surface.class);
+				}
+				if (surface != null) {
+					multiSurface.addGeometry(surface);
+				}
+			} while (commaOrRightParenthesis(reader));
+
+		}
+
+		return multiSurface;
+	}
+
+	/**
 	 * Read a Circular String
 	 * 
 	 * @param reader
@@ -744,8 +913,17 @@ public class GeometryReader {
 			compoundCurve = new CompoundCurve(hasZ, hasM);
 
 			do {
-				LineString lineString = readGeometry(reader, filter,
-						GeometryType.COMPOUNDCURVE, LineString.class);
+				LineString lineString = null;
+				if (isLeftParenthesisOrEmpty(reader)) {
+					lineString = readLineString(reader, filter, hasZ, hasM);
+					if (!filter(filter, GeometryType.COMPOUNDCURVE,
+							lineString)) {
+						lineString = null;
+					}
+				} else {
+					lineString = readGeometry(reader, filter,
+							GeometryType.COMPOUNDCURVE, LineString.class);
+				}
 				if (lineString != null) {
 					compoundCurve.addLineString(lineString);
 				}
@@ -800,8 +978,16 @@ public class GeometryReader {
 			curvePolygon = new CurvePolygon<Curve>(hasZ, hasM);
 
 			do {
-				Curve ring = readGeometry(reader, filter,
-						GeometryType.CURVEPOLYGON, Curve.class);
+				Curve ring = null;
+				if (isLeftParenthesisOrEmpty(reader)) {
+					ring = readLineString(reader, filter, hasZ, hasM);
+					if (!filter(filter, GeometryType.CURVEPOLYGON, ring)) {
+						ring = null;
+					}
+				} else {
+					ring = readGeometry(reader, filter,
+							GeometryType.CURVEPOLYGON, Curve.class);
+				}
 				if (ring != null) {
 					curvePolygon.addRing(ring);
 				}
@@ -1036,7 +1222,6 @@ public class GeometryReader {
 		}
 
 		return comma;
-
 	}
 
 	/**
@@ -1053,6 +1238,60 @@ public class GeometryReader {
 			throw new SFException(
 					"Invalid token, expected ')'. found: '" + token);
 		}
+	}
+
+	/**
+	 * Determine if the next token is either a left parenthesis or empty
+	 * 
+	 * @param reader
+	 *            text reader
+	 * @return true if a left parenthesis or empty
+	 * @throws IOException
+	 *             upon failure to read
+	 */
+	private static boolean isLeftParenthesisOrEmpty(TextReader reader)
+			throws IOException {
+
+		boolean is = false;
+
+		String token = reader.peekToken();
+
+		switch (token.toUpperCase()) {
+		case "EMPTY":
+		case "(":
+			is = true;
+			break;
+		default:
+		}
+
+		return is;
+	}
+
+	/**
+	 * Determine if the next token is either a comma or right parenthesis
+	 * 
+	 * @param reader
+	 *            text reader
+	 * @return true if a comma
+	 * @throws IOException
+	 *             upon failure to read
+	 */
+	private static boolean isCommaOrRightParenthesis(TextReader reader)
+			throws IOException {
+
+		boolean is = false;
+
+		String token = reader.peekToken();
+
+		switch (token) {
+		case ",":
+		case ")":
+			is = true;
+			break;
+		default:
+		}
+
+		return is;
 	}
 
 	/**
