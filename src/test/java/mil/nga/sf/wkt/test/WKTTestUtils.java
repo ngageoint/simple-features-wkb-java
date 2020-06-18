@@ -473,6 +473,22 @@ public class WKTTestUtils {
 	 *             upon error
 	 */
 	public static Geometry readGeometry(String text) throws IOException {
+		return readGeometry(text, true);
+	}
+
+	/**
+	 * Read a geometry from text
+	 * 
+	 * @param text
+	 *            text
+	 * @param validateZM
+	 *            true to validate the geometry type info z and m values
+	 * @return geometry
+	 * @throws IOException
+	 *             upon error
+	 */
+	public static Geometry readGeometry(String text, boolean validateZM)
+			throws IOException {
 
 		TextReader reader = new TextReader(text);
 		Geometry geometry = GeometryReader.readGeometry(reader);
@@ -491,8 +507,10 @@ public class WKTTestUtils {
 		default:
 		}
 		TestCase.assertEquals(expectedGeometryType, geometry.getGeometryType());
-		TestCase.assertEquals(geometryTypeInfo.hasZ(), geometry.hasZ());
-		TestCase.assertEquals(geometryTypeInfo.hasM(), geometry.hasM());
+		if (validateZM) {
+			TestCase.assertEquals(geometryTypeInfo.hasZ(), geometry.hasZ());
+			TestCase.assertEquals(geometryTypeInfo.hasM(), geometry.hasM());
+		}
 
 		return geometry;
 	}
@@ -514,8 +532,19 @@ public class WKTTestUtils {
 		TextReader reader2 = new TextReader(actual);
 
 		while (reader1.peekToken() != null) {
-			TestCase.assertTrue(
-					reader1.readToken().equalsIgnoreCase(reader2.readToken()));
+			String token1 = reader1.readToken();
+			String token2 = reader2.readToken();
+			if (!token1.equalsIgnoreCase(token2)) {
+				try {
+					double token1Double = Double.parseDouble(token1);
+					double token2Double = Double.parseDouble(token2);
+					TestCase.assertEquals(token1Double, token2Double, 0);
+				} catch (NumberFormatException e) {
+					TestCase.fail(
+							"Expected: " + token1 + ", Actual: " + token2);
+				}
+			}
+
 		}
 
 		TestCase.assertNull(reader1.readToken());

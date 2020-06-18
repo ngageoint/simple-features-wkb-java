@@ -541,11 +541,220 @@ public class WKTTest {
 	}
 
 	/**
+	 * Test geometries
+	 * 
+	 * @throws Exception
+	 *             upon error
+	 */
+	@Test
+	public void testGeometries() throws Exception {
+		geometryTester("Point (10 10)");
+		geometryTester("LineString ( 10 10, 20 20, 30 40)");
+		geometryTester("Polygon\n" + "((10 10, 10 20, 20 20, 20 15, 10 10))");
+		geometryTester("MultiPoint ((10 10), (20 20))");
+		geometryTester("MultiLineString\n" + "(\n"
+				+ "(10 10, 20 20), (15 15, 30 15)\n" + ") ");
+		geometryTester(" MultiPolygon\n" + "(\n"
+				+ "((10 10, 10 20, 20 20, 20 15, 10 10)),\n"
+				+ "((60 60, 70 70, 80 60, 60 60 ))\n" + ")");
+		geometryTester("GeometryCollection\n" + "(\n" + "POINT (10 10),\n"
+				+ "POINT (30 30),\n" + "LINESTRING (15 15, 20 20)\n" + ")");
+		geometryTester("PolyhedralSurface Z\n" + "(\n"
+				+ "((0 0 0, 0 0 1, 0 1 1, 0 1 0, 0 0 0)),\n"
+				+ "((0 0 0, 0 1 0, 1 1 0, 1 0 0, 0 0 0)),\n"
+				+ "((0 0 0, 1 0 0, 1 0 1, 0 0 1, 0 0 0)),\n"
+				+ "((1 1 0, 1 1 1, 1 0 1, 1 0 0, 1 1 0)),\n"
+				+ "((0 1 0, 0 1 1, 1 1 1, 1 1 0, 0 1 0)),\n"
+				+ "((0 0 1, 1 0 1, 1 1 1, 0 1 1, 0 0 1))\n" + ")");
+		geometryTester("Tin Z (\n" + "((0 0 0, 0 0 1, 0 1 0, 0 0 0)),\n"
+				+ "((0 0 0, 0 1 0, 1 0 0, 0 0 0)),\n"
+				+ "((0 0 0, 1 0 0, 0 0 1, 0 0 0)),\n"
+				+ "((1 0 0, 0 1 0, 0 0 1, 1 0 0))\n" + ")");
+		geometryTester("Point Z (10 10 5)");
+		geometryTester("Point ZM (10 10 5 40)");
+		geometryTester("Point M (10 10 40)");
+		geometryTester(
+				"MULTICURVE (COMPOUNDCURVE (LINESTRING (3451418.006 5481808.951, 3451417.787 5481809.927, 3451409.995 5481806.744), LINESTRING (3451409.995 5481806.744, 3451418.006 5481808.951)), LINESTRING (3451418.006 5481808.951, 3451417.787 5481809.927, 3451409.995 5481806.744), LINESTRING (3451409.995 5481806.744, 3451418.006 5481808.951))",
+				GeometryType.MULTICURVE.getName(),
+				GeometryType.GEOMETRYCOLLECTION.getName());
+		geometryTester("COMPOUNDCURVE(EMPTY,CIRCULARSTRING EMPTY)",
+				"\\(EMPTY,CIRCULARSTRING EMPTY\\)", " EMPTY");
+		geometryTester("COMPOUNDCURVE(LINESTRING EMPTY,CIRCULARSTRING EMPTY)",
+				"\\(LINESTRING EMPTY,CIRCULARSTRING EMPTY\\)", " EMPTY");
+		geometryTester("COMPOUNDCURVE(EMPTY, CIRCULARSTRING(1 5,6 2,7 3))",
+				"EMPTY, ", "");
+		geometryTester(
+				"COMPOUNDCURVE(LINESTRING EMPTY, CIRCULARSTRING(1 5,6 2,7 3))",
+				"LINESTRING EMPTY,", "");
+		geometryTester("CircularString(1.1 1.9, 1.1 2.5, 1.1 1.9)");
+		geometryTester("Point(0.96 2.32)");
+		geometryTester(
+				"MultiCurve(CircularString(0.9 2.32, 0.95 2.3, 1.0 2.32),CircularString(0.9 2.32, 0.95 2.34, 1.0 2.32))",
+				"MultiCurve", GeometryType.GEOMETRYCOLLECTION.getName());
+		geometryTester(
+				"MultiCurve(CircularString(1.05 1.56, 1.03 1.53, 1.05 1.50),CircularString(1.05 1.50, 1.10 1.48, 1.15 1.52),CircularString(1.15 1.52, 1.14 1.54, 1.12 1.53),CircularString(1.12 1.53, 1.06 1.42, 0.95 1.28),CircularString(0.95 1.28, 0.92 1.31, 0.95 1.34),CircularString(0.95 1.34, 1.06 1.28, 1.17 1.32))",
+				"MultiCurve", GeometryType.GEOMETRYCOLLECTION.getName());
+		geometryTester(
+				"MultiPolygon(((2.18 1.0, 2.1 1.2, 2.3 1.4, 2.5 1.2, 2.35 1.0, 2.18 1.0)),((2.3 1.4, 2.57 1.6, 2.7 1.3, 2.3 1.4)))");
+		geometryTester(
+				"MultiSurface(((1.6 1.9, 1.9 1.9, 1.9 2.2, 1.6 2.2, 1.6 1.9)),((1.1 1.8, 0.7 1.2, 1.5 1.2, 1.1 1.8)))",
+				"GEOMETRYCOLLECTION (POLYGON ((1.6 1.9, 1.9 1.9, 1.9 2.2, 1.6 2.2, 1.6 1.9)), POLYGON ((1.1 1.8, 0.7 1.2, 1.5 1.2, 1.1 1.8)))");
+		geometryTester(
+				"CurvePolygon(CompoundCurve(CircularString(2.6 1.0, 2.7 1.3, 2.8 1.0),(2.8 1.0, 2.6 1.0)))",
+				"\\(2.8 1.0, 2.6 1.0\\)",
+				GeometryType.LINESTRING.getName() + "(2.8 1.0, 2.6 1.0)");
+		geometryTester(
+				"GeometryCollection(MultiCurve((2.0 1.0, 2.1 1.0),CircularString(2.0 1.0, 1.98 1.1, 1.9 1.2),CircularString(2.1 1.0, 2.08 1.1, 2.0 1.2),(1.9 1.2, 1.85 1.3),(2.0 1.2, 1.9 1.35),(1.85 1.3, 1.9 1.35)),CircularString(1.85 1.3, 1.835 1.29, 1.825 1.315),CircularString(1.9 1.35, 1.895 1.38, 1.88 1.365),LineString(1.825 1.315, 1.88 1.365))",
+				"GEOMETRYCOLLECTION (GEOMETRYCOLLECTION (LINESTRING (2.0 1.0, 2.1 1.0), CIRCULARSTRING (2.0 1.0, 1.98 1.1, 1.9 1.2), CIRCULARSTRING (2.1 1.0, 2.08 1.1, 2.0 1.2), LINESTRING (1.9 1.2, 1.85 1.3), LINESTRING (2.0 1.2, 1.9 1.35), LINESTRING (1.85 1.3, 1.9 1.35)), CIRCULARSTRING (1.85 1.3, 1.835 1.29, 1.825 1.315), CIRCULARSTRING (1.9 1.35, 1.895 1.38, 1.88 1.365), LINESTRING (1.825 1.315, 1.88 1.365))");
+		geometryTester(
+				"COMPOUNDCURVE((0 0, 0.25 0), CIRCULARSTRING(0.25 0, 0.5 0.5, 0.75 0), (0.75 0, 1 0))",
+				"COMPOUNDCURVE(LINESTRING(0 0, 0.25 0), CIRCULARSTRING(0.25 0, 0.5 0.5, 0.75 0), LINESTRING(0.75 0, 1 0))");
+		geometryTester("POLYHEDRALSURFACE Z(\n"
+				+ "	((0 0 0, 0 0 1, 0 1 1, 0 1 0, 0 0 0)),\n"
+				+ "	((0 0 0, 0 1 0, 1 1 0, 1 0 0, 0 0 0)),\n"
+				+ "	((0 0 0, 1 0 0, 1 0 1, 0 0 1, 0 0 0)),\n"
+				+ "	((1 1 0, 1 1 1, 1 0 1, 1 0 0, 1 1 0)),\n"
+				+ "	((0 1 0, 0 1 1, 1 1 1, 1 1 0, 0 1 0)),\n"
+				+ "	((0 0 1, 1 0 1, 1 1 1, 0 1 1, 0 0 1))\n" + ")");
+		geometryTester(
+				"POLYHEDRALSURFACE(\n"
+						+ "	((0 0 0, 0 0 1, 0 1 1, 0 1 0, 0 0 0)),\n"
+						+ "	((0 0 0, 0 1 0, 1 1 0, 1 0 0, 0 0 0)),\n"
+						+ "	((0 0 0, 1 0 0, 1 0 1, 0 0 1, 0 0 0)),\n"
+						+ "	((1 1 0, 1 1 1, 1 0 1, 1 0 0, 1 1 0)),\n"
+						+ "	((0 1 0, 0 1 1, 1 1 1, 1 1 0, 0 1 0)),\n"
+						+ "	((0 0 1, 1 0 1, 1 1 1, 0 1 1, 0 0 1))\n" + ")",
+				"POLYHEDRALSURFACE", "POLYHEDRALSURFACE Z", false);
+		geometryTester(
+				"CIRCULARSTRING Z (220268 150415 1,220227 150505 2,220227 150406 3)");
+		geometryTester(
+				"CIRCULARSTRING(220268 150415 1,220227 150505 2,220227 150406 3)",
+				"CIRCULARSTRING", "CIRCULARSTRING Z", false);
+		geometryTester("TRIANGLE ((0 0, 0 9, 9 0, 0 0))");
+		geometryTester(
+				"MULTIPOLYGON(((0 0 0,4 0 0,4 4 0,0 4 0,0 0 0),(1 1 0,2 1 0,2 2 0,1 2 0,1 1 0)),((-1 -1 0,-1 -2 0,-2 -2 0,-2 -1 0,-1 -1 0)))",
+				"MULTIPOLYGON", "MULTIPOLYGON Z", false);
+		geometryTester(
+				"TIN( ((0 0 0, 0 0 1, 0 1 0, 0 0 0)), ((0 0 0, 0 1 0, 1 1 0, 0 0 0)) )",
+				"TIN", "TIN Z", false);
+		geometryTester("POINT(0 0 0)", "POINT", "POINT Z", false);
+		geometryTester("POINTM(0 0 0)", "POINTM", "POINT M");
+		geometryTester("POINT(0 0 0 0)", "POINT", "POINT ZM", false);
+		geometryTester("POINTZM(0 0 0 0)", "POINTZM", "POINT ZM");
+		geometryTester("MULTIPOINTM(0 0 0,1 2 1)",
+				"MULTIPOINT M((0 0 0),(1 2 1))");
+		geometryTester(
+				"GEOMETRYCOLLECTIONM( POINTM(2 3 9), LINESTRINGM(2 3 4, 3 4 5) )",
+				"GEOMETRYCOLLECTION M( POINT M(2 3 9), LINESTRING M(2 3 4, 3 4 5) )");
+		geometryTester("GEOMETRYCOLLECTIONZ(POINTZ(13.21 47.21 0.21),\n"
+				+ "LINESTRINGZ(15.21 57.58 0.31,\n" + "15.81 57.12 0.33))",
+				"GEOMETRYCOLLECTION Z(POINT Z(13.21 47.21 0.21),\n"
+						+ "LINESTRING Z(15.21 57.58 0.31,\n"
+						+ "15.81 57.12 0.33))");
+		geometryTester("GEOMETRYCOLLECTIONM(POINTM(13.21 47.21 1000.0),\n"
+				+ "LINESTRINGM(15.21 57.58 1000.0, 15.81 57.12 1100.0))",
+				"GEOMETRYCOLLECTION M(POINT M(13.21 47.21 1000.0),\n"
+						+ "LINESTRING M(15.21 57.58 1000.0, 15.81 57.12 1100.0))");
+		geometryTester(
+				"GEOMETRYCOLLECTIONZM(POINTZM(13.21 47.21 0.21 1000.0),\n"
+						+ "LINESTRINGZM(15.21 57.58 0.31 1000.0, 15.81 57.12 0.33 1100.0))",
+				"GEOMETRYCOLLECTION ZM(POINT ZM(13.21 47.21 0.21 1000.0),\n"
+						+ "LINESTRING ZM(15.21 57.58 0.31 1000.0, 15.81 57.12 0.33 1100.0))");
+	}
+
+	/**
+	 * Test the geometry reading from and writing to text
+	 * 
+	 * @param text
+	 *            geometry well known text
+	 * @throws IOException
+	 *             upon error
+	 */
+	private void geometryTester(String text) throws IOException {
+		geometryTester(text, text);
+	}
+
+	/**
+	 * Test the geometry reading from and writing to text
+	 * 
+	 * @param text
+	 *            geometry well known text
+	 * @param replace
+	 *            value to replace
+	 * @param replacement
+	 *            replacement value
+	 * @throws IOException
+	 *             upon error
+	 */
+	private void geometryTester(String text, String replace, String replacement)
+			throws IOException {
+		geometryTester(text, replace, replacement, true);
+	}
+
+	/**
+	 * Test the geometry reading from and writing to text
+	 * 
+	 * @param text
+	 *            geometry well known text
+	 * @param replace
+	 *            value to replace
+	 * @param replacement
+	 *            replacement value
+	 * @param validateZM
+	 *            true to validate the geometry type info z and m values
+	 * @throws IOException
+	 *             upon error
+	 */
+	private void geometryTester(String text, String replace, String replacement,
+			boolean validateZM) throws IOException {
+		geometryTester(text, text.replaceAll(replace, replacement), validateZM);
+	}
+
+	/**
+	 * Test the geometry reading from and writing to text
+	 * 
+	 * @param text
+	 *            geometry well known text
+	 * @param expected
+	 *            expected wkt result
+	 * @param validateZM
+	 *            true to validate the geometry type info z and m values
+	 * @throws IOException
+	 *             upon error
+	 */
+	private void geometryTester(String text, String expected)
+			throws IOException {
+		geometryTester(text, expected, true);
+	}
+
+	/**
+	 * Test the geometry reading from and writing to text
+	 * 
+	 * @param text
+	 *            geometry well known text
+	 * @param expected
+	 *            expected wkt result
+	 * @param validateZM
+	 *            true to validate the geometry type info z and m values
+	 * @throws IOException
+	 *             upon error
+	 */
+	private void geometryTester(String text, String expected,
+			boolean validateZM) throws IOException {
+
+		Geometry geometry = WKTTestUtils.readGeometry(text, validateZM);
+		String text2 = WKTTestUtils.writeText(geometry);
+		WKTTestUtils.compareText(expected, text2);
+
+	}
+
+	/**
 	 * Test the geometry writing to and reading from text
 	 * 
 	 * @param geometry
 	 *            geometry
-	 * @throws IOException
+	 * @throws IOExceptionupon
+	 *             error
 	 */
 	private void geometryTester(Geometry geometry) throws IOException {
 
@@ -562,6 +771,7 @@ public class WKTTest {
 	 * @param compareGeometry
 	 *            compare geometry
 	 * @throws IOException
+	 *             upon error
 	 */
 	private void geometryTester(Geometry geometry, Geometry compareGeometry)
 			throws IOException {
@@ -590,6 +800,7 @@ public class WKTTest {
 	 * @param geometry
 	 *            geometry
 	 * @throws Exception
+	 *             upon error
 	 */
 	private void testFiniteFilter(Geometry geometry) throws Exception {
 
