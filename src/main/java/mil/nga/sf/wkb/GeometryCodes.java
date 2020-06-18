@@ -20,11 +20,29 @@ public class GeometryCodes {
 	 * @return geometry code
 	 */
 	public static int getCode(Geometry geometry) {
-		int code = getCode(geometry.getGeometryType());
-		if (geometry.hasZ()) {
+		return getCode(geometry.getGeometryType(), geometry.hasZ(),
+				geometry.hasM());
+	}
+
+	/**
+	 * Get the geometry code from the geometry type
+	 * 
+	 * @param geometryType
+	 *            geometry type
+	 * @param hasZ
+	 *            has z
+	 * @param hasM
+	 *            mas m
+	 * @return geometry code
+	 * @since 2.0.3
+	 */
+	public static int getCode(GeometryType geometryType, boolean hasZ,
+			boolean hasM) {
+		int code = getCode(geometryType);
+		if (hasZ) {
 			code += 1000;
 		}
-		if (geometry.hasM()) {
+		if (hasM) {
 			code += 2000;
 		}
 		return code;
