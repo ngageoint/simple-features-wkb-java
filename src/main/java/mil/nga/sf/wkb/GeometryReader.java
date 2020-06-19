@@ -46,24 +46,7 @@ public class GeometryReader {
 	 * @since 2.0.3
 	 */
 	public static Geometry readGeometry(byte[] bytes) throws IOException {
-		return readGeometry(bytes, ByteReader.DEFAULT_BYTE_ORDER);
-	}
-
-	/**
-	 * Read a geometry from well-known bytes
-	 * 
-	 * @param bytes
-	 *            byte reader
-	 * @param byteOrder
-	 *            byte order
-	 * @return geometry
-	 * @throws IOException
-	 *             upon failure to read
-	 * @since 2.0.3
-	 */
-	public static Geometry readGeometry(byte[] bytes, ByteOrder byteOrder)
-			throws IOException {
-		return readGeometry(bytes, byteOrder, null, null);
+		return readGeometry(bytes, null, null);
 	}
 
 	/**
@@ -80,26 +63,7 @@ public class GeometryReader {
 	 */
 	public static Geometry readGeometry(byte[] bytes, GeometryFilter filter)
 			throws IOException {
-		return readGeometry(bytes, ByteReader.DEFAULT_BYTE_ORDER, filter);
-	}
-
-	/**
-	 * Read a geometry from well-known bytes
-	 * 
-	 * @param bytes
-	 *            byte reader
-	 * @param byteOrder
-	 *            byte order
-	 * @param filter
-	 *            geometry filter
-	 * @return geometry
-	 * @throws IOException
-	 *             upon failure to read
-	 * @since 2.0.3
-	 */
-	public static Geometry readGeometry(byte[] bytes, ByteOrder byteOrder,
-			GeometryFilter filter) throws IOException {
-		return readGeometry(bytes, byteOrder, filter, null);
+		return readGeometry(bytes, filter, null);
 	}
 
 	/**
@@ -118,28 +82,7 @@ public class GeometryReader {
 	 */
 	public static <T extends Geometry> T readGeometry(byte[] bytes,
 			Class<T> expectedType) throws IOException {
-		return readGeometry(bytes, ByteReader.DEFAULT_BYTE_ORDER, expectedType);
-	}
-
-	/**
-	 * Read a geometry from well-known bytes
-	 * 
-	 * @param bytes
-	 *            byte reader
-	 * @param byteOrder
-	 *            byte order
-	 * @param expectedType
-	 *            expected type
-	 * @param <T>
-	 *            geometry type
-	 * @return geometry
-	 * @throws IOException
-	 *             upon failure to read
-	 * @since 2.0.3
-	 */
-	public static <T extends Geometry> T readGeometry(byte[] bytes,
-			ByteOrder byteOrder, Class<T> expectedType) throws IOException {
-		return readGeometry(bytes, byteOrder, null, expectedType);
+		return readGeometry(bytes, null, expectedType);
 	}
 
 	/**
@@ -160,33 +103,8 @@ public class GeometryReader {
 	 */
 	public static <T extends Geometry> T readGeometry(byte[] bytes,
 			GeometryFilter filter, Class<T> expectedType) throws IOException {
-		return readGeometry(bytes, ByteReader.DEFAULT_BYTE_ORDER, filter,
-				expectedType);
-	}
-
-	/**
-	 * Read a geometry from well-known bytes
-	 * 
-	 * @param bytes
-	 *            byte reader
-	 * @param byteOrder
-	 *            byte order
-	 * @param filter
-	 *            geometry filter
-	 * @param expectedType
-	 *            expected type
-	 * @param <T>
-	 *            geometry type
-	 * @return geometry
-	 * @throws IOException
-	 *             upon failure to read
-	 * @since 2.0.3
-	 */
-	public static <T extends Geometry> T readGeometry(byte[] bytes,
-			ByteOrder byteOrder, GeometryFilter filter, Class<T> expectedType)
-			throws IOException {
 		T geometry = null;
-		ByteReader reader = new ByteReader(bytes, byteOrder);
+		ByteReader reader = new ByteReader(bytes);
 		try {
 			geometry = readGeometry(reader, filter, expectedType);
 		} finally {
