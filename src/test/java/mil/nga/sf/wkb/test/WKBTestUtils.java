@@ -544,12 +544,14 @@ public class WKBTestUtils {
 	public static Geometry readGeometry(byte[] bytes, ByteOrder byteOrder)
 			throws IOException {
 
-		Geometry geometry = GeometryReader.readGeometry(bytes, byteOrder);
-
 		ByteReader reader = new ByteReader(bytes, byteOrder);
-		GeometryTypeInfo geometryTypeInfo = GeometryReader
-				.readGeometryType(reader);
+		Geometry geometry = GeometryReader.readGeometry(reader);
 		reader.close();
+
+		ByteReader reader2 = new ByteReader(bytes, byteOrder);
+		GeometryTypeInfo geometryTypeInfo = GeometryReader
+				.readGeometryType(reader2);
+		reader2.close();
 		TestCase.assertEquals(geometryTypeInfo.getGeometryType(), GeometryCodes
 				.getGeometryType(geometryTypeInfo.getGeometryTypeCode()));
 		GeometryType expectedGeometryType = geometryTypeInfo.getGeometryType();
