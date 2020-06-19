@@ -23,7 +23,6 @@ import mil.nga.sf.Surface;
 import mil.nga.sf.TIN;
 import mil.nga.sf.Triangle;
 import mil.nga.sf.util.ByteReader;
-import mil.nga.sf.util.ByteWriter;
 import mil.nga.sf.wkb.GeometryCodes;
 import mil.nga.sf.wkb.GeometryReader;
 import mil.nga.sf.wkb.GeometryTypeInfo;
@@ -425,6 +424,7 @@ public class WKBTestUtils {
 	 * @param actual
 	 *            actual geometry
 	 * @throws IOException
+	 *             upon error
 	 */
 	public static void compareGeometryBytes(Geometry expected, Geometry actual)
 			throws IOException {
@@ -441,6 +441,7 @@ public class WKBTestUtils {
 	 * @param byteOrder
 	 *            byte order
 	 * @throws IOException
+	 *             upon error
 	 */
 	public static void compareGeometryBytes(Geometry expected, Geometry actual,
 			ByteOrder byteOrder) throws IOException {
@@ -459,6 +460,7 @@ public class WKBTestUtils {
 	 * @param actual
 	 *            actual bytes
 	 * @throws IOException
+	 *             upon error
 	 */
 	public static void compareByteGeometries(byte[] expected, byte[] actual)
 			throws IOException {
@@ -475,6 +477,7 @@ public class WKBTestUtils {
 	 * @param byteOrder
 	 *            byte order
 	 * @throws IOException
+	 *             upon error
 	 */
 	public static void compareByteGeometries(byte[] expected, byte[] actual,
 			ByteOrder byteOrder) throws IOException {
@@ -492,6 +495,7 @@ public class WKBTestUtils {
 	 *            geometry
 	 * @return bytes
 	 * @throws IOException
+	 *             upon error
 	 */
 	public static byte[] writeBytes(Geometry geometry) throws IOException {
 		return writeBytes(geometry, ByteOrder.BIG_ENDIAN);
@@ -506,15 +510,11 @@ public class WKBTestUtils {
 	 *            byte order
 	 * @return bytes
 	 * @throws IOException
+	 *             upon error
 	 */
 	public static byte[] writeBytes(Geometry geometry, ByteOrder byteOrder)
 			throws IOException {
-		ByteWriter writer = new ByteWriter();
-		writer.setByteOrder(byteOrder);
-		GeometryWriter.writeGeometry(writer, geometry);
-		byte[] bytes = writer.getBytes();
-		writer.close();
-		return bytes;
+		return GeometryWriter.writeGeometry(geometry, byteOrder);
 	}
 
 	/**
@@ -544,14 +544,12 @@ public class WKBTestUtils {
 	public static Geometry readGeometry(byte[] bytes, ByteOrder byteOrder)
 			throws IOException {
 
-		ByteReader reader = new ByteReader(bytes, byteOrder);
-		Geometry geometry = GeometryReader.readGeometry(reader);
-		reader.close();
+		Geometry geometry = GeometryReader.readGeometry(bytes, byteOrder);
 
-		ByteReader reader2 = new ByteReader(bytes, byteOrder);
+		ByteReader reader = new ByteReader(bytes, byteOrder);
 		GeometryTypeInfo geometryTypeInfo = GeometryReader
-				.readGeometryType(reader2);
-		reader2.close();
+				.readGeometryType(reader);
+		reader.close();
 		TestCase.assertEquals(geometryTypeInfo.getGeometryType(), GeometryCodes
 				.getGeometryType(geometryTypeInfo.getGeometryTypeCode()));
 		GeometryType expectedGeometryType = geometryTypeInfo.getGeometryType();
@@ -820,7 +818,9 @@ public class WKBTestUtils {
 	 * Create a random compound curve
 	 * 
 	 * @param hasZ
+	 *            has z
 	 * @param hasM
+	 *            has m
 	 * @return compound curve
 	 */
 	public static CompoundCurve createCompoundCurve(boolean hasZ,
@@ -832,8 +832,11 @@ public class WKBTestUtils {
 	 * Create a random compound curve
 	 * 
 	 * @param hasZ
+	 *            has z
 	 * @param hasM
+	 *            has m
 	 * @param ring
+	 *            is ring
 	 * @return compound curve
 	 */
 	public static CompoundCurve createCompoundCurve(boolean hasZ, boolean hasM,
@@ -859,7 +862,9 @@ public class WKBTestUtils {
 	 * Create a random curve polygon
 	 * 
 	 * @param hasZ
+	 *            has z
 	 * @param hasM
+	 *            has m
 	 * @return polygon
 	 */
 	public static CurvePolygon<Curve> createCurvePolygon(boolean hasZ,

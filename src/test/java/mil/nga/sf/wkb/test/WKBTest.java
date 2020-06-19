@@ -23,7 +23,6 @@ import mil.nga.sf.Polygon;
 import mil.nga.sf.Surface;
 import mil.nga.sf.extended.ExtendedGeometryCollection;
 import mil.nga.sf.util.ByteReader;
-import mil.nga.sf.util.ByteWriter;
 import mil.nga.sf.util.GeometryEnvelopeBuilder;
 import mil.nga.sf.util.filter.FiniteFilterType;
 import mil.nga.sf.util.filter.PointFiniteFilter;
@@ -50,6 +49,12 @@ public class WKBTest {
 
 	}
 
+	/**
+	 * Test a point
+	 * 
+	 * @throws IOException
+	 *             upon error
+	 */
 	@Test
 	public void testPoint() throws IOException {
 
@@ -62,6 +67,12 @@ public class WKBTest {
 
 	}
 
+	/**
+	 * Test a line string
+	 * 
+	 * @throws IOException
+	 *             upon error
+	 */
 	@Test
 	public void testLineString() throws IOException {
 
@@ -74,6 +85,12 @@ public class WKBTest {
 
 	}
 
+	/**
+	 * Test a polygon
+	 * 
+	 * @throws IOException
+	 *             upon error
+	 */
 	@Test
 	public void testPolygon() throws IOException {
 
@@ -86,6 +103,12 @@ public class WKBTest {
 
 	}
 
+	/**
+	 * Test a multi point
+	 * 
+	 * @throws IOException
+	 *             upon error
+	 */
 	@Test
 	public void testMultiPoint() throws IOException {
 
@@ -98,6 +121,12 @@ public class WKBTest {
 
 	}
 
+	/**
+	 * Test a multi line string
+	 * 
+	 * @throws IOException
+	 *             upon error
+	 */
 	@Test
 	public void testMultiLineString() throws IOException {
 
@@ -111,6 +140,12 @@ public class WKBTest {
 
 	}
 
+	/**
+	 * Test a multi curve with line strings
+	 * 
+	 * @throws IOException
+	 *             upon error
+	 */
 	@Test
 	public void testMultiCurveWithLineStrings() throws IOException {
 
@@ -174,6 +209,12 @@ public class WKBTest {
 
 	}
 
+	/**
+	 * Test a multi curve with compound curve
+	 * 
+	 * @throws IOException
+	 *             upon error
+	 */
 	@Test
 	public void testMultiCurveWithCompoundCurve() throws IOException {
 
@@ -234,6 +275,12 @@ public class WKBTest {
 
 	}
 
+	/**
+	 * Test a multi curve
+	 * 
+	 * @throws IOException
+	 *             upon error
+	 */
 	@Test
 	public void testMultiCurve() throws IOException {
 
@@ -289,6 +336,12 @@ public class WKBTest {
 		geometryTester(extendedMultiCurve, multiCurve);
 	}
 
+	/**
+	 * Test a multi surface
+	 * 
+	 * @throws IOException
+	 *             upon error
+	 */
 	@Test
 	public void testMultiSurface() throws IOException {
 
@@ -344,6 +397,12 @@ public class WKBTest {
 		geometryTester(extendedMultiSurface, multiSurface);
 	}
 
+	/**
+	 * Test a multi polygon
+	 * 
+	 * @throws IOException
+	 *             upon error
+	 */
 	@Test
 	public void testMultiPolygon() throws IOException {
 
@@ -356,6 +415,12 @@ public class WKBTest {
 
 	}
 
+	/**
+	 * Test a geometry collection
+	 * 
+	 * @throws IOException
+	 *             upon error
+	 */
 	@Test
 	public void testGeometryCollection() throws IOException {
 
@@ -369,6 +434,12 @@ public class WKBTest {
 
 	}
 
+	/**
+	 * Test a multi polygon 2.5
+	 * 
+	 * @throws IOException
+	 *             upon error
+	 */
 	@Test
 	public void testMultiPolygon25() throws IOException {
 
@@ -617,9 +688,7 @@ public class WKBTest {
 	 */
 	private void testFiniteFilter(Geometry geometry) throws Exception {
 
-		ByteWriter writer = new ByteWriter();
-		GeometryWriter.writeGeometry(writer, geometry);
-		byte[] bytes = writer.getBytes();
+		byte[] bytes = GeometryWriter.writeGeometry(geometry);
 
 		testFiniteFilter(bytes, new PointFiniteFilter());
 		testFiniteFilter(bytes, new PointFiniteFilter(true));
@@ -657,9 +726,7 @@ public class WKBTest {
 	private void testFiniteFilter(byte[] bytes, PointFiniteFilter filter)
 			throws IOException {
 
-		ByteReader reader = new ByteReader(bytes);
-		Geometry geometry = GeometryReader.readGeometry(reader, filter);
-		reader.close();
+		Geometry geometry = GeometryReader.readGeometry(bytes, filter);
 
 		if (geometry != null) {
 

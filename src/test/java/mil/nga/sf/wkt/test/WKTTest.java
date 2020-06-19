@@ -22,7 +22,6 @@ import mil.nga.sf.Polygon;
 import mil.nga.sf.Surface;
 import mil.nga.sf.extended.ExtendedGeometryCollection;
 import mil.nga.sf.util.GeometryEnvelopeBuilder;
-import mil.nga.sf.util.TextReader;
 import mil.nga.sf.util.filter.FiniteFilterType;
 import mil.nga.sf.util.filter.PointFiniteFilter;
 import mil.nga.sf.wkt.GeometryReader;
@@ -842,9 +841,7 @@ public class WKTTest {
 	private void testFiniteFilter(String text, PointFiniteFilter filter)
 			throws IOException {
 
-		TextReader reader = new TextReader(text);
-		Geometry geometry = GeometryReader.readGeometry(reader, filter);
-		reader.close();
+		Geometry geometry = GeometryReader.readGeometry(text, filter);
 
 		if (geometry != null) {
 

@@ -34,6 +34,83 @@ public class GeometryReader {
 	/**
 	 * Read a geometry from the well-known text
 	 * 
+	 * @param text
+	 *            well-known text
+	 * @return geometry
+	 * @throws IOException
+	 *             upon failure to read
+	 */
+	public static Geometry readGeometry(String text) throws IOException {
+		return readGeometry(text, null, null);
+	}
+
+	/**
+	 * Read a geometry from the well-known text
+	 * 
+	 * @param text
+	 *            well-known text
+	 * @param filter
+	 *            geometry filter
+	 * @return geometry
+	 * @throws IOException
+	 *             upon failure to read
+	 */
+	public static Geometry readGeometry(String text, GeometryFilter filter)
+			throws IOException {
+		return readGeometry(text, filter, null);
+	}
+
+	/**
+	 * Read a geometry from the well-known text
+	 * 
+	 * @param text
+	 *            well-known text
+	 * @param expectedType
+	 *            expected type
+	 * @param <T>
+	 *            geometry type
+	 * @return geometry
+	 * @throws IOException
+	 *             upon failure to read
+	 */
+	public static <T extends Geometry> T readGeometry(String text,
+			Class<T> expectedType) throws IOException {
+		return readGeometry(text, null, expectedType);
+	}
+
+	/**
+	 * Read a geometry from the well-known text
+	 * 
+	 * @param text
+	 *            well-known text
+	 * @param filter
+	 *            geometry filter
+	 * @param expectedType
+	 *            expected type
+	 * @param <T>
+	 *            geometry type
+	 * @return geometry
+	 * @throws IOException
+	 *             upon failure to read
+	 */
+	public static <T extends Geometry> T readGeometry(String text,
+			GeometryFilter filter, Class<T> expectedType) throws IOException {
+
+		T geometry = null;
+
+		TextReader reader = new TextReader(text);
+		try {
+			geometry = readGeometry(reader, filter, expectedType);
+		} finally {
+			reader.close();
+		}
+
+		return geometry;
+	}
+
+	/**
+	 * Read a geometry from the well-known text
+	 * 
 	 * @param reader
 	 *            text reader
 	 * @return geometry

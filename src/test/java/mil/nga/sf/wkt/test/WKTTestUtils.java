@@ -490,14 +490,12 @@ public class WKTTestUtils {
 	public static Geometry readGeometry(String text, boolean validateZM)
 			throws IOException {
 
-		TextReader reader = new TextReader(text);
-		Geometry geometry = GeometryReader.readGeometry(reader);
-		reader.close();
+		Geometry geometry = GeometryReader.readGeometry(text);
 
-		TextReader reader2 = new TextReader(text);
+		TextReader reader = new TextReader(text);
 		GeometryTypeInfo geometryTypeInfo = GeometryReader
-				.readGeometryType(reader2);
-		reader2.close();
+				.readGeometryType(reader);
+		reader.close();
 		GeometryType expectedGeometryType = geometryTypeInfo.getGeometryType();
 		switch (expectedGeometryType) {
 		case MULTICURVE:

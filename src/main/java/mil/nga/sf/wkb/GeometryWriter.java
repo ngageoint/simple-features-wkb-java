@@ -30,6 +30,45 @@ import mil.nga.sf.util.SFException;
 public class GeometryWriter {
 
 	/**
+	 * Write a geometry to a well-known bytes
+	 * 
+	 * @param geometry
+	 *            geometry
+	 * @return well-known bytes
+	 * @throws IOException
+	 *             upon failure to write
+	 * @since 2.0.3
+	 */
+	public static byte[] writeGeometry(Geometry geometry) throws IOException {
+		return writeGeometry(geometry, ByteWriter.DEFAULT_BYTE_ORDER);
+	}
+
+	/**
+	 * Write a geometry to a well-known bytes
+	 * 
+	 * @param geometry
+	 *            geometry
+	 * @param byteOrder
+	 *            byte order
+	 * @return well-known bytes
+	 * @throws IOException
+	 *             upon failure to write
+	 * @since 2.0.3
+	 */
+	public static byte[] writeGeometry(Geometry geometry, ByteOrder byteOrder)
+			throws IOException {
+		byte[] bytes = null;
+		ByteWriter writer = new ByteWriter(byteOrder);
+		try {
+			writeGeometry(writer, geometry);
+			bytes = writer.getBytes();
+		} finally {
+			writer.close();
+		}
+		return bytes;
+	}
+
+	/**
 	 * Write a geometry to the byte writer
 	 * 
 	 * @param writer
