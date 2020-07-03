@@ -305,7 +305,8 @@ public class GeometryReader {
 		// Read the geometry type
 		String geometryTypeValue = reader.readToken();
 
-		if (!geometryTypeValue.equalsIgnoreCase("EMPTY")) {
+		if (geometryTypeValue != null
+				&& !geometryTypeValue.equalsIgnoreCase("EMPTY")) {
 
 			boolean hasZ = false;
 			boolean hasM = false;
@@ -359,7 +360,7 @@ public class GeometryReader {
 				// Peek at the next token without popping it off
 				String next = reader.peekToken();
 
-				switch (next.toUpperCase()) {
+				switch (toUpperCase(next)) {
 				case "Z":
 					hasZ = true;
 					break;
@@ -376,7 +377,8 @@ public class GeometryReader {
 				default:
 					throw new SFException(
 							"Invalid value following geometry type: '"
-									+ geometryTypeValue + "', value: '" + next);
+									+ geometryTypeValue + "', value: '" + next
+									+ "'");
 				}
 
 				if (hasZ || hasM) {
@@ -1255,7 +1257,7 @@ public class GeometryReader {
 
 		String token = reader.readToken();
 
-		switch (token.toUpperCase()) {
+		switch (toUpperCase(token)) {
 		case "EMPTY":
 			nonEmpty = false;
 			break;
@@ -1264,7 +1266,8 @@ public class GeometryReader {
 			break;
 		default:
 			throw new SFException(
-					"Invalid token, expected 'EMPTY' or '('. found: '" + token);
+					"Invalid token, expected 'EMPTY' or '('. found: '" + token
+							+ "'");
 		}
 
 		return nonEmpty;
@@ -1286,7 +1289,7 @@ public class GeometryReader {
 
 		String token = reader.readToken();
 
-		switch (token.toUpperCase()) {
+		switch (toUpperCase(token)) {
 		case ",":
 			comma = true;
 			break;
@@ -1294,8 +1297,8 @@ public class GeometryReader {
 			comma = false;
 			break;
 		default:
-			throw new SFException(
-					"Invalid token, expected ',' or ')'. found: '" + token);
+			throw new SFException("Invalid token, expected ',' or ')'. found: '"
+					+ token + "'");
 		}
 
 		return comma;
@@ -1313,7 +1316,7 @@ public class GeometryReader {
 		String token = reader.readToken();
 		if (!token.equals(")")) {
 			throw new SFException(
-					"Invalid token, expected ')'. found: '" + token);
+					"Invalid token, expected ')'. found: '" + token + "'");
 		}
 	}
 
@@ -1333,7 +1336,7 @@ public class GeometryReader {
 
 		String token = reader.peekToken();
 
-		switch (token.toUpperCase()) {
+		switch (toUpperCase(token)) {
 		case "EMPTY":
 		case "(":
 			is = true;
@@ -1386,6 +1389,17 @@ public class GeometryReader {
 			GeometryType containingType, Geometry geometry) {
 		return filter == null || geometry == null
 				|| filter.filter(containingType, geometry);
+	}
+
+	/**
+	 * To upper case helper with null handling for switch statements
+	 * 
+	 * @param value
+	 *            string value
+	 * @return upper case value or empty string
+	 */
+	private static String toUpperCase(String value) {
+		return value != null ? value.toUpperCase(Locale.US) : "";
 	}
 
 }
