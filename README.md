@@ -21,11 +21,9 @@ View the latest [Javadoc](http://ngageoint.github.io/simple-features-wkb-java/do
 
 ```java
 
-//byte[] bytes = ...    
+// byte[] bytes = ...
 
-ByteReader reader = new ByteReader(bytes);
-reader.setByteOrder(ByteOrder.BIG_ENDIAN);
-Geometry geometry = GeometryReader.readGeometry(reader);
+Geometry geometry = GeometryReader.readGeometry(bytes);
 GeometryType geometryType = geometry.getGeometryType();
 
 ```
@@ -34,13 +32,9 @@ GeometryType geometryType = geometry.getGeometryType();
 
 ```java
 
-//Geometry geometry = ...
+// Geometry geometry = ...
 
-ByteWriter writer = new ByteWriter();
-writer.setByteOrder(ByteOrder.BIG_ENDIAN);
-GeometryWriter.writeGeometry(writer, geometry);
-byte[] bytes = writer.getBytes();
-writer.close();
+byte[] bytes = GeometryWriter.writeGeometry(geometry);
 
 ```
 
