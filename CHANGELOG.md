@@ -4,9 +4,12 @@ Adheres to [Semantic Versioning](http://semver.org/).
 
 ---
 
-## 2.0.3 (TBD)
+## [2.0.3](https://github.com/ngageoint/simple-features-wkb-java/releases/tag/2.0.3) (07-13-2020)
 
-* TBD
+* simple-features-java version 2.0.3
+* Geometry reader/writer shortcut support directly between bytes and geometries
+* Geometry Filter support
+* Geometry Code retrieval method by geometry type, has z, and has m
 
 ## [2.0.2](https://github.com/ngageoint/simple-features-wkb-java/releases/tag/2.0.2) (07-08-2019)
 
