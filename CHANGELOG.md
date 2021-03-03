@@ -4,7 +4,7 @@ Adheres to [Semantic Versioning](http://semver.org/).
 
 ---
 
-## 2.0.4 (TBD)
+## [2.0.4](https://github.com/ngageoint/simple-features-wkb-java/releases/tag/2.0.4) (03-03-2021)
 
 * simple-features-java version 2.0.4
 * Geometry reader/writer instance methods
