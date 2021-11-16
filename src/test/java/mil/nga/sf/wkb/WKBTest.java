@@ -1,4 +1,4 @@
-package mil.nga.sf.wkb.test;
+package mil.nga.sf.wkb;
 
 import java.io.IOException;
 import java.nio.ByteOrder;
