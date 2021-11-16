@@ -23,10 +23,6 @@ import mil.nga.sf.Surface;
 import mil.nga.sf.TIN;
 import mil.nga.sf.Triangle;
 import mil.nga.sf.util.ByteReader;
-import mil.nga.sf.wkb.GeometryCodes;
-import mil.nga.sf.wkb.GeometryReader;
-import mil.nga.sf.wkb.GeometryTypeInfo;
-import mil.nga.sf.wkb.GeometryWriter;
 
 /**
  * WKB test utils

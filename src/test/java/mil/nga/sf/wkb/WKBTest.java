@@ -26,9 +26,6 @@ import mil.nga.sf.util.ByteReader;
 import mil.nga.sf.util.GeometryEnvelopeBuilder;
 import mil.nga.sf.util.filter.FiniteFilterType;
 import mil.nga.sf.util.filter.PointFiniteFilter;
-import mil.nga.sf.wkb.GeometryCodes;
-import mil.nga.sf.wkb.GeometryReader;
-import mil.nga.sf.wkb.GeometryWriter;
 
 /**
  * Test Well Known Binary Geometries

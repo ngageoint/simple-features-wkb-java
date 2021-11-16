@@ -8,8 +8,6 @@ import junit.framework.TestCase;
 import mil.nga.sf.Geometry;
 import mil.nga.sf.GeometryType;
 import mil.nga.sf.Point;
-import mil.nga.sf.wkb.GeometryReader;
-import mil.nga.sf.wkb.GeometryWriter;
 
 /**
  * README example tests
