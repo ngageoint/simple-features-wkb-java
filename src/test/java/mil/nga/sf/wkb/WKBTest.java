@@ -23,7 +23,6 @@ import mil.nga.sf.Polygon;
 import mil.nga.sf.Surface;
 import mil.nga.sf.extended.ExtendedGeometryCollection;
 import mil.nga.sf.util.ByteReader;
-import mil.nga.sf.util.GeometryEnvelopeBuilder;
 import mil.nga.sf.util.filter.FiniteFilterType;
 import mil.nga.sf.util.filter.PointFiniteFilter;
 
@@ -648,12 +647,9 @@ public class WKBTest {
 		WKBTestUtils.compareGeometries(compareGeometry, geometry2);
 		WKBTestUtils.compareGeometries(geometry1, geometry2);
 
-		GeometryEnvelope envelope = GeometryEnvelopeBuilder
-				.buildEnvelope(compareGeometry);
-		GeometryEnvelope envelope1 = GeometryEnvelopeBuilder
-				.buildEnvelope(geometry1);
-		GeometryEnvelope envelope2 = GeometryEnvelopeBuilder
-				.buildEnvelope(geometry2);
+		GeometryEnvelope envelope = compareGeometry.getEnvelope();
+		GeometryEnvelope envelope1 = geometry1.getEnvelope();
+		GeometryEnvelope envelope2 = geometry2.getEnvelope();
 
 		WKBTestUtils.compareEnvelopes(envelope, envelope1);
 		WKBTestUtils.compareEnvelopes(envelope1, envelope2);
