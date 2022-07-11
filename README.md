@@ -40,14 +40,14 @@ byte[] bytes = GeometryWriter.writeGeometry(geometry);
 
 ### Installation ###
 
-Pull from the [Maven Central Repository](http://search.maven.org/#artifactdetails|mil.nga.sf|sf-wkb|2.0.6|jar) (JAR, POM, Source, Javadoc)
+Pull from the [Maven Central Repository](http://search.maven.org/#artifactdetails|mil.nga.sf|sf-wkb|2.1.0|jar) (JAR, POM, Source, Javadoc)
 
 ```xml
 
 <dependency>
     <groupId>mil.nga.sf</groupId>
     <artifactId>sf-wkb</artifactId>
-    <version>2.0.6</version>
+    <version>2.1.0</version>
 </dependency>
 
 ```
