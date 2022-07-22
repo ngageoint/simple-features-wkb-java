@@ -4,7 +4,7 @@ Adheres to [Semantic Versioning](http://semver.org/).
 
 ---
 
-## 2.1.1 (TBD)
+## 2.2.0 (TBD)
 
 * TBD
 
