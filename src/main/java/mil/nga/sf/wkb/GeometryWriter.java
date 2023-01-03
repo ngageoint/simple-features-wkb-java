@@ -151,7 +151,7 @@ public class GeometryWriter {
 		writer.writeByte(byteOrder);
 
 		// Write the geometry type integer
-		writer.writeInt(GeometryCodes.getCode(geometry));
+		writer.writeInt(GeometryCodes.getWKBCode(geometry));
 
 		GeometryType geometryType = geometry.getGeometryType();
 
@@ -170,14 +170,8 @@ public class GeometryWriter {
 			writePolygon((Polygon) geometry);
 			break;
 		case MULTIPOINT:
-			writeMultiPoint((MultiPoint) geometry);
-			break;
 		case MULTILINESTRING:
-			writeMultiLineString((MultiLineString) geometry);
-			break;
 		case MULTIPOLYGON:
-			writeMultiPolygon((MultiPolygon) geometry);
-			break;
 		case GEOMETRYCOLLECTION:
 		case MULTICURVE:
 		case MULTISURFACE:

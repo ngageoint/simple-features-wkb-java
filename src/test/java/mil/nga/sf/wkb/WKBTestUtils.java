@@ -675,6 +675,49 @@ public class WKBTestUtils {
 	}
 
 	/**
+	 * Create a random circular string
+	 * 
+	 * @param hasZ
+	 *            has z
+	 * @param hasM
+	 *            has m
+	 * @return circular string
+	 */
+	public static CircularString createCircularString(boolean hasZ,
+			boolean hasM) {
+		return createCircularString(hasZ, hasM, false);
+	}
+
+	/**
+	 * Create a random circular string
+	 * 
+	 * @param hasZ
+	 *            has z
+	 * @param hasM
+	 *            has m
+	 * @param closed
+	 *            closed
+	 * @return circular string
+	 */
+	public static CircularString createCircularString(boolean hasZ,
+			boolean hasM, boolean closed) {
+
+		CircularString circularString = new CircularString(hasZ, hasM);
+
+		int num = 2 + ((int) (Math.random() * 9));
+
+		for (int i = 0; i < num; i++) {
+			circularString.addPoint(createPoint(hasZ, hasM));
+		}
+
+		if (closed) {
+			circularString.addPoint(circularString.getPoints().get(0));
+		}
+
+		return circularString;
+	}
+
+	/**
 	 * Create a random polygon
 	 * 
 	 * @param hasZ
@@ -736,6 +779,29 @@ public class WKBTestUtils {
 
 		for (int i = 0; i < num; i++) {
 			multiLineString.addLineString(createLineString(hasZ, hasM));
+		}
+
+		return multiLineString;
+	}
+
+	/**
+	 * Create a random multi line string with circular strings
+	 * 
+	 * @param hasZ
+	 *            has z
+	 * @param hasM
+	 *            has m
+	 * @return multi line string
+	 */
+	public static MultiLineString createMultiLineStringWithCircularStrings(
+			boolean hasZ, boolean hasM) {
+
+		MultiLineString multiLineString = new MultiLineString(hasZ, hasM);
+
+		int num = 1 + ((int) (Math.random() * 5));
+
+		for (int i = 0; i < num; i++) {
+			multiLineString.addLineString(createCircularString(hasZ, hasM));
 		}
 
 		return multiLineString;

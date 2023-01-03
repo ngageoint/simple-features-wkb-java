@@ -1,7 +1,10 @@
 package mil.nga.sf.wkb;
 
+import mil.nga.sf.CircularString;
 import mil.nga.sf.Geometry;
 import mil.nga.sf.GeometryType;
+import mil.nga.sf.LineString;
+import mil.nga.sf.MultiLineString;
 import mil.nga.sf.util.SFException;
 
 /**
@@ -121,6 +124,30 @@ public class GeometryCodes {
 		}
 
 		return code;
+	}
+
+	/**
+	 * Get the well-known binary writable geometry code from the geometry
+	 * 
+	 * @param geometry
+	 *            geometry
+	 * @return geometry code
+	 */
+	public static int getWKBCode(Geometry geometry) {
+		GeometryType type = geometry.getGeometryType();
+		if (!geometry.isEmpty()) {
+			switch (type) {
+			case MULTILINESTRING:
+				LineString lineString = ((MultiLineString) geometry)
+						.getLineString(0);
+				if (lineString instanceof CircularString) {
+					type = GeometryType.MULTICURVE;
+				}
+				break;
+			default:
+			}
+		}
+		return getCode(type, geometry.hasZ(), geometry.hasM());
 	}
 
 	/**
