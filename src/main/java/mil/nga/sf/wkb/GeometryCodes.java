@@ -132,8 +132,22 @@ public class GeometryCodes {
 	 * @param geometry
 	 *            geometry
 	 * @return geometry code
+	 * @since 2.2.1
 	 */
 	public static int getWKBCode(Geometry geometry) {
+		return getCode(getWKBGeometryType(geometry), geometry.hasZ(),
+				geometry.hasM());
+	}
+
+	/**
+	 * Get the well-known binary writable geometry type from the geometry
+	 * 
+	 * @param geometry
+	 *            geometry
+	 * @return geometry type
+	 * @since 2.2.1
+	 */
+	public static GeometryType getWKBGeometryType(Geometry geometry) {
 		GeometryType type = geometry.getGeometryType();
 		if (!geometry.isEmpty()) {
 			switch (type) {
@@ -147,7 +161,7 @@ public class GeometryCodes {
 			default:
 			}
 		}
-		return getCode(type, geometry.hasZ(), geometry.hasM());
+		return type;
 	}
 
 	/**
