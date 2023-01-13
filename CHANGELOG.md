@@ -4,7 +4,7 @@ Adheres to [Semantic Versioning](http://semver.org/).
 
 ---
 
-## 2.2.1 (TBD)
+## [2.2.1](https://github.com/ngageoint/simple-features-wkb-java/releases/tag/2.2.1) (01-13-2023)
 
 * MultiLineString with CircularStrings byte encoding fix to use MultiCurve
 
